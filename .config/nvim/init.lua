@@ -10,6 +10,7 @@ vim.keymap.set('n', '<C-l>', 'a<cr><C-c>O', {})
 vim.keymap.set('i', '<C-l>', '<cr><C-c>O', {})
 vim.g.mapleader = " "
 vim.wo.relativenumber = true
+vim.wo.number = true
 
 -- Install lazy if not available ----------------------------------------------
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
