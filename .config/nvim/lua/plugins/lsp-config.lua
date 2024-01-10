@@ -12,7 +12,7 @@ return {
         ensure_installed = {
           "lua_ls",
           "r_language_server",
-          "pyright"
+          "ruff_lsp"
         }
       })
     end
@@ -28,15 +28,8 @@ return {
       })
       lspconfig.r_language_server.setup({
         capabilities = capabilities,
-        settings = {
-          r = {
-            lsp = {
-              diagnostics = false -- disable lintr
-            }
-          }
-        }
       })
-      lspconfig.pyright.setup({
+      lspconfig.ruff_lsp.setup({
         capabilities = capabilities
       })
 
