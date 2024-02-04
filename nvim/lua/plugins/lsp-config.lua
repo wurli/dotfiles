@@ -12,7 +12,8 @@ return {
         ensure_installed = {
           "lua_ls",
           "r_language_server",
-          "ruff_lsp"
+          "ruff_lsp",
+          "rust_analyzer"
         }
       })
     end
@@ -30,6 +31,9 @@ return {
         capabilities = capabilities,
       })
       lspconfig.ruff_lsp.setup({
+        capabilities = capabilities
+      })
+      lspconfig.rust_analyzer.setup({
         capabilities = capabilities
       })
 
