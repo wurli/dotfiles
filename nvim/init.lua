@@ -1,4 +1,8 @@
 -- Set vim options ------------------------------------------------------------
+vim.g.mapleader = " "
+vim.wo.relativenumber = true -- | Together give 'hybrid' line numbers
+vim.wo.number = true         -- |
+
 vim.cmd("set expandtab")
 vim.cmd("set tabstop=2")
 vim.cmd("set softtabstop=2")
@@ -8,9 +12,15 @@ vim.cmd("set colorcolumn=80,120")
 -- Indentation-sensitive linebreak insert
 vim.keymap.set('n', '<C-l>', 'a<cr><C-c>O', {})
 vim.keymap.set('i', '<C-l>', '<cr><C-c>O', {})
-vim.g.mapleader = " "
-vim.wo.relativenumber = true
-vim.wo.number = true
+
+-- Select text after pasting (e.g. for adjusting indentation)
+vim.keymap.set('n', '<leader>p', 'p`[v`]', {}) -- Paste and select below cursor
+vim.keymap.set('n', '<leader>P', 'P`[v`]', {}) -- Paste and select above cursor
+vim.keymap.set('n', '<leader>v', '`[v`]', {})  -- Select last paste
+
+-- For multi-line inserts
+vim.keymap.set("i", "<C-c>", "<Esc>")
+
 
 -- Install lazy if not available ----------------------------------------------
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
