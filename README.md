@@ -18,8 +18,8 @@ function symlink ([String] $real, [String] $link) {
     }
 }
 
-symlink .bashrc $HOME\.bashrc
+symlink .bashrc $HOME\~\.bashrc
 symlink .gitconfig $HOME\~\.gitconfig
-symlink .lintr $HOME\.lintr
+symlink .lintr $HOME\~\.lintr
 symlink nvim $HOME\AppData\Local\nvim
 ```
