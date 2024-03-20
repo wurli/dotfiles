@@ -3,7 +3,9 @@ Configuration settings I use
 
 ## Installation on Mac
 
-...
+``` zsh
+ln -s .tmux.conf ~/.tmux.conf
+```
 
 ## Installation on Windows 
 

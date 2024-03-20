@@ -1,3 +1,6 @@
+-- Set vim options required for lazy -------------------------------------------
+vim.g.mapleader = " "
+
 -- Install lazy if not available ----------------------------------------------
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -15,9 +18,8 @@ vim.opt.rtp:prepend(lazypath)
 -- Set up plugins -------------------------------------------------------------
 require("lazy").setup("plugins")
 
+-- Set other vim options ------------------------------------------------------
 
--- Set vim options ------------------------------------------------------------
-vim.g.mapleader = " "
 vim.wo.relativenumber = true -- | Together give 'hybrid' line numbers
 vim.wo.number = true         -- |
 
