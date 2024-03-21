@@ -23,6 +23,9 @@ return {
             "<Cmd>lua require('r.send').cmd('devtools::load_all()')<CR>", {}
           )
 
+          -- Pipe operator
+          vim.api.nvim_buf_set_keymap(0, "i", "<C-S-m>", " |>", {})
+
         end
       },
 
