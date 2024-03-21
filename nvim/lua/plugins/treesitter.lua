@@ -9,5 +9,5 @@ return {
       highlight = { enabled = true },
       indent = { enabled = true },
     })
-  end,
+ end,
 }

@@ -3,6 +3,9 @@ return {
     "hrsh7th/cmp-nvim-lsp"
   },
   {
+    "R-nvim/cmp-r",
+  },
+  {
     "L3MON4D3/LuaSnip",
     dependencies = {
       "saadparwaiz1/cmp_luasnip",
@@ -12,10 +15,11 @@ return {
   {
     "hrsh7th/nvim-cmp",
     config = function()
+
       local cmp = require("cmp")
       require("luasnip.loaders.from_vscode").lazy_load()
 
-      cmp.setup({
+      local opts = {
         snippet = {
           expand = function(args)
             require("luasnip").lsp_expand(args.body)
@@ -31,14 +35,21 @@ return {
           ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-e>"] = cmp.mapping.abort(),
           ["<CR>"] = cmp.mapping.confirm({ select = true }),
+          ["<C-j>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+          ["<C-k>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
         }),
         sources = cmp.config.sources({
           { name = "nvim_lsp" },
           { name = "luasnip" }, -- For luasnip users.
         }, {
           { name = "buffer" },
+          { name = "cmp_r" }
         }),
-      })
+      }
+
+      cmp.setup(opts)
+      require("cmp_r").setup(opts)
+
     end,
   },
 }

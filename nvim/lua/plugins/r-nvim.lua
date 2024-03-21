@@ -1,58 +1,58 @@
 return {
-  "R-nvim/cmp-r",
-  {
-    "hrsh7th/nvim-cmp",
-    config = function()
-      require("cmp").setup({ sources = {{ name = "cmp_r" }}})
-      require("cmp_r").setup({ })
-    end,
-  },
-  {
-    "R-nvim/R.nvim",
-    
-    config = function ()
+  "R-nvim/R.nvim",
+  config = function ()
 
-      -- Create a table with the options to be passed to setup()
-      local opts = {
-        R_args = {"--quiet", "--no-save"},
-        hook = {
-          after_config = function ()
-            -- This function will be called at the FileType event
-            -- of files supported by R.nvim. This is an
-            -- opportunity to create mappings local to buffers.
-            if vim.o.syntax ~= "rbrowser" then
-              vim.api.nvim_buf_set_keymap(0, "n", "<Enter>", "<Plug>RDSendLine", {})
-              vim.api.nvim_buf_set_keymap(0, "v", "<Enter>", "<Plug>RSendSelection", {})
-            end
+    -- Create a table with the options to be passed to setup()
+    local opts = {
+      R_args = {"--quiet", "--no-save"},
+      hook = {
+        after_config = function ()
+          -- This function will be called at the FileType event
+          -- of files supported by R.nvim. This is an
+          -- opportunity to create mappings local to buffers.
+          if vim.o.syntax ~= "rbrowser" then
+            vim.api.nvim_buf_set_keymap(0, "n", "<Enter>", "<Plug>RDSendLine", {})
+            vim.api.nvim_buf_set_keymap(0, "v", "<Enter>", "<Plug>RSendSelection", {})
           end
-        },
 
-        min_editor_width = 72,
-        rconsole_width = 78,
+          -- Use <C-L> for devtools::load_all() like RStudio
+          vim.api.nvim_buf_set_keymap(0, "n", "<C-S-l>",
+            "<Cmd>lua require('r.send').cmd('devtools::load_all()')<CR>", {}
+          )
+          vim.api.nvim_buf_set_keymap(0, "i", "<C-S-l>",
+            "<Cmd>lua require('r.send').cmd('devtools::load_all()')<CR>", {}
+          )
 
-        disable_cmds = {
-          "RClearConsole",
-          "RCustomStart",
-          "RSPlot",
-          "RSaveClose",
-        },
+        end
+      },
 
-      }
-      
-      -- Check if the environment variable "R_AUTO_START" exists.
-      -- If using fish shell, you could put in your config.fish:
-      -- alias r "R_AUTO_START=true nvim"
-      if vim.env.R_AUTO_START == "true" then
-        opts.auto_start = 1
-        opts.objbr_auto_start = true
-      end
+      -- Note that on macOS, you need to set the option key as the 'meta'
+      -- key, e.g. in your iterm2 profile, for this to work
+      assign_map = "<M-->",
 
-      require("r").setup(opts)
+      min_editor_width = 72,
+      rconsole_width = 78,
 
-      require("cmp").setup({ sources = {{ name = "cmp_r" }}})
-      require("cmp_r").setup({ })
+      disable_cmds = {
+        "RClearConsole",
+        "RCustomStart",
+        "RSPlot",
+        "RSaveClose",
+      },
 
-    end,
-    lazy = false
-  }
+    }
+
+    -- Check if the environment variable "R_AUTO_START" exists.
+    -- If using fish shell, you could put in your config.fish:
+    -- alias r "R_AUTO_START=true nvim"
+    if vim.env.R_AUTO_START == "true" then
+      opts.auto_start = 1
+      opts.objbr_auto_start = true
+    end
+
+    require("r").setup(opts)
+
+  end,
+  lazy = false
 }
+
