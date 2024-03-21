@@ -30,6 +30,8 @@ return {
       -- key, e.g. in your iterm2 profile, for this to work
       assign_map = "<M-->",
 
+      auto_start = "yes",
+
       min_editor_width = 72,
       rconsole_width = 78,
 

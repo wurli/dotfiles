@@ -29,10 +29,6 @@ vim.cmd("set softtabstop=2")
 vim.cmd("set shiftwidth=2")
 vim.cmd("set colorcolumn=80,120")
 
--- Indentation-sensitive linebreak insert
-vim.keymap.set('n', '<C-l>', 'a<cr><C-c>O', {})
-vim.keymap.set('i', '<C-l>', '<cr><C-c>O', {})
-
 -- Select text after pasting (e.g. for adjusting indentation)
 vim.keymap.set('n', '<leader>p', 'p`[v`]', {}) -- Paste and select below cursor
 vim.keymap.set('n', '<leader>P', 'P`[v`]', {}) -- Paste and select above cursor
