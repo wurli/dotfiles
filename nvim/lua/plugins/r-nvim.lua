@@ -33,7 +33,14 @@ return {
       -- key, e.g. in your iterm2 profile, for this to work
       assign_map = "<M-->",
 
-      auto_start = "yes",
+      auto_start = "on startup",
+
+      -- For some reason gets set to 'Rterm' on windows
+      R_cmd = "R",
+      R_app = "R",
+
+      -- Windows testing 
+      -- R_path = "C:\\Program Files\\R\\R-4.3.2\\bin",
 
       min_editor_width = 72,
       rconsole_width = 78,
