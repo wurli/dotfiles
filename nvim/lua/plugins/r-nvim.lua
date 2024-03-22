@@ -33,7 +33,7 @@ return {
       -- key, e.g. in your iterm2 profile, for this to work
       assign_map = "<M-->",
 
-      auto_start = "on startup",
+      auto_start = "always",
 
       -- For some reason gets set to 'Rterm' on windows
       R_cmd = "R",
