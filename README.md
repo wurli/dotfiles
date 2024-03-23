@@ -3,8 +3,9 @@ Configuration settings I use
 
 ## Installation on Mac
 
+Just use symlinks, e.g. for `tmux.conf`:
 ``` zsh
-ln -s .tmux.conf ~/.tmux.conf
+ln -s Repos/dotfiles/.tmux.conf .tmux.conf
 ```
 
 ## Installation on Windows 
