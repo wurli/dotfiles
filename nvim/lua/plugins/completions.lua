@@ -38,6 +38,10 @@ return {
           ["<C-j>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
           ["<C-k>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
         }),
+        -- Disable for markdown files - otherwise it's just annoying
+        enabled = function()
+          return vim.bo.filetype ~= "markdown"
+        end,
         sources = cmp.config.sources({
           { name = "nvim_lsp" },
           { name = "luasnip" }, -- For luasnip users.
