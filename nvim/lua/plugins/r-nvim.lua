@@ -64,6 +64,9 @@ return {
 
     require("r").setup(opts)
 
+    -- Use tidyverse-style indentation (instead of weird stackoverflow style)
+    vim.g.r_indent_align_args = 0
+
   end,
   lazy = false
 }
