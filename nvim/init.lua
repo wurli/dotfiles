@@ -33,10 +33,12 @@ vim.cmd("set colorcolumn=80,120")
 vim.keymap.set('n', '<leader>p', 'p`[v`]', {}) -- Paste and select below cursor
 vim.keymap.set('n', '<leader>P', 'P`[v`]', {}) -- Paste and select above cursor
 vim.keymap.set('n', '<leader>v', '`[v`]', {})  -- Select last paste
+vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
 
 -- For multi-line inserts
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
 -- Highlight R output using normal colourscheme
 vim.g.rout_follow_colorscheme = true
+
 
