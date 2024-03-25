@@ -41,4 +41,3 @@ vim.keymap.set("i", "<C-c>", "<Esc>")
 -- Highlight R output using normal colourscheme
 vim.g.rout_follow_colorscheme = true
 
-

@@ -67,6 +67,9 @@ return {
     -- Use tidyverse-style indentation (instead of weird stackoverflow style)
     vim.g.r_indent_align_args = 0
 
+    -- Highlight R output using normal colourscheme
+    vim.g.rout_follow_colorscheme = true
+
   end,
   lazy = false
 }
