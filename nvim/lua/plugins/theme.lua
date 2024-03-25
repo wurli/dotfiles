@@ -18,7 +18,9 @@ return {
         diagnostic_virtual_text = "coloured",
         spell_foreground = false,
         colours_override = function(palette)
-          palette.bg_dim = "#d3d3d3"
+          -- Swap the sidebar and main pane background colours - main pane
+          -- is a little too washed out for me (aesthetically v nice though)
+          palette.bg0, palette.bg_dim = palette.bg_dim, palette.bg0
         end
       })
       everforest.load()
