@@ -21,8 +21,9 @@ require("lazy").setup("plugins")
 
 -- Set other vim options ------------------------------------------------------
 
-vim.wo.relativenumber = true -- | Together give 'hybrid' line numbers
-vim.wo.number = true -- |
+-- Together give 'hybrid' line numbers
+vim.wo.relativenumber = true
+vim.wo.number = true
 
 vim.cmd("set expandtab")
 vim.cmd("set colorcolumn=80,120")
