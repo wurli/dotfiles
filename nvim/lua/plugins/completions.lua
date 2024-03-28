@@ -20,9 +20,7 @@ return {
 
 			local opts = {
 				snippet = {
-					expand = function(args)
-						require("luasnip").lsp_expand(args.body)
-					end,
+					expand = function(args) require("luasnip").lsp_expand(args.body) end,
 				},
 				window = {
 					completion = cmp.config.window.bordered(),
@@ -39,9 +37,7 @@ return {
 					["<C-k>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
 				}),
 				-- Disable for markdown files - otherwise it's just annoying
-				enabled = function()
-					return vim.bo.filetype ~= "markdown"
-				end,
+				enabled = function() return vim.bo.filetype ~= "markdown" end,
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" }, -- For luasnip users.

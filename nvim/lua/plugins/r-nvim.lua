@@ -8,11 +8,62 @@ return {
 				after_config = function()
 					-- This function will be called at the FileType event
 					-- of files supported by R.nvim. This is an
-					-- opportunity to create mappings local to buffers.
+					-- opportunity to create mappings local to buffers
+
+					local r_term = require("r.term")
+					local r_console_buf_nr = function() return r_term.get_buf_nr() end
+
+					local r_console_winid = function()
+						local bufno = r_console_buf_nr()
+						if bufno == nil then
+							return -1
+						else
+							return vim.fn.bufwinid(bufno)
+						end
+					end
+
+					local r_console_open = function() require("r.run").start_R("R") end
+					local r_console_close = function(winid) vim.fn.win_execute(winid, "q") end
+
+					local toggle_r_console = function()
+						local winid = r_console_winid()
+						if winid == -1 then
+							r_console_open()
+						else
+							r_console_close(winid)
+						end
+					end
+
+					local send_line = function()
+						if vim.g.R_Nvim_status > 6 then
+							if r_console_winid() == -1 then r_console_open() end
+							require("r.send").line(true)
+							return
+						end
+
+						r_console_open()
+
+						local timer = vim.uv.new_timer()
+						local i = 0
+						timer:start(
+							200,
+							100,
+							vim.schedule_wrap(function()
+								if vim.g.R_Nvim_status > 6 or i > 7 then
+									timer:close()
+									require("r.send").line(true)
+								end
+								i = i + 1
+							end)
+						)
+					end
+
 					if vim.o.syntax ~= "rbrowser" then
-						vim.api.nvim_buf_set_keymap(0, "n", "<Enter>", "<Plug>RDSendLine", {})
+						vim.keymap.set("n", "<Enter>", send_line, { buffer = 0 })
 						vim.api.nvim_buf_set_keymap(0, "v", "<Enter>", "<Plug>RSendSelection", {})
 					end
+
+					vim.keymap.set("n", "<localleader>rf", toggle_r_console, { buffer = 0 })
 
 					-- Use <C-L> for devtools::load_all() like RStudio
 					vim.api.nvim_buf_set_keymap(
@@ -39,8 +90,6 @@ return {
 			-- key, e.g. in your iterm2 profile, for this to work
 			assign_map = "<M-->",
 
-			auto_start = "always",
-
 			-- For some reason gets set to 'Rterm' on windows
 			R_cmd = "R",
 			R_app = "R",
@@ -49,13 +98,16 @@ return {
 			-- R_path = "C:\\Program Files\\R\\R-4.3.2\\bin",
 
 			min_editor_width = 72,
-			rconsole_width = 78,
+			rconsole_width = 0,
+			rconsole_height = 18,
 
 			disable_cmds = {
 				"RClearConsole",
 				"RCustomStart",
 				"RSPlot",
 				"RSaveClose",
+				"RStart",
+				"RSendLine",
 			},
 		}
 
