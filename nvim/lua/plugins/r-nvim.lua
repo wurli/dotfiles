@@ -59,7 +59,6 @@ return {
 							200,
 							200,
 							vim.schedule_wrap(function()
-                                print(vim.inspect("..." .. vim.inspect(vim.g.R_Nvim_status)))
                                 -- Give up trying to start R after about 10 seconds
 								if vim.g.R_Nvim_status > 6 or i > 50 then
 									timer:close()
