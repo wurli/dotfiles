@@ -35,21 +35,33 @@ return {
 					end
 
 					local send_line = function()
+
+                        -- If R is running, open the console if closed and send 
+                        -- the line
 						if vim.g.R_Nvim_status > 6 then
 							if r_console_winid() == -1 then r_console_open() end
 							require("r.send").line(true)
 							return
 						end
 
+                        -- If R not running, start and open console
 						r_console_open()
 
-						local timer = vim.uv.new_timer()
+                        -- Should happen very rarely, e.g. if you try to send 
+                        -- a line less than a second after opening a script
+                        if vim.g.R_Nvim_status < 4 then return end
+
+                        -- Repeatedly check to see if R has started - once yes,
+                        -- send the line
+						local timer = vim.loop.new_timer()
 						local i = 0
 						timer:start(
 							200,
-							100,
+							200,
 							vim.schedule_wrap(function()
-								if vim.g.R_Nvim_status > 6 or i > 7 then
+                                print(vim.inspect("..." .. vim.inspect(vim.g.R_Nvim_status)))
+                                -- Give up trying to start R after about 10 seconds
+								if vim.g.R_Nvim_status > 6 or i > 50 then
 									timer:close()
 									require("r.send").line(true)
 								end
