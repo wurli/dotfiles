@@ -74,7 +74,8 @@ return {
 						vim.api.nvim_buf_set_keymap(0, "v", "<Enter>", "<Plug>RSendSelection", {})
 					end
 
-					vim.keymap.set("n", "<localleader>rf", toggle_r_console, { buffer = 0 })
+					vim.keymap.set("n", "<localleader>rt", toggle_r_console, { buffer = 0 })
+					vim.keymap.set("n", "<localleader>rq", "<Plug>RClose", { buffer = 0 })
 
 					-- Use <C-L> for devtools::load_all() like RStudio
 					vim.api.nvim_buf_set_keymap(
@@ -111,6 +112,8 @@ return {
 			min_editor_width = 72,
 			rconsole_width = 0,
 			rconsole_height = 18,
+
+            user_maps_only = true,
 
 			disable_cmds = {
 				"RClearConsole",
