@@ -77,12 +77,7 @@ return {
 					vim.keymap.set("n", "<localleader>rt", toggle_r_console, { buffer = 0 })
 					vim.keymap.set("n", "<localleader>rq", "<Plug>RClose", { buffer = 0 })
 
-
-                    local search_for_r_script = function() 
-                        local path = package.searchpath("r-nvim-rprofile.R", "../?")
-                        print(vim.inspect(package.path))
-                    end
-					vim.keymap.set("n", "<leader>sp", search_for_r_script, { buffer = 0 })
+					-- vim.keymap.set("n", "<leader>sp", search_for_r_script, { buffer = 0 })
 
 					-- Use <C-L> for devtools::load_all() like RStudio
 					vim.api.nvim_buf_set_keymap(
@@ -103,13 +98,6 @@ return {
 					-- Pipe operator
 					vim.api.nvim_buf_set_keymap(0, "i", "<C-S-m>", " |>", {})
 				end,
-                --
-                -- after_R_start = function()
-                --     vim.notify("hellooo")
-                --     print(vim.inspect(package.path))
-                --     -- local p = package.searchpath("r-nvim-rprofile", package.path)
-                --     -- print(vim.inspect("path = " .. p))
-                -- end,
 			},
 
 			-- Note that on macOS, you need to set the option key as the 'meta'
