@@ -21,7 +21,7 @@ return {
 				},
 			},
 		})
-		vim.keymap.set("n", "<C-n>", ":Neotree filesystem reveal left<CR>")
-		vim.keymap.set("n", "<C-m>", ":Neotree close<CR>")
+		vim.keymap.set("n", "<C-n>", ":Neotree filesystem reveal left toggle<CR>")
+		-- vim.keymap.set("n", "<C-m>", ":Neotree close<CR>")
 	end,
 }
