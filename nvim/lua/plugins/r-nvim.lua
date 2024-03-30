@@ -77,6 +77,13 @@ return {
 					vim.keymap.set("n", "<localleader>rt", toggle_r_console, { buffer = 0 })
 					vim.keymap.set("n", "<localleader>rq", "<Plug>RClose", { buffer = 0 })
 
+
+                    local search_for_r_script = function() 
+                        local path = package.searchpath("r-nvim-rprofile.R", "../?")
+                        print(vim.inspect(package.path))
+                    end
+					vim.keymap.set("n", "<leader>sp", search_for_r_script, { buffer = 0 })
+
 					-- Use <C-L> for devtools::load_all() like RStudio
 					vim.api.nvim_buf_set_keymap(
 						0,
@@ -96,6 +103,13 @@ return {
 					-- Pipe operator
 					vim.api.nvim_buf_set_keymap(0, "i", "<C-S-m>", " |>", {})
 				end,
+                --
+                -- after_R_start = function()
+                --     vim.notify("hellooo")
+                --     print(vim.inspect(package.path))
+                --     -- local p = package.searchpath("r-nvim-rprofile", package.path)
+                --     -- print(vim.inspect("path = " .. p))
+                -- end,
 			},
 
 			-- Note that on macOS, you need to set the option key as the 'meta'
@@ -109,25 +123,16 @@ return {
 			-- Windows testing
 			-- R_path = "C:\\Program Files\\R\\R-4.3.2\\bin",
 
+            -- Always open console below current script, a'la RStudio
 			min_editor_width = 72,
 			rconsole_width = 0,
 			rconsole_height = 18,
+            hl_term = false,
 
+            -- Disable all R.nvim default keymaps
             user_maps_only = true,
-
-			disable_cmds = {
-				"RClearConsole",
-				"RCustomStart",
-				"RSPlot",
-				"RSaveClose",
-				"RStart",
-				"RSendLine",
-			},
 		}
 
-		-- Check if the environment variable "R_AUTO_START" exists.
-		-- If using fish shell, you could put in your config.fish:
-		-- alias r "R_AUTO_START=true nvim"
 		if vim.env.R_AUTO_START == "true" then
 			opts.auto_start = 1
 			opts.objbr_auto_start = true
@@ -143,4 +148,5 @@ return {
 		vim.g.rout_follow_colorscheme = true
 	end,
 	lazy = false,
+
 }

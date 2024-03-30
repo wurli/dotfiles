@@ -7,7 +7,7 @@ return {
 		-- LHS of toggle mappings in NORMAL mode
 		toggler = {
 			line = "gc", -- Line-comment toggle keymap
-			block = "gc", -- Block-comment toggle keymap
+			-- block = "gc", -- Block-comment toggle keymap
 		},
 		-- LHS of operator-pending mappings in NORMAL and VISUAL mode
 		opleader = {
