@@ -5,6 +5,9 @@ return {
 		local opts = {
 			R_args = { "--quiet", "--no-save" },
 			hook = {
+                after_R_start = function()
+                    print(vim.inspect("hello?"))
+                end,
 				after_config = function()
 					-- This function will be called at the FileType event
 					-- of files supported by R.nvim. This is an
@@ -138,3 +141,4 @@ return {
 	lazy = false,
 
 }
+

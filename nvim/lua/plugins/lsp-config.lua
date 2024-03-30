@@ -25,9 +25,6 @@ return {
 			lspconfig.lua_ls.setup({
 				capabilities = capabilities,
 			})
-			lspconfig.r_language_server.setup({
-				capabilities = capabilities,
-			})
 			lspconfig.ruff_lsp.setup({
 				capabilities = capabilities,
 			})
