@@ -1,5 +1,7 @@
 ---@diagnostic disable: undefined-global
 -- Set vim options required for lazy -------------------------------------------
+vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
+vim.g.maplocalleader = ","
 vim.g.mapleader = " "
 
 -- Install lazy if not available ----------------------------------------------

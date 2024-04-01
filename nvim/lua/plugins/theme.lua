@@ -319,6 +319,10 @@ return {
         config = function()
             require("lualine").setup({
                 options = { theme = "kanagawa" },
+                sections = {
+                    -- Show relative path, not just filename
+                    lualine_c = {{ 'filename', path = 1 }},
+                }
             })
         end,
     },
