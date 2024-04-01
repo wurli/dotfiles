@@ -42,6 +42,11 @@ vim.keymap.set("n", "<leader>P", "P`[v`]", {}) -- Paste and select above cursor
 vim.keymap.set("n", "<leader>v", "`[v`]", {}) -- Select last paste
 vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
 
+-- Enter insert mode at the correct indentation
+local indent = function() if #vim.fn.getline(".") == 0 then return [["_cc]] else return "i" end end
+vim.keymap.set("n", "i", indent, { expr = true, desc = "properly indent on empty line when insert" })
+vim.keymap.set("n", "a", indent, { expr = true, desc = "properly indent on empty line when insert" })
+
 -- For multi-line inserts
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
