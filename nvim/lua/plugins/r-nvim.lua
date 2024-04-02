@@ -1,4 +1,6 @@
-local nvim_rprofile_path = vim.fn.stdpath("config") .. "/nvim-rprofile.R"
+local nvim_rprofile_path = vim.fn.resolve(
+    vim.fn.stdpath("config") .. "/nvim-rprofile.R"
+):gsub("\\", "\\\\")
 
 local r_console_winid = function()
     local bufno = require("r.term").get_buf_nr()
@@ -61,7 +63,17 @@ return {
 			hook = {
 
                 after_R_start = function()
-                    require("r.send").cmd('source("' .. nvim_rprofile_path .. '")')
+                    -- local timer = vim.loop.new_timer()
+                    -- local i = 0
+                    -- timer:start(200, 200, vim.schedule_wrap(function()
+                    --     -- Give up trying to start R after about 10 seconds
+                    --     if vim.g.R_Nvim_status > 6 or i > 50 then
+                    --         timer:close()
+                            print(vim.inspect(nvim_r_profile_path))
+                            require("r.send").cmd('source("' .. nvim_rprofile_path .. '")')
+                    --     end
+                    --     i = i + 1
+                    -- end))
                 end,
 
 				after_config = function()

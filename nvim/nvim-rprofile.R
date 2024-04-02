@@ -1,4 +1,4 @@
-
+options(repos = c(CRAN = "http://cran.rstudio.com", getOption("repos")))
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # A possible way to set a faster device for previewing plots if on macOS 
