@@ -1,4 +1,8 @@
-options(repos = c(CRAN = "http://cran.rstudio.com", getOption("repos")))
+local({
+  repos <- getOption("repos")
+  repos["CRAN"] <- "http://cran.rstudio.com"
+  options(repos = repos)
+})
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # A possible way to set a faster device for previewing plots if on macOS 

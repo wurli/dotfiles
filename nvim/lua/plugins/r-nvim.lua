@@ -1,4 +1,4 @@
-    local nvim_rprofile_path = vim.fn.resolve(
+    local nvim_rprofile_path = (
         vim.fn.stdpath("config") .. "/nvim-rprofile.R"
     ):gsub("\\", "/")
 

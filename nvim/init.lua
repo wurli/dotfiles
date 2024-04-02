@@ -1,4 +1,4 @@
--- @diagnostic disable: undefined-global
+---@diagnostic disable: undefined-global
 -- Set vim options required for lazy -------------------------------------------
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 vim.g.maplocalleader = ","
@@ -27,11 +27,19 @@ require("lazy").setup("plugins")
 vim.wo.relativenumber = true
 vim.wo.number = true
 
-vim.cmd("set expandtab")
-vim.cmd("set colorcolumn=80,120")
-vim.cmd("set tabstop=2")
-vim.cmd("set softtabstop=2")
-vim.cmd("set shiftwidth=2")
+vim.opt.autoindent = true
+vim.opt.smartindent = true
+
+vim.opt.expandtab = true
+vim.opt.colorcolumn = { 80, 120 }
+vim.opt.tabstop = 2
+vim.opt.softtabstop = 2
+vim.opt.shiftwidth = 2
+
+vim.opt.swapfile = false
+
+vim.opt.hlsearch = false
+vim.opt.incsearch = true
 
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "Lua",
@@ -58,11 +66,11 @@ vim.keymap.set(
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
 -- Move out of terminal mode
+-- vim.keymap.set("t", "<C-c>", "<C-\\><C-n>", { noremap = false })
 vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h")
 vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j")
 vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k")
 vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l")
--- vim.keymap.set("t", "<C-c>", "<C-\\><C-n>", { noremap = false })
 
 -- Paste without overwriting buffer:
 vim.keymap.set("x", "<leader>p", [["_dP]])
