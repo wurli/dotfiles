@@ -1,6 +1,6 @@
 local nvim_rprofile_path = vim.fn.resolve(
     vim.fn.stdpath("config") .. "/nvim-rprofile.R"
-):gsub("\\", "\\\\")
+):gsub("\\", "/")
 
 local r_console_winid = function()
     local bufno = require("r.term").get_buf_nr()
