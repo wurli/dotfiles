@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-global
+-- @diagnostic disable: undefined-global
 -- Set vim options required for lazy -------------------------------------------
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 vim.g.maplocalleader = ","
@@ -39,8 +39,6 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- Select text after pasting (e.g. for adjusting indentation)
-vim.keymap.set("n", "<leader>p", "p`[v`]", {}) -- Paste and select below cursor
-vim.keymap.set("n", "<leader>P", "P`[v`]", {}) -- Paste and select above cursor
 vim.keymap.set("n", "<leader>v", "`[v`]", {}) -- Select last paste
 vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
 
@@ -59,3 +57,19 @@ vim.keymap.set(
 -- For multi-line inserts
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
+-- Move out of terminal mode
+vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h")
+vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j")
+vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k")
+vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l")
+-- vim.keymap.set("t", "<C-c>", "<C-\\><C-n>", { noremap = false })
+
+-- Paste without overwriting buffer:
+vim.keymap.set("x", "<leader>p", [["_dP]])
+
+-- Yank into system clipboard
+vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
+vim.keymap.set("n", "<leader>Y", [["+Y]])
+
+-- Delete without adding to buffer
+vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
