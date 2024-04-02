@@ -94,7 +94,7 @@ return {
                     )
 
                     -- Pipe operator
-                    vim.api.nvim_buf_set_keymap(0, "i", "<C-m>", " |>", {})
+                    vim.api.nvim_buf_set_keymap(0, "i", "<C-k>", " |>", {})
                 end,
             },
 
