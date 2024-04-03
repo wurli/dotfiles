@@ -81,6 +81,7 @@ return {
 
                     vim.keymap.set("n", "<localleader>rt", toggle_r_console, { buffer = 0 })
                     vim.keymap.set("n", "<localleader>rq", "<Plug>RClose", { buffer = 0 })
+                    vim.keymap.set("n", "<localleader>ro", "<Plug>ROBToggle", { buffer = 0 })
 
                     -- devtools::load_all()
                     vim.keymap.set(
