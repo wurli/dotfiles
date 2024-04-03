@@ -53,13 +53,13 @@ vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
 -- Enter insert mode at the correct indentation
 vim.keymap.set(
     "n", "i",
-    function() if #vim.fn.getline(".") == 0 then return [["_cc]] else return "i" end end,
-    { expr = true, desc = "properly indent on empty line when insert" }
+    function() if #vim.fn.getline(".") == 0 and vim.o.modifiable then return [["_cc]] else return "i" end end,
+    { expr = true, desc = "Apply indentation when inserting on an empty line" }
 )
 vim.keymap.set(
     "n", "a",
-    function() if #vim.fn.getline(".") == 0 then return [["_cc]] else return "a" end end,
-    { expr = true, desc = "properly indent on empty line when insert" }
+    function() if #vim.fn.getline(".") == 0 and vim.o.modifiable then return [["_cc]] else return "a" end end,
+    { expr = true, desc = "Apply indentation when inserting on an empty line" }
 )
 
 -- For multi-line inserts
