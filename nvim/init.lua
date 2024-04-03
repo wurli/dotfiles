@@ -32,9 +32,9 @@ vim.opt.smartindent = true
 
 vim.opt.expandtab = true
 vim.opt.colorcolumn = { 80, 120 }
-vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
-vim.opt.shiftwidth = 2
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
 
 vim.opt.swapfile = false
 
@@ -42,8 +42,8 @@ vim.opt.hlsearch = false
 vim.opt.incsearch = true
 
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = "Lua",
-	command = "setlocal shiftwidth=4 tabstop=4 softtabstop=4",
+	pattern = "[Rr]",
+	command = "setlocal shiftwidth=2 tabstop=2 softtabstop=2",
 })
 
 -- Select text after pasting (e.g. for adjusting indentation)
