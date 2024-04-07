@@ -1,5 +1,5 @@
 # dotfiles
-Configuration settings I use
+Config I use
 
 ## Installation on Mac
 
