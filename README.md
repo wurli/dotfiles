@@ -10,6 +10,8 @@ ln -s Repos/dotfiles/.tmux.conf .tmux.conf
 
 ## Installation on Windows 
 
+I.e. at work where _actual_ symlinks aren't allowed without admin permissions for some reason??
+
 ```powershell
 function symlink ([String] $real, [String] $link) {
     if (Test-Path $real -pathType container) {
