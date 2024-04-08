@@ -258,48 +258,67 @@ local use_rstudio_console_colours = function()
 end
 
 -------------------------------------------------------------------------------
--- falcon - quite nice?
+-- Kanagawa theme - quite nice?? Still a bit low contrast tho :(
 -------------------------------------------------------------------------------
 return {
     {
-        "fenetikm/falcon",
+        "rebelot/kanagawa.nvim",
         config = function()
-            vim.cmd[[colorscheme falcon]]
-            vim.cmd[[set termguicolors]]
-            vim.api.nvim_set_var('falcon.palette', {
-                red = '#ff3600',
-                orange = '#ff761a',
-                yellow = '#ffc552',
-                green = '#718e3f',
-                blue_gray = '#99a4bc',
-                purple = '#635196',
-                indigo = '#5521d9',
-                status = '#28282d',
-                status_2 = '#36363a',
-                inactive_status = '#1c1c22',
-                black = '#000004',
-                white = '#F8F8FF',
-                light_gray = '#dfdfe5',
-                normal_gray = '#b4b4b9',
-                mid_gray = '#787882',
-                mid_dark_gray = '#57575e',
-                dark_gray = '#36363a',
-                modified = '#c8d0e3',
-                branch = '#99a4bc',
-                method = '#a1968a',
-                path = '#787882',
-                info = '#787882',
-                hint = '#847b73',
-                error = '#9e1e00',
-                warning = '#bc8f3f'
+            require('kanagawa').setup({
+                compile = false,             -- enable compiling the colorscheme
+                undercurl = true,            -- enable undercurls
+                commentStyle = { italic = true },
+                functionStyle = {},
+                keywordStyle = { italic = true},
+                statementStyle = { bold = true },
+                typeStyle = {},
+                transparent = false,         -- do not set background color
+                dimInactive = false,         -- dim inactive window `:h hl-NormalNC`
+                terminalColors = true,       -- define vim.g.terminal_color_{0,17}
+                colors = {                   -- add/modify theme and palette colors
+                    palette = {},
+                    theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
+                },
+                overrides = function(colors)
+                    local theme = colors.theme
+                    return {
+                        NormalFloat = { bg = "none" },
+                        FloatBorder = { bg = "none" },
+                        FloatTitle = { bg = "none" },
+
+                        -- Save an hlgroup with dark background and dimmed foreground
+                        -- so that you can use it where your still want darker windows.
+                        -- E.g.: autocmd TermOpen * setlocal winhighlight=Normal:NormalDark
+                        NormalDark = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m3 },
+
+                        -- Popular plugins that open floats will link to NormalFloat by default;
+                        -- set their background accordingly if you wish to keep them dark and borderless
+                        LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
+                        MasonNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
+
+                        -- Dark popup windows
+                        Pmenu = { fg = theme.ui.shade0, bg = theme.ui.bg_p1, blend = vim.o.pumblend },
+                        PmenuSel = { fg = "NONE", bg = theme.ui.bg_p2 },
+                        PmenuSbar = { bg = theme.ui.bg_m1 },
+                        PmenuThumb = { bg = theme.ui.bg_p2 },
+                    }
+                end,
+                theme = "wave",              -- Load "wave" theme when 'background' option is not set
+                background = {               -- map the value of 'background' option to a theme
+                    dark = "dragon",           -- try "dragon" !
+                    light = "lotus"
+                },
             })
-            use_rstudio_console_colours()
+            vim.cmd("colorscheme kanagawa")
+            -- The kanagawa console looks a bit better with the rest of the theme
+            -- use_rstudio_console_colours()
         end
     },
     {
         "nvim-lualine/lualine.nvim",
         config = function()
             require("lualine").setup({
+                options = { theme = "kanagawa" },
                 sections = {
                     -- Show relative path, not just filename
                     lualine_c = {{ 'filename', path = 1 }},
@@ -309,80 +328,9 @@ return {
     },
 }
 
--------------------------------------------------------------------------------
--- Kanagawa theme - quite nice?? Still a bit low contrast tho :(
--------------------------------------------------------------------------------
--- return {
---     {
---         "rebelot/kanagawa.nvim",
---         config = function()
---             require('kanagawa').setup({
---                 compile = false,             -- enable compiling the colorscheme
---                 undercurl = true,            -- enable undercurls
---                 commentStyle = { italic = true },
---                 functionStyle = {},
---                 keywordStyle = { italic = true},
---                 statementStyle = { bold = true },
---                 typeStyle = {},
---                 transparent = false,         -- do not set background color
---                 dimInactive = false,         -- dim inactive window `:h hl-NormalNC`
---                 terminalColors = true,       -- define vim.g.terminal_color_{0,17}
---                 colors = {                   -- add/modify theme and palette colors
---                     palette = {},
---                     theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
---                 },
---                 overrides = function(colors)
---                     local theme = colors.theme
---                     return {
---                         NormalFloat = { bg = "none" },
---                         FloatBorder = { bg = "none" },
---                         FloatTitle = { bg = "none" },
---
---                         -- Save an hlgroup with dark background and dimmed foreground
---                         -- so that you can use it where your still want darker windows.
---                         -- E.g.: autocmd TermOpen * setlocal winhighlight=Normal:NormalDark
---                         NormalDark = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m3 },
---
---                         -- Popular plugins that open floats will link to NormalFloat by default;
---                         -- set their background accordingly if you wish to keep them dark and borderless
---                         LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
---                         MasonNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
---
---                         -- Dark popup windows
---                         Pmenu = { fg = theme.ui.shade0, bg = theme.ui.bg_p1, blend = vim.o.pumblend },
---                         PmenuSel = { fg = "NONE", bg = theme.ui.bg_p2 },
---                         PmenuSbar = { bg = theme.ui.bg_m1 },
---                         PmenuThumb = { bg = theme.ui.bg_p2 },
---                     }
---                 end,
---                 theme = "wave",              -- Load "wave" theme when 'background' option is not set
---                 background = {               -- map the value of 'background' option to a theme
---                     dark = "dragon",           -- try "dragon" !
---                     light = "lotus"
---                 },
---             })
---             vim.cmd("colorscheme kanagawa")
---             -- The kanagawa console looks a bit better with the rest of the theme
---             -- use_rstudio_console_colours()
---         end
---     },
---     {
---         "nvim-lualine/lualine.nvim",
---         config = function()
---             require("lualine").setup({
---                 options = { theme = "kanagawa" },
---                 sections = {
---                     -- Show relative path, not just filename
---                     lualine_c = {{ 'filename', path = 1 }},
---                 }
---             })
---         end,
---     },
--- }
---
--------------------------------------------------------------------------------
+-- -----------------------------------------------------------------------------
 -- Cobalt2 - nice but still kinda low contrast
--------------------------------------------------------------------------------
+-- -----------------------------------------------------------------------------
 -- return {
 --     {
 --         "lalitmee/cobalt2.nvim",
@@ -404,6 +352,60 @@ return {
 -- 			})
 -- 		end,
 -- 	},
+-- }
+
+-------------------------------------------------------------------------------
+-- falcon - quite nice but hard to get working properly
+-------------------------------------------------------------------------------
+-- return {
+--     {
+--         "fenetikm/falcon",
+--         lazy = false,
+--         priority = 9999,
+--         config = function()
+--             vim.cmd[[colorscheme falcon]]
+--             vim.cmd[[set termguicolors]]
+--             vim.api.nvim_set_var('falcon.palette', {
+--                 red = '#ff3600',
+--                 orange = '#ff761a',
+--                 yellow = '#ffc552',
+--                 green = '#718e3f',
+--                 blue_gray = '#99a4bc',
+--                 purple = '#635196',
+--                 indigo = '#5521d9',
+--                 status = '#28282d',
+--                 status_2 = '#36363a',
+--                 inactive_status = '#1c1c22',
+--                 black = '#000004',
+--                 white = '#F8F8FF',
+--                 light_gray = '#dfdfe5',
+--                 normal_gray = '#b4b4b9',
+--                 mid_gray = '#787882',
+--                 mid_dark_gray = '#57575e',
+--                 dark_gray = '#36363a',
+--                 modified = '#c8d0e3',
+--                 branch = '#99a4bc',
+--                 method = '#a1968a',
+--                 path = '#787882',
+--                 info = '#787882',
+--                 hint = '#847b73',
+--                 error = '#9e1e00',
+--                 warning = '#bc8f3f'
+--             })
+--             use_rstudio_console_colours()
+--         end
+--     },
+--     {
+--         "nvim-lualine/lualine.nvim",
+--         config = function()
+--             require("lualine").setup({
+--                 sections = {
+--                     -- Show relative path, not just filename
+--                     lualine_c = {{ 'filename', path = 1 }},
+--                 }
+--             })
+--         end,
+--     },
 -- }
 
 -------------------------------------------------------------------------------
