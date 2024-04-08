@@ -81,3 +81,5 @@ vim.keymap.set("n", "<leader>Y", [["+Y]])
 
 -- Delete without adding to buffer
 vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
+
+
