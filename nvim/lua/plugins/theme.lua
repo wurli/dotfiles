@@ -1,15 +1,3 @@
---     {
---         "nvim-lualine/lualine.nvim",
---         config = function()
---             require("lualine").setup({
---                 options = { theme = "tokyonight" },
---                 sections = {
---                     -- show relative path, not just filename
---                     lualine_c = {{ 'filename', path = 1 }},
---                 }
---             })
---         end,
---     },
 local use_rstudio_console_colours = function()
     vim.g.terminal_color_0 = "#4f4f4f"
     vim.g.terminal_color_1 = "#ff6c60"
@@ -292,6 +280,14 @@ return {
                 }
             })
         end,
+    },
+    {
+        -- Colour hex codes like #000000
+        "norcalli/nvim-colorizer.lua",
+        config = function()
+            vim.w.termguicolours = true
+            require("colorizer").setup()
+        end
     },
 }
 
