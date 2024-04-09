@@ -285,7 +285,6 @@ return {
         -- Colour hex codes like #000000
         "norcalli/nvim-colorizer.lua",
         config = function()
-            vim.w.termguicolours = true
             require("colorizer").setup()
         end
     },
