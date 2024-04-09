@@ -1,3 +1,15 @@
+--     {
+--         "nvim-lualine/lualine.nvim",
+--         config = function()
+--             require("lualine").setup({
+--                 options = { theme = "tokyonight" },
+--                 sections = {
+--                     -- show relative path, not just filename
+--                     lualine_c = {{ 'filename', path = 1 }},
+--                 }
+--             })
+--         end,
+--     },
 local use_rstudio_console_colours = function()
     vim.g.terminal_color_0 = "#4f4f4f"
     vim.g.terminal_color_1 = "#ff6c60"
@@ -257,210 +269,29 @@ local use_rstudio_console_colours = function()
     vim.g.terminal_color_255 = "#eeeeee"
 end
 
--------------------------------------------------------------------------------
--- Kanagawa theme - quite nice?? Still a bit low contrast tho :(
--------------------------------------------------------------------------------
 return {
     {
-        "rebelot/kanagawa.nvim",
+        "rose-pine/neovim",
+        name = "rose-pine",
         config = function()
-            require('kanagawa').setup({
-                compile = false,             -- enable compiling the colorscheme
-                undercurl = true,            -- enable undercurls
-                commentStyle = { italic = true },
-                functionStyle = {},
-                keywordStyle = { italic = true},
-                statementStyle = { bold = true },
-                typeStyle = {},
-                transparent = false,         -- do not set background color
-                dimInactive = false,         -- dim inactive window `:h hl-NormalNC`
-                terminalColors = true,       -- define vim.g.terminal_color_{0,17}
-                colors = {                   -- add/modify theme and palette colors
-                    palette = {},
-                    theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
-                },
-                overrides = function(colors)
-                    local theme = colors.theme
-                    return {
-                        NormalFloat = { bg = "none" },
-                        FloatBorder = { bg = "none" },
-                        FloatTitle = { bg = "none" },
-
-                        -- Save an hlgroup with dark background and dimmed foreground
-                        -- so that you can use it where your still want darker windows.
-                        -- E.g.: autocmd TermOpen * setlocal winhighlight=Normal:NormalDark
-                        NormalDark = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m3 },
-
-                        -- Popular plugins that open floats will link to NormalFloat by default;
-                        -- set their background accordingly if you wish to keep them dark and borderless
-                        LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
-                        MasonNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
-
-                        -- Dark popup windows
-                        Pmenu = { fg = theme.ui.shade0, bg = theme.ui.bg_p1, blend = vim.o.pumblend },
-                        PmenuSel = { fg = "NONE", bg = theme.ui.bg_p2 },
-                        PmenuSbar = { bg = theme.ui.bg_m1 },
-                        PmenuThumb = { bg = theme.ui.bg_p2 },
-                    }
-                end,
-                theme = "wave",              -- Load "wave" theme when 'background' option is not set
-                background = {               -- map the value of 'background' option to a theme
-                    dark = "dragon",           -- try "dragon" !
-                    light = "lotus"
-                },
+            require("rose-pine").setup({
+                variant = "moon",
+                dim_inactive_windows = true
             })
-            vim.cmd("colorscheme kanagawa")
-            -- The kanagawa console looks a bit better with the rest of the theme
-            -- use_rstudio_console_colours()
+            vim.cmd[[colorscheme rose-pine]]
         end
     },
     {
         "nvim-lualine/lualine.nvim",
         config = function()
             require("lualine").setup({
-                options = { theme = "kanagawa" },
+                options = { theme = "rose-pine" },
                 sections = {
-                    -- Show relative path, not just filename
+                    -- show relative path, not just filename
                     lualine_c = {{ 'filename', path = 1 }},
                 }
             })
         end,
     },
 }
-
--- -----------------------------------------------------------------------------
--- Cobalt2 - nice but still kinda low contrast
--- -----------------------------------------------------------------------------
--- return {
---     {
---         "lalitmee/cobalt2.nvim",
---         event = { "ColorSchemePre" }, -- if you want to lazy load
---         dependencies = { "tjdevries/colorbuddy.nvim", tag = "v1.0.0" },
---
---         init = function()
---             require("colorbuddy").colorscheme("cobalt2")
---             use_rstudio_console_colours()
---         end,
---     },
---
--- 	{
--- 		"nvim-lualine/lualine.nvim",
--- 		config = function()
--- 			require("lualine").setup({
--- 				options = { theme = "cobalt2" },
--- 				--[[ options = { theme = "dracula" }, ]]
--- 			})
--- 		end,
--- 	},
--- }
-
--------------------------------------------------------------------------------
--- falcon - quite nice but hard to get working properly
--------------------------------------------------------------------------------
--- return {
---     {
---         "fenetikm/falcon",
---         lazy = false,
---         priority = 9999,
---         config = function()
---             vim.cmd[[colorscheme falcon]]
---             vim.cmd[[set termguicolors]]
---             vim.api.nvim_set_var('falcon.palette', {
---                 red = '#ff3600',
---                 orange = '#ff761a',
---                 yellow = '#ffc552',
---                 green = '#718e3f',
---                 blue_gray = '#99a4bc',
---                 purple = '#635196',
---                 indigo = '#5521d9',
---                 status = '#28282d',
---                 status_2 = '#36363a',
---                 inactive_status = '#1c1c22',
---                 black = '#000004',
---                 white = '#F8F8FF',
---                 light_gray = '#dfdfe5',
---                 normal_gray = '#b4b4b9',
---                 mid_gray = '#787882',
---                 mid_dark_gray = '#57575e',
---                 dark_gray = '#36363a',
---                 modified = '#c8d0e3',
---                 branch = '#99a4bc',
---                 method = '#a1968a',
---                 path = '#787882',
---                 info = '#787882',
---                 hint = '#847b73',
---                 error = '#9e1e00',
---                 warning = '#bc8f3f'
---             })
---             use_rstudio_console_colours()
---         end
---     },
---     {
---         "nvim-lualine/lualine.nvim",
---         config = function()
---             require("lualine").setup({
---                 sections = {
---                     -- Show relative path, not just filename
---                     lualine_c = {{ 'filename', path = 1 }},
---                 }
---             })
---         end,
---     },
--- }
-
--------------------------------------------------------------------------------
--- Everforest - nice but a bit low-contrast 
--------------------------------------------------------------------------------
--- return {
--- 	{
--- 		"neanias/everforest-nvim",
--- 		version = false,
--- 		lazy = false,
--- 		priority = 1000,
--- 		config = function()
--- 			local everforest = require("everforest")
--- 			everforest.setup({
--- 				background = "hard",
--- 				transparent_background_level = 0,
--- 				italics = true,
--- 				disable_italic_comments = false,
--- 				sign_column_background = "none",
--- 				ui_contrast = "high",
--- 				dim_inactive_windows = false,
--- 				diagnostic_text_highlight = true,
--- 				diagnostic_virtual_text = "coloured",
--- 				spell_foreground = false,
--- 				colours_override = function(palette)
--- 					-- Swap the sidebar and main pane background colours - main pane
--- 					-- is a little too washed out for me (aesthetically v nice though)
--- 					palette.bg0, palette.bg_dim = palette.bg_dim, palette.bg0
--- 				end,
--- 			})
--- 			everforest.load()
--- 		end,
--- 	},
--- 	{
--- 		"nvim-lualine/lualine.nvim",
--- 		config = function()
--- 			require("lualine").setup({
--- 				options = { theme = "everforest" },
--- 				--[[ options = { theme = "dracula" }, ]]
--- 			})
--- 		end,
--- 	},
--- }
-
--------------------------------------------------------------------------------
--- Catppuccin - also nice, but also a bit low contrast
--------------------------------------------------------------------------------
--- return {
---   "catppuccin/nvim",
---   name = "catppuccin",
---   priority = 1000,
---   lazy = false,
---   flavour = "mocha",
---   config = function()
---     vim.cmd.colorscheme "catppuccin"
---   end
--- }
 
