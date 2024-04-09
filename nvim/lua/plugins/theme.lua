@@ -1,4 +1,4 @@
-local use_rstudio_console_colours = function()
+local use_xterm_256_term_colours = function()
     vim.g.terminal_color_0 = "#4f4f4f"
     vim.g.terminal_color_1 = "#ff6c60"
     vim.g.terminal_color_2 = "#a8ff60"
@@ -267,6 +267,7 @@ return {
                 dim_inactive_windows = true
             })
             vim.cmd[[colorscheme rose-pine]]
+            use_xterm_256_term_colours()
         end
     },
     {
