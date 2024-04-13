@@ -5,7 +5,7 @@ return {
         local config = require("nvim-treesitter.configs")
         config.setup({
             auto_install = true,
-            ensure_installed = { "lua", "python", "r" },
+            ensure_installed = { "lua", "python", "r", "markdown", "rnoweb" },
             highlight = { enable = true },
             indent = { enable = true },
             -- textobjects = { enable = true },
