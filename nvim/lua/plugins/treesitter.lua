@@ -3,8 +3,8 @@ return { -- Highlight, edit, and navigate code
     build = ':TSUpdate',
     opts = {
         ensure_installed = {
-            'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'python', 'r',
-            'rnoweb', 'vim', 'vimdoc'
+            'bash', 'c', 'html', 'lua', 'luadoc', 'markdown',
+            'markdown_inline', 'python', 'r', 'rnoweb', 'vim', 'vimdoc'
         },
         -- Autoinstall languages that are not installed
         auto_install = true,

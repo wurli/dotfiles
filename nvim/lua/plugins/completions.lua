@@ -33,6 +33,7 @@ return { -- Autocompletion
         --  into multiple repos for maintenance purposes.
         'hrsh7th/cmp-nvim-lsp',
         'hrsh7th/cmp-path',
+        "R-nvim/cmp-r",
     },
     config = function()
         -- See `:help cmp`
@@ -103,6 +104,9 @@ return { -- Autocompletion
         }
     end,
 }
+
+
+
 -- return {
 -- 	{
 -- 		"hrsh7th/cmp-nvim-lsp",
