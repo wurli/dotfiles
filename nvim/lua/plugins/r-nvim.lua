@@ -88,6 +88,13 @@ return {
                     -- Pipe operator
                     -- vim.api.nvim_buf_set_keymap(0, "i", "<C-k>", " |>", {})
                 end,
+
+                on_filetype = function()
+                    if vim.o.syntax ~= "rbrowser" then
+                        vim.keymap.set("n", "<Enter>", send_line, { buffer = 0 })
+                        vim.api.nvim_buf_set_keymap(0, "v", "<Enter>", "<Plug>RSendSelection", {})
+                    end
+                end
             },
 
             -- Note that on macOS, you need to set the option key as the 'meta'
@@ -119,16 +126,6 @@ return {
             opts.auto_start = 1
             opts.objbr_auto_start = true
         end
-
-        vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
-            pattern = { "*.[Rr]", "*.[Rr]md", "*.qmd" },
-            callback = function()
-                if vim.o.syntax ~= "rbrowser" then
-                    vim.keymap.set("n", "<Enter>", send_line, { buffer = 0 })
-                    vim.api.nvim_buf_set_keymap(0, "v", "<Enter>", "<Plug>RSendSelection", {})
-                end
-            end
-        })
 
         require("r").setup(opts)
 
