@@ -64,12 +64,11 @@ return {
         local opts = {
             R_args = { "--quiet", "--no-save" },
             hook = {
-
                 after_R_start = function()
                     require("r.send").cmd('source("' .. nvim_rprofile_path .. '")')
                 end,
 
-                after_config = function()
+                on_filetype = function()
                     vim.keymap.set("n", "<localleader>rt", toggle_r_console, { buffer = 0 })
                     vim.keymap.set("n", "<localleader>rq", "<Plug>RClose", { buffer = 0 })
                     vim.keymap.set("n", "<localleader>ro", "<Plug>ROBToggle", { buffer = 0 })
@@ -87,9 +86,6 @@ return {
 
                     -- Pipe operator
                     -- vim.api.nvim_buf_set_keymap(0, "i", "<C-k>", " |>", {})
-                end,
-
-                on_filetype = function()
                     if vim.o.syntax ~= "rbrowser" then
                         vim.keymap.set("n", "<Enter>", send_line, { buffer = 0 })
                         vim.api.nvim_buf_set_keymap(0, "v", "<Enter>", "<Plug>RSendSelection", {})

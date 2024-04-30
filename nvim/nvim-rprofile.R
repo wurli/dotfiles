@@ -1,3 +1,5 @@
+options(cli.num_colors = 256)
+
 local({
   repos <- getOption("repos")
   repos["CRAN"] <- "http://cran.rstudio.com"
