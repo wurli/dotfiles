@@ -5,15 +5,17 @@ local({
   options(repos = repos)
 })
 
+# Manually set cli to use more terminal colours (e.g. for tibble printing)
+options(cli.num_colors = 256)
+
 # -- Set some Windows stuff ---------------------------------------------------
 if (.Platform[["OS.type"]] == "windows") {
-  # Manually set cli to use more terminal colours (e.g. for tibble printing)
-  options(cli.num_colors = 256)
-
   # Hack `getOption()` to always update the console width, which for some
   # reason doesn't happen with the default windows R console
   if (requireNamespace("cli", quietly = TRUE)) {
-    assignInNamespace(
+    unlockBinding("getOption", asNamespace("base", base.OK = TRUE))
+
+    assign(
       "getOption",
       function(x, default = NULL) {
         # Check and maybe update console width
@@ -34,8 +36,11 @@ if (.Platform[["OS.type"]] == "windows") {
           }
         }
       }, 
-      ns = "base"
+      envir = asNamespace("base", base.OK = TRUE),
+      inherits = FALSE
     )
+
+    lockBinding("getOption", asNamespace("base", base.OK = TRUE))
   }
 }
 
