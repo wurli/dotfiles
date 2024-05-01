@@ -6,7 +6,7 @@ local({
 })
 
 # -- Set some Windows stuff ---------------------------------------------------
-if (.Platform[["OS.type"]] == "Windows") {
+if (.Platform[["OS.type"]] == "windows") {
   # Manually set cli to use more terminal colours (e.g. for tibble printing)
   options(cli.num_colors = 256)
 
