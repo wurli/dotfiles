@@ -1,9 +1,11 @@
+# -- Set the CRAN mirror ------------------------------------------------------
 local({
   repos <- getOption("repos")
   repos["CRAN"] <- "http://cran.rstudio.com"
   options(repos = repos)
 })
 
+# -- Set some Windows stuff ---------------------------------------------------
 if (.Platform[["OS.type"]] == "Windows") {
   # Manually set cli to use more terminal colours (e.g. for tibble printing)
   options(cli.num_colors = 256)
