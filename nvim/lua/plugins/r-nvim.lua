@@ -58,7 +58,6 @@ end
 
 return {
     "R-nvim/R.nvim",
-    -- dir = "~/Repos/R.nvim",
     config = function()
         -- Create a table with the options to be passed to setup()
         local opts = {
@@ -91,14 +90,6 @@ return {
                         vim.api.nvim_buf_set_keymap(0, "v", "<Enter>", "<Plug>RSendSelection", {})
                     end
                 end
-            },
-
-            -- Note that on macOS, you need to set the option key as the 'meta'
-            -- key, e.g. in your iterm2 profile, for this to work
-            pipe = {
-                create_keymap = true,
-                keymap = "<localleader>m",
-                version = "native"
             },
 
             -- For some reason gets set to 'Rterm' on windows
