@@ -24,6 +24,8 @@ require("lazy").setup("plugins")
 
 -- Set other vim options ------------------------------------------------------
 
+vim.g.ftplugin_sql_omni_key = "<C-s>"
+
 -- Together give 'hybrid' line numbers
 vim.wo.relativenumber = true
 vim.wo.number = true
