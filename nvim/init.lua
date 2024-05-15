@@ -88,3 +88,18 @@ vim.keymap.set("n", "<leader>Y", [["+Y]])
 -- Delete without adding to buffer
 vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
 
+vim.keymap.set("n", "<M-j>", function()
+  if vim.opt.diff:get() then
+    vim.cmd [[normal! ]c]]
+  else
+    vim.cmd [[m .+1<CR>==]]
+  end
+end)
+
+vim.keymap.set("n", "<M-k>", function()
+  if vim.opt.diff:get() then
+    vim.cmd [[normal! [c]]
+  else
+    vim.cmd [[m .-2<CR>==]]
+  end
+end)
