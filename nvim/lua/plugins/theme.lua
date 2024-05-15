@@ -1,15 +1,28 @@
 return {
+    -- {
+    --     dir = "~/Repos/cobalt.nvim",
+    --     event = { "ColorSchemePre" }, -- if you want to lazy load
+    --     dependencies = { "tjdevries/colorbuddy.nvim", tag = "v1.0.0" },
+    --     init = function()
+    --         require("colorbuddy").colorscheme("cobalt2")
+    --     end,
+    -- },
     {
-        "wurli/cobalt.nvim",
+        dir = "~/Repos/cobalt.nvim",
+        -- "wurli/cobalt.nvim",
         config = function()
             vim.cmd[[colorscheme cobalt]]
         end
     },
     {
         "nvim-lualine/lualine.nvim",
+        lazy = false,
         config = function()
             require("lualine").setup({
-                options = { theme = "cobalt" },
+                options = {
+                    theme = "cobalt",
+                    section_separators = "",
+                },
                 sections = {
                     -- show relative path, not just filename
                     lualine_c = {{ 'filename', path = 1 }},
