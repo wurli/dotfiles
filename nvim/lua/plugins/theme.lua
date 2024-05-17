@@ -8,8 +8,8 @@ return {
     --     end,
     -- },
     {
-        dir = "~/Repos/cobalt.nvim",
-        -- "wurli/cobalt.nvim",
+        -- dir = "~/Repos/cobalt.nvim",
+        "wurli/cobalt.nvim",
         config = function()
             vim.cmd[[colorscheme cobalt]]
         end
