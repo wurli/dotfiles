@@ -100,6 +100,8 @@ return { -- LSP Configuration & Plugins
 
                 map('<leader>ld', vim.diagnostic.open_float, '[L]sp [D]iagnostic')
 
+                map('<leader>td', function() vim.diagnostic.enable(not vim.diagnostic.is_enabled()) end, '[T]oggle [D]iagnostic')
+
                 -- The following two autocommands are used to highlight references of the
                 -- word under your cursor when your cursor rests there for a little while.
                 --    See `:help CursorHold` for information about when this is executed
