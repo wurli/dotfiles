@@ -7,12 +7,22 @@ return {
     --         require("colorbuddy").colorscheme("cobalt2")
     --     end,
     -- },
+    -- {
+    --     -- dir = "~/Repos/cobalt.nvim",
+    --     "wurli/cobalt.nvim",
+    --     config = function()
+    --         vim.cmd[[colorscheme cobalt]]
+    --     end
+    -- },
     {
-        -- dir = "~/Repos/cobalt.nvim",
-        "wurli/cobalt.nvim",
+        "oxfist/night-owl.nvim",
+        lazy = false, -- make sure we load this during startup if it is your main colorscheme
+        priority = 1000, -- make sure to load this before all the other start plugins
         config = function()
-            vim.cmd[[colorscheme cobalt]]
-        end
+            -- load the colorscheme here
+            require("night-owl").setup()
+            vim.cmd.colorscheme("night-owl")
+        end,
     },
     {
         "nvim-lualine/lualine.nvim",
@@ -20,7 +30,7 @@ return {
         config = function()
             require("lualine").setup({
                 options = {
-                    theme = "cobalt",
+                    theme = "night-owl",
                     section_separators = "",
                 },
                 sections = {
