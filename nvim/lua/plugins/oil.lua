@@ -25,6 +25,6 @@ return {
         })
 
         local api = require("oil")
-        vim.keymap.set("n", "-", api.open_float, { desc = "Open parent directory" })
+        vim.keymap.set("n", "-", api.open, { desc = "Open parent directory" })
     end
 }
