@@ -112,18 +112,26 @@ eval "$(starship init zsh)"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # fzf key bindings and fuzzy completion
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# CTRL-/ to show preview window which is hidden by default
+
 source <(fzf --zsh)
 
-# Preview file content using bat (https://github.com/sharkdp/bat)
-export FZF_CTRL_T_OPTS="
-  --walker-skip .git,target
-  --preview 'bat -n --color=always {}'
-  --bind 'ctrl-/:change-preview-window(down|hidden|)'"
+export FZF_DEFAULT_OPTS='
+  --preview-window "right:60%:hidden:wrap"
+  --bind "ctrl-/:toggle-preview,ctrl-h:preview-up,ctrl-l:preview-down"
+  --preview "bat --color=always --style=numbers --line-range=:500 {}"
+  '
 
-export FZF_DEFAULT_COMMAND='rg --hidden -l ""'
+# Preview file content using bat (https://github.com/sharkdp/bat)
+export FZF_CTRL_T_OPTS='
+  --walker-skip .git,node_modules,target
+  --preview "bat --color=always --style=numbers --line-range=:500 {}"
+  --bind "ctrl-/:change-preview-window(down|hidden|)"
+  '
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Aliases and other customisation 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 alias lg="lazygit"
-alias vim=nvim
+alias vim="nvim"
