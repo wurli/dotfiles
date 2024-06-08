@@ -145,7 +145,10 @@ return { -- LSP Configuration & Plugins
             rust_analyzer = {},
             r_language_server = {
                 -- Turn off lintr because it's a bit slow and annoying for interactive use
-                settings = { r = { lsp = { diagnostics = false } } },
+                settings = { r = { lsp = {
+                    diagnostics = false,
+                    rich_documentation = false
+                } } },
                 on_attach = function(conf)
                     -- Turn off lsp autcomplete (we're using cmp-r instead)
                     conf.server_capabilities.completionProvider = false
