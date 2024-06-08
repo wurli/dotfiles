@@ -143,7 +143,15 @@ return { -- LSP Configuration & Plugins
             -- gopls = {},
             pyright = {},
             rust_analyzer = {},
-            r_language_server = {},
+            r_language_server = {
+                -- Turn off lintr because it's a bit slow and annoying for interactive use
+                settings = { r = { lsp = { diagnostics = false } } },
+                on_attach = function(conf)
+                    -- Turn off lsp autcomplete (we're using cmp-r instead)
+                    conf.server_capabilities.completionProvider = false
+                    return conf
+                end,
+            },
             -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
             --
             -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -195,20 +203,6 @@ return { -- LSP Configuration & Plugins
                     server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
                     require('lspconfig')[server_name].setup(server)
                 end,
-                ['r_language_server'] = function()
-                    require('lspconfig').r_language_server.setup {
-                        handlers = {
-                            -- Note: see :help lsp-handler-configuration for info
-                            ["textDocument/publishDiagnostics"] = vim.lsp.with(
-                                vim.lsp.diagnostic.on_publish_diagnostics, {
-                                    -- disable lintr diagnostics, which are just too much
-                                    -- virtual_text = false,
-                                    virtual_text = false,
-                                }
-                            )
-                        }
-                    }
-                end
             },
         }
     end,
