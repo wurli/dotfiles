@@ -40,7 +40,6 @@ return { -- Autocompletion
         local cmp = require 'cmp'
         local luasnip = require 'luasnip'
         luasnip.config.setup {}
- 
         cmp.setup {
             snippet = {
                 expand = function(args)
@@ -83,12 +82,12 @@ return { -- Autocompletion
                 --
                 -- <c-l> will move you to the right of each of the expansion locations.
                 -- <c-h> is similar, except moving you backwards.
-                ['<C-k>'] = cmp.mapping(function()
+                ['<C-l>'] = cmp.mapping(function()
                     if luasnip.expand_or_locally_jumpable() then
                         luasnip.expand_or_jump()
                     end
                 end, { 'i', 's' }),
-                ['<C-l>'] = cmp.mapping(function()
+                ['<C-k>'] = cmp.mapping(function()
                     if luasnip.locally_jumpable(-1) then
                         luasnip.jump(-1)
                     end
@@ -104,5 +103,9 @@ return { -- Autocompletion
                 { name = 'cmp_r' }
             },
         }
+
+        for _, ftpath in ipairs(vim.api.nvim_get_runtime_file("lua/custom/snippets/*.lua", true)) do
+            loadfile(ftpath)()
+        end
     end,
 }
