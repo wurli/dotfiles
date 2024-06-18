@@ -1,28 +1,11 @@
 return {
-    -- {
-    --     dir = "~/Repos/cobalt.nvim",
-    --     event = { "ColorSchemePre" }, -- if you want to lazy load
-    --     dependencies = { "tjdevries/colorbuddy.nvim", tag = "v1.0.0" },
-    --     init = function()
-    --         require("colorbuddy").colorscheme("cobalt2")
-    --     end,
-    -- },
-    -- {
-    --     -- dir = "~/Repos/cobalt.nvim",
-    --     "wurli/cobalt.nvim",
-    --     config = function()
-    --         vim.cmd[[colorscheme cobalt]]
-    --     end
-    -- },
     {
-        "oxfist/night-owl.nvim",
-        lazy = false, -- make sure we load this during startup if it is your main colorscheme
-        priority = 1000, -- make sure to load this before all the other start plugins
+        -- dir = "~/Repos/cobalt.nvim",
+        "wurli/cobalt.nvim",
         config = function()
-            -- load the colorscheme here
-            require("night-owl").setup()
-            vim.cmd.colorscheme("night-owl")
-        end,
+            require("cobalt").setup({ })
+            vim.cmd[[colorscheme cobalt]]
+        end
     },
     {
         "nvim-lualine/lualine.nvim",
@@ -30,7 +13,7 @@ return {
         config = function()
             require("lualine").setup({
                 options = {
-                    theme = "night-owl",
+                    theme = "cobalt",
                     section_separators = "",
                 },
                 sections = {
