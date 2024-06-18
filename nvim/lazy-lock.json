@@ -6,6 +6,7 @@
   "cmp-path": { "branch": "main", "commit": "91ff86cd9c29299a64f968ebb45846c485725f23" },
   "cmp-r": { "branch": "main", "commit": "efa34e762dea378cae27a9e47bdd95afb0bc8dfc" },
   "cmp_luasnip": { "branch": "master", "commit": "05a9ab28b53f71d1aece421ef32fee2cb857a843" },
+  "cobalt.nvim": { "branch": "main", "commit": "35752bbccff5bbf54966a322221dd561a810c311" },
   "fidget.nvim": { "branch": "main", "commit": "ef99df04a1c53a453602421bc0f756997edc8289" },
   "harpoon": { "branch": "harpoon2", "commit": "0378a6c428a0bed6a2781d459d7943843f374bce" },
   "lazy.nvim": { "branch": "main", "commit": "cd6a8293430a7fadf6a093dfdfbdb1ddbaf8ae7d" },
