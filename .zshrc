@@ -75,6 +75,15 @@ ZSH_THEME="robbyrussell"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git)
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# zsh-vi-mode
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Note: this needs the plugin to be installed. You can do this using:
+#
+#   git clone https://github.com/jeffreytse/zsh-vi-mode \
+#     $ZSH_CUSTOM/plugins/zsh-vi-mode
+plugins+=(zsh-vi-mode)
+
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
