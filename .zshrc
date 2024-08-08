@@ -94,13 +94,13 @@ zvm_after_init_commands+=('source <(fzf --zsh)')
 export FZF_DEFAULT_OPTS='
   --preview-window "right:60%:hidden:wrap"
   --bind "ctrl-/:toggle-preview,ctrl-h:preview-up,ctrl-l:preview-down"
-  --preview "bat --color=always --style=numbers --line-range=:500 {}"
+  --preview "bat --color=always --style=plain,numbers --line-range=:500 {}"
   '
 
 # Preview file content using bat (https://github.com/sharkdp/bat)
 export FZF_CTRL_T_OPTS='
   --walker-skip .git,node_modules,target
-  --preview "bat --color=always --style=numbers --line-range=:500 {}"
+  --preview "bat --color=always --style=plain,numbers --line-range=:500 {}"
   --bind "ctrl-/:change-preview-window(down|hidden|)"
   '
 
@@ -143,3 +143,13 @@ eval "$(starship init zsh)"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 alias lg="lazygit"
 alias vim="nvim"
+
+function fg() {
+rg --color=always --line-number --no-heading --smart-case "${*:-}" |
+  fzf --ansi \
+      --color "hl:-1:underline,hl+:-1:underline:reverse" \
+      --delimiter : \
+      --preview 'bat --color=always {1} --highlight-line {2} --style="plain,numbers"' \
+      --preview-window 'right,50%,border-none,+{2}+3/3,~3' \
+      --bind 'enter:become(nvim {1} +{2})'
+} 
