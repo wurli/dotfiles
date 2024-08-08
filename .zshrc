@@ -122,8 +122,7 @@ eval "$(starship init zsh)"
 # fzf key bindings and fuzzy completion
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CTRL-/ to show preview window which is hidden by default
-
-source <(fzf --zsh)
+zvm_after_init_commands+=('source <(fzf --zsh)')
 
 export FZF_DEFAULT_OPTS='
   --preview-window "right:60%:hidden:wrap"
