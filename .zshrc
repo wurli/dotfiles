@@ -84,6 +84,26 @@ plugins=(git)
 #     $ZSH_CUSTOM/plugins/zsh-vi-mode
 plugins+=(zsh-vi-mode)
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# fzf key bindings and fuzzy completion
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# CTRL-/ to show preview window which is hidden by default
+
+zvm_after_init_commands+=('source <(fzf --zsh)')
+
+export FZF_DEFAULT_OPTS='
+  --preview-window "right:60%:hidden:wrap"
+  --bind "ctrl-/:toggle-preview,ctrl-h:preview-up,ctrl-l:preview-down"
+  --preview "bat --color=always --style=numbers --line-range=:500 {}"
+  '
+
+# Preview file content using bat (https://github.com/sharkdp/bat)
+export FZF_CTRL_T_OPTS='
+  --walker-skip .git,node_modules,target
+  --preview "bat --color=always --style=numbers --line-range=:500 {}"
+  --bind "ctrl-/:change-preview-window(down|hidden|)"
+  '
+
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -117,26 +137,6 @@ source $ZSH/oh-my-zsh.sh
 # use starship
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 eval "$(starship init zsh)"
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# fzf key bindings and fuzzy completion
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# CTRL-/ to show preview window which is hidden by default
-zvm_after_init_commands+=('source <(fzf --zsh)')
-
-export FZF_DEFAULT_OPTS='
-  --preview-window "right:60%:hidden:wrap"
-  --bind "ctrl-/:toggle-preview,ctrl-h:preview-up,ctrl-l:preview-down"
-  --preview "bat --color=always --style=numbers --line-range=:500 {}"
-  '
-
-# Preview file content using bat (https://github.com/sharkdp/bat)
-export FZF_CTRL_T_OPTS='
-  --walker-skip .git,node_modules,target
-  --preview "bat --color=always --style=numbers --line-range=:500 {}"
-  --bind "ctrl-/:change-preview-window(down|hidden|)"
-  '
-
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Aliases and other customisation 
