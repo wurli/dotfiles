@@ -143,6 +143,7 @@ eval "$(starship init zsh)"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 alias lg="lazygit"
 alias vim="nvim"
+alias ff="fzf"
 
 function fg() {
 rg --color=always --line-number --no-heading --smart-case "${*:-}" |
