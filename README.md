@@ -3,9 +3,9 @@ Config I use
 
 ## Installation on Mac
 
-Just use symlinks, e.g. for `tmux.conf`:
+Just use symlinks:
 ``` bash
-ln -s Repos/dotfiles/.tmux.conf .tmux.conf
+ln -s ~/Repos/dotfiles/.config/ .config
 ```
 
 ## Installation on Windows 

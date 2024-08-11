@@ -1,0 +1,19 @@
+{
+    "initial_working_directory": "~",
+    "editor_theme": "Cobalt",
+    "posix_terminal_shell": "bash",
+    "default_project_location": "~/Repos",
+    "save_workspace": "never",
+    "load_workspace": false,
+    "insert_native_pipe_operator": true,
+    "jobs_tab_visibility": "shown",
+    "visual_markdown_editing_wrap": "column",
+    "save_files_before_build": true,
+    "scroll_past_end_of_document": true,
+    "source_with_echo": true,
+    "vertically_align_arguments_indent": false,
+    "relative_line_numbers": true,
+    "shiny_viewer_type": "browser",
+    "editor_keybindings": "vim",
+    "continue_comments_on_newline": true
+}

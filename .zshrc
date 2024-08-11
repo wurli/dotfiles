@@ -104,6 +104,10 @@ export FZF_CTRL_T_OPTS='
   --bind "ctrl-/:change-preview-window(down|hidden|)"
   '
 
+
+# Homebrew auto completions
+FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
