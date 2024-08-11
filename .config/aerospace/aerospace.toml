@@ -32,10 +32,10 @@ alt-shift-r = 'reload-config'
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Switch to apps.
-alt-enter = 'exec-and-forget open "/Applications/iTerm.app"'
-alt-s     = 'exec-and-forget open "/Applications/Spotify.app"'
-alt-p     = 'exec-and-forget open "/Applications/Positron.app"'
-alt-o     = 'exec-and-forget open "/Applications/Outlook.app"'
+alt-i = 'exec-and-forget open "/Applications/iTerm.app"'
+alt-s = 'exec-and-forget open "/Applications/Spotify.app"'
+alt-p = 'exec-and-forget open "/Applications/Positron.app"'
+alt-o = 'exec-and-forget open "/Applications/Outlook.app"'
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Workspaces
@@ -52,6 +52,7 @@ alt-6 = 'workspace 6'
 alt-7 = 'workspace 7'
 alt-8 = 'workspace 8'
 alt-9 = 'workspace 9'
+alt-0 = 'workspace 0'
 
 alt-shift-1 = 'move-node-to-workspace 1'
 alt-shift-2 = 'move-node-to-workspace 2'
@@ -62,6 +63,7 @@ alt-shift-6 = 'move-node-to-workspace 6'
 alt-shift-7 = 'move-node-to-workspace 7'
 alt-shift-8 = 'move-node-to-workspace 8'
 alt-shift-9 = 'move-node-to-workspace 9'
+alt-shift-0 = 'move-node-to-workspace 0'
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Layouts / Movement / Focus.
@@ -101,38 +103,40 @@ alt-shift-equal = 'resize smart +50'
 run = 'layout tiling'
 
 [[on-window-detected]]
-if.app-id = 'com.rstudio.positron'
-check-further-callbacks = false
-run = 'move-node-to-workspace 2'
+if.app-id = 'com.googlecode.iterm2'
+run = 'move-node-to-workspace 0'
 
-# [[on-window-detected]]
-# if.app-id = 'com.googlecode.iterm2'
-# run = 'move-node-to-workspace 1'
-#
-# [[on-window-detected]]
-# if.app-name-regex-substring = 'positron|rstudio'
-# run = 'move-node-to-workspace 2'
-#
-# [[on-window-detected]]
-# if.app-name-regex-substring = 'excel'
-# run = 'move-node-to-workspace 3'
-#
-# [[on-window-detected]]
-# if.app-name-regex-substring = 'safari|edge'
-# run = 'move-node-to-workspace 4'
-#
-# [[on-window-detected]]
-# if.app-name-regex-substring = 'outlook'
-# run = 'move-node-to-workspace O'
-#
-# [[on-window-detected]]
-# if.app-name-regex-substring = 'teams'
-# run = 'move-node-to-workspace T'
-#
-# [[on-window-detected]]
-# if.app-name-regex-substring = 'whatsapp'
-# run = 'move-node-to-workspace W'
-#
-# [[on-window-detected]]
-# if.app-name-regex-substring = 'spotify'
-# run = 'move-node-to-workspace S'
+[[on-window-detected]]
+if.app-name-regex-substring = 'positron|rstudio'
+run = 'move-node-to-workspace 9'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'safari|edge'
+run = 'move-node-to-workspace 8'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'excel'
+run = 'move-node-to-workspace 7'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'outlook'
+run = 'move-node-to-workspace o'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'teams'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'whatsapp'
+run = 'move-node-to-workspace m'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'spotify'
+run = 'move-node-to-workspace n'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'excel'
+run = 'move-node-to-workspace 3'
+
+[workspace-to-monitor-force-assignment]
+1 = 'secondary'
