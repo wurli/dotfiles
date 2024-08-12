@@ -104,7 +104,7 @@ alt-h = 'focus left'
 alt-j = 'focus down'
 alt-k = 'focus up'
 alt-l = 'focus right'
-o
+
 alt-slash = 'layout tiles horizontal'
 alt-comma = 'layout accordion horizontal'
 alt-period = 'layout floating tiling'
