@@ -5,10 +5,25 @@
 start-at-login = true
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Styling
+# Styling / default behaviour
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 accordion-padding = 0
+
+# Possible values: tiles|accordion
+default-root-container-layout = 'tiles'
+
+# Possible values: horizontal|vertical|auto
+# 'auto' means: wide monitor (anything wider than high) gets horizontal orientation,
+#               tall monitor (anything higher than wide) gets vertical orientation
+default-root-container-orientation = 'auto'
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Normalisation of windows
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
 
 [gaps]
 inner.horizontal = 0
@@ -17,6 +32,7 @@ outer.left       = 0
 outer.bottom     = 0
 outer.top        = 0
 outer.right      = 0
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Keybindings (main)
@@ -32,10 +48,10 @@ alt-shift-r = 'reload-config'
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Switch to apps.
-alt-i = 'exec-and-forget open "/Applications/iTerm.app"'
-alt-s = 'exec-and-forget open "/Applications/Spotify.app"'
-alt-p = 'exec-and-forget open "/Applications/Positron.app"'
-alt-o = 'exec-and-forget open "/Applications/Outlook.app"'
+# alt-i = 'exec-and-forget open "/Applications/iTerm.app"'
+# alt-s = 'exec-and-forget open "/Applications/Spotify.app"'
+# alt-p = 'exec-and-forget open "/Applications/Positron.app"'
+# alt-o = 'exec-and-forget open "/Applications/Outlook.app"'
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Workspaces
@@ -54,6 +70,10 @@ alt-8 = 'workspace 8'
 alt-9 = 'workspace 9'
 alt-0 = 'workspace 0'
 
+alt-o = 'workspace O'
+alt-m = 'workspace M'
+alt-n = 'workspace N'
+
 alt-shift-1 = 'move-node-to-workspace 1'
 alt-shift-2 = 'move-node-to-workspace 2'
 alt-shift-3 = 'move-node-to-workspace 3'
@@ -64,6 +84,10 @@ alt-shift-7 = 'move-node-to-workspace 7'
 alt-shift-8 = 'move-node-to-workspace 8'
 alt-shift-9 = 'move-node-to-workspace 9'
 alt-shift-0 = 'move-node-to-workspace 0'
+
+alt-shift-o = 'move-node-to-workspace O'
+alt-shift-m = 'move-node-to-workspace M'
+alt-shift-n = 'move-node-to-workspace N'
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Layouts / Movement / Focus.
@@ -80,12 +104,10 @@ alt-h = 'focus left'
 alt-j = 'focus down'
 alt-k = 'focus up'
 alt-l = 'focus right'
-
-# alt-s = 'layout v_accordion'               # 'layout stacking' in i3
-# alt-w = 'layout h_accordion'               # 'layout tabbed' in i3
-# alt-e = 'layout tiles horizontal vertical' # 'layout toggle split' in i3
-
-# alt-shift-space = 'layout floating tiling' # 'floating toggle' in i3
+o
+alt-slash = 'layout tiles horizontal'
+alt-comma = 'layout accordion horizontal'
+alt-period = 'layout floating tiling'
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Resizing / Misc
@@ -99,8 +121,8 @@ alt-shift-equal = 'resize smart +50'
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Default everything to tiles on start.
-[[on-window-detected]]
-run = 'layout tiling'
+# [[on-window-detected]]
+# run = 'layout tiling'
 
 [[on-window-detected]]
 if.app-id = 'com.googlecode.iterm2'
@@ -134,9 +156,5 @@ run = 'move-node-to-workspace m'
 if.app-name-regex-substring = 'spotify'
 run = 'move-node-to-workspace n'
 
-[[on-window-detected]]
-if.app-name-regex-substring = 'excel'
-run = 'move-node-to-workspace 3'
-
 [workspace-to-monitor-force-assignment]
-1 = 'secondary'
+1 = 'built-in'
