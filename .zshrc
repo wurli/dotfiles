@@ -83,3 +83,5 @@ function fg() {
     --preview-window 'right,50%,border-none,+{2}+3/3,~3' \
     --bind 'enter:become(nvim {1} +{2})'
 }
+
+bindkey -s '^[3' \#

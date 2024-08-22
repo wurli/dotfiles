@@ -92,6 +92,13 @@ vim.keymap.set("n", "<leader>Y", [["+Y]])
 -- Delete without adding to buffer
 vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
 
+-- These mappings control the size of splits (height/width)
+vim.keymap.set("n", "<M-,>", "<c-w>5<")
+vim.keymap.set("n", "<M-.>", "<c-w>5>")
+vim.keymap.set("n", "<M-s>", "<C-W>-")
+vim.keymap.set("n", "<M-t>", "<C-W>+")
+
+-- Move line down
 vim.keymap.set("n", "<M-j>", function()
   if vim.opt.diff:get() then
     vim.cmd [[normal! ]c]]
@@ -100,6 +107,7 @@ vim.keymap.set("n", "<M-j>", function()
   end
 end)
 
+-- Move line up
 vim.keymap.set("n", "<M-k>", function()
   if vim.opt.diff:get() then
     vim.cmd [[normal! [c]]
@@ -107,3 +115,6 @@ vim.keymap.set("n", "<M-k>", function()
     vim.cmd [[m .-2<CR>==]]
   end
 end)
+
+-- Workaround for meta-key limitations in iterm2
+vim.keymap.set({ "i", "c" }, "<M-3>", "#", { noremap = true })
