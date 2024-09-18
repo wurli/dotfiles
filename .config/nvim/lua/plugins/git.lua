@@ -1,7 +1,11 @@
 return {
-    { "tpope/vim-fugitive" },
+    {
+        "tpope/vim-fugitive",
+        cond = not vim.g.vscode,
+    },
     {
         "lewis6991/gitsigns.nvim",
+        cond = not vim.g.vscode,
         config = function()
             require('gitsigns').setup {
                 on_attach = function(bufnr)
@@ -37,6 +41,7 @@ return {
     },
     {
         "kdheepak/lazygit.nvim",
+        cond = not vim.g.vscode,
         cmd = {
             "LazyGit",
             "LazyGitConfig",

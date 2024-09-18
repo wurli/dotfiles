@@ -1,5 +1,6 @@
 return {
     "nvim-tree/nvim-tree.lua",
+    cond = not vim.g.vscode,
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
         require("nvim-tree").setup {

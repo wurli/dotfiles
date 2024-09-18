@@ -1,5 +1,6 @@
 return {
     "stevearc/oil.nvim",
+    cond = not vim.g.vscode,
     config = function()
         require("oil").setup({
             keymaps = {

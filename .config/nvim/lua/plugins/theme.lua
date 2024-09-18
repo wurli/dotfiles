@@ -2,6 +2,7 @@ return {
     {
         -- dir = "~/Repos/cobalt.nvim",
         "wurli/cobalt.nvim",
+        cond = not vim.g.vscode,
         config = function()
             require("cobalt").setup({ })
             vim.cmd[[colorscheme cobalt]]
@@ -9,6 +10,7 @@ return {
     },
     {
         "nvim-lualine/lualine.nvim",
+        cond = not vim.g.vscode,
         lazy = false,
         config = function()
             require("lualine").setup({
@@ -26,6 +28,7 @@ return {
     {
         -- Colour hex codes like #000000
         "norcalli/nvim-colorizer.lua",
+        cond = not vim.g.vscode,
         config = function()
             require("colorizer").setup({ "*" }, {
                 RGB      = true,  -- #RGB hex codes 

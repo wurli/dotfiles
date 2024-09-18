@@ -3,6 +3,7 @@ if vim.fn.has("nvim-0.10") == 1 then
 else
     return {
         "numToStr/Comment.nvim",
+        cond = not vim.g.vscode,
         opts = {
             padding = true, -- Add a space b/w comment and the line
             sticky = true, -- Whether the cursor should stay at its position

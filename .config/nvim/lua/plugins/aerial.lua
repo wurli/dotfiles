@@ -1,6 +1,7 @@
 return {
     'stevearc/aerial.nvim',
     -- Optional dependencies
+    cond = not vim.g.vscode,
     dependencies = {
         "nvim-treesitter/nvim-treesitter",
         "nvim-tree/nvim-web-devicons"
