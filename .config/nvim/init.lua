@@ -105,16 +105,21 @@ vim.keymap.set("n", "<M-k>", function()
 end)
 
 -- Split a line into mutliple lines based on a delimiter
-local split_current_line = function(sep)
+local split_current_line = function(sep, keep_sep)
+    if keep_sep == nil then keep_sep = true end
     local line = vim.api.nvim_get_current_line()
 
-    -- Detect and temporarily remove any indentation
+    -- Detect and (temporarily) remove any indentation
     local _, indent_end, indent = line:find("^(%s*)")
     indent = indent or ""
     line = line:sub(indent_end + 1)
 
     -- Replace separator with line breaks
-    line = string.gsub(line, "(" .. sep .. ")", "%1\n")
+    if keep_sep then
+        line = string.gsub(line, "(" .. sep .. ")", "%1\n")
+    else
+        line = string.gsub(line, "(" .. sep .. ")", "\n")
+    end
 
     -- Perform the split
     local line_split = vim.fn.split(line, "\n", true)
@@ -122,10 +127,10 @@ local split_current_line = function(sep)
     for i, l in ipairs(line_split) do
         l = string.gsub(l, "^%s*", "") -- Remove leading whitespace
         l = string.gsub(l, "%s*$", "") -- Remove trailing whitespace
-        line_split[i] = indent .. l    -- Apply indentation
+        line_split[i] = indent .. l    -- (Re)apply any indentation
     end
 
-    -- Replace lines in the current buffer
+    -- Replace lines in the buffer
     local line_no = vim.api.nvim_win_get_cursor(0)[1] - 1
     vim.api.nvim_buf_set_lines(0, line_no, line_no + 1, true, line_split)
 end
@@ -135,8 +140,19 @@ vim.keymap.set("n", "<C-s>", function() split_current_line(",") end)
 
 -- Split by any pattern
 vim.keymap.set("n", "<leader><C-s>", function()
-    local pattern = vim.fn.input({ prompt="Enter a split pattern: " })
-    split_current_line(pattern)
+    local keep_sep = true
+    local pattern = ""
+
+    while pattern == "" do
+        if keep_sep then
+            pattern = vim.fn.input({ prompt="Enter a split pattern (keeping separator): " })
+        else
+            pattern = vim.fn.input({ prompt="Enter a split pattern (removing separator): "})
+        end
+        if pattern == "" then keep_sep = not keep_sep end
+    end
+
+    split_current_line(pattern, keep_sep)
 end)
 
 -- Workaround for meta-key limitations in iterm2
