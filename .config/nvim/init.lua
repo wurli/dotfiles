@@ -140,16 +140,24 @@ vim.keymap.set("n", "<C-s>", function() split_current_line(",") end)
 
 -- Split by any pattern
 vim.keymap.set("n", "<leader><C-s>", function()
+    local esc_keycode = "\27"
     local keep_sep = true
     local pattern = ""
+    local keep_prompting = true
+    local was_cancelled = false
 
-    while pattern == "" do
+    while pattern == "" and keep_prompting do
+        -- Detect if user enters Esc (in which case pattern will be "")
+        vim.on_key(function(k) was_cancelled = k == esc_keycode end)
+
         if keep_sep then
-            pattern = vim.fn.input({ prompt="Enter a split pattern (keeping separator): " })
+            keep_prompting, pattern = pcall(vim.fn.input, "Enter a split pattern (keeping separator): ")
         else
-            pattern = vim.fn.input({ prompt="Enter a split pattern (removing separator): "})
+            keep_prompting, pattern = pcall(vim.fn.input, "Enter a split pattern (removing separator): ")
         end
+
         if pattern == "" then keep_sep = not keep_sep end
+        if not keep_prompting or was_cancelled then return end
     end
 
     split_current_line(pattern, keep_sep)
