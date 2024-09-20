@@ -119,9 +119,10 @@ local split_current_line = function(sep)
     -- Perform the split
     local line_split = vim.fn.split(line, "\n", true)
 
-    -- Reapply indentation and remove trailing whitespace
     for i, l in ipairs(line_split) do
-        line_split[i] = indent .. string.gsub(l, "%s$", "")
+        l = string.gsub(l, "^%s*", "") -- Remove leading whitespace
+        l = string.gsub(l, "%s*$", "") -- Remove trailing whitespace
+        line_split[i] = indent .. l    -- Apply indentation
     end
 
     -- Replace lines in the current buffer
