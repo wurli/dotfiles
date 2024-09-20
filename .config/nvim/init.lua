@@ -56,18 +56,6 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.keymap.set("n", "<leader>v", "`[v`]", {}) -- Select last paste
 vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
 
--- Enter insert mode at the correct indentation
-vim.keymap.set(
-    "n", "i",
-    function() if #vim.fn.getline(".") == 0 and vim.o.modifiable then return [["_cc]] else return "i" end end,
-    { expr = true, desc = "Apply indentation when inserting on an empty line" }
-)
-vim.keymap.set(
-    "n", "a",
-    function() if #vim.fn.getline(".") == 0 and vim.o.modifiable then return [["_cc]] else return "a" end end,
-    { expr = true, desc = "Apply indentation when inserting on an empty line" }
-)
-
 -- For multi-line inserts
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
@@ -116,5 +104,40 @@ vim.keymap.set("n", "<M-k>", function()
   end
 end)
 
+-- Split a line into mutliple lines based on a delimiter
+local split_current_line = function(sep)
+    local line = vim.api.nvim_get_current_line()
+
+    -- Detect and temporarily remove any indentation
+    local _, indent_end, indent = line:find("^(%s*)")
+    indent = indent or ""
+    line = line:sub(indent_end + 1)
+
+    -- Replace separator with line breaks
+    line = string.gsub(line, "(" .. sep .. ")", "%1\n")
+
+    -- Perform the split
+    local line_split = vim.fn.split(line, "\n", true)
+
+    -- Reapply indentation and remove trailing whitespace
+    for i, l in ipairs(line_split) do
+        line_split[i] = indent .. string.gsub(l, "%s$", "")
+    end
+
+    -- Replace lines in the current buffer
+    local line_no = vim.api.nvim_win_get_cursor(0)[1] - 1
+    vim.api.nvim_buf_set_lines(0, line_no, line_no + 1, true, line_split)
+end
+
+-- Split lines by comma
+vim.keymap.set("n", "<C-s>", function() split_current_line(",") end)
+
+-- Split by any pattern
+vim.keymap.set("n", "<leader><C-s>", function()
+    local pattern = vim.fn.input({ prompt="Enter a split pattern: " })
+    split_current_line(pattern)
+end)
+
 -- Workaround for meta-key limitations in iterm2
 vim.keymap.set({ "i", "c" }, "<M-3>", "#", { noremap = true })
+
