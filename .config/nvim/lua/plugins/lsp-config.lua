@@ -4,6 +4,7 @@ return {
         -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
         -- used for completion, annotations and signatures of Neovim apis
         'folke/lazydev.nvim',
+        cond = not vim.g.vscode,
         ft = 'lua',
         opts = {
             library = {
@@ -12,10 +13,15 @@ return {
             },
         },
     },
-    { 'Bilal2453/luvit-meta', lazy = true },
+    {
+        'Bilal2453/luvit-meta',
+        cond = not vim.g.vscode,
+        lazy = true
+    },
 
     {
         'neovim/nvim-lspconfig',
+        cond = not vim.g.vscode,
         dependencies = {
             -- Automatically install LSPs and related tools to stdpath for Neovim
             { 'williamboman/mason.nvim', config = true },
