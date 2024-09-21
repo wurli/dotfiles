@@ -122,7 +122,7 @@ local split_current_line = function(sep, keep_sep)
     end
 
     -- Perform the split
-    local line_split = vim.fn.split(line, "\n", true)
+    local line_split = vim.fn.split(line, "\n", false)
 
     for i, l in ipairs(line_split) do
         l = string.gsub(l, "^%s*", "") -- Remove leading whitespace
