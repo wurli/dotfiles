@@ -72,6 +72,8 @@ vim.keymap.set("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "Execute 
 
 -- Paste without overwriting buffer:
 vim.keymap.set("x", "<leader>p", [["_dP]])
+vim.keymap.set("n", "<leader>p", [[p==]])
+vim.keymap.set("n", "<leader>P", [[P==]])
 
 -- Yank into system clipboard
 vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
@@ -165,4 +167,3 @@ end)
 
 -- Workaround for meta-key limitations in iterm2
 vim.keymap.set({ "i", "c" }, "<M-3>", "#", { noremap = true })
-
