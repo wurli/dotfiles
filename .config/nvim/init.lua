@@ -4,6 +4,7 @@ vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 vim.g.maplocalleader = "\\"
 vim.g.mapleader = " "
 vim.opt.termguicolors = true
+vim.opt.splitright = true
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
@@ -85,8 +86,8 @@ vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
 -- These mappings control the size of splits (height/width)
 vim.keymap.set("n", "<M-,>", "<c-w>5<")
 vim.keymap.set("n", "<M-.>", "<c-w>5>")
-vim.keymap.set("n", "<M-s>", "<C-W>-")
-vim.keymap.set("n", "<M-t>", "<C-W>+")
+vim.keymap.set("n", "<M-;>", "<C-W>-")
+vim.keymap.set("n", "<M-'>", "<C-W>+")
 
 -- Move line down
 vim.keymap.set("n", "<M-j>", function()
@@ -167,3 +168,4 @@ end)
 
 -- Workaround for meta-key limitations in iterm2
 vim.keymap.set({ "i", "c" }, "<M-3>", "#", { noremap = true })
+
