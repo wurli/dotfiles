@@ -11,14 +11,14 @@ vim.g.loaded_netrwPlugin = 1
 -- Install lazy if not available ----------------------------------------------
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-	vim.fn.system({
-		"git",
-		"clone",
-		"--filter=blob:none",
-		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable", -- latest stable release
-		lazypath,
-	})
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -73,8 +73,10 @@ vim.keymap.set("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "Execute 
 
 -- Paste without overwriting buffer:
 vim.keymap.set("x", "<leader>p", [["_dP]])
-vim.keymap.set("n", "<leader>p", [[p==]])
-vim.keymap.set("n", "<leader>P", [[P==]])
+-- Paste and reindent
+vim.keymap.set("n", "<leader>p", "p`[=`]")
+vim.keymap.set("n", "<leader>P",  "P`[=`]")
+
 
 -- Yank into system clipboard
 vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
@@ -168,4 +170,5 @@ end)
 
 -- Workaround for meta-key limitations in iterm2
 vim.keymap.set({ "i", "c" }, "<M-3>", "#", { noremap = true })
+
 
