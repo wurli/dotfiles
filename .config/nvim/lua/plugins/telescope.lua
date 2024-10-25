@@ -13,6 +13,13 @@ return {
                                 ["<Enter>"] = require("telescope.actions").select_vertical
                             }
                         }
+                    },
+                    man_pages = {
+                        mappings = {
+                            i = {
+                                ["<Enter>"] = require("telescope.actions").select_vertical
+                            }
+                        }
                     }
                 }
             })

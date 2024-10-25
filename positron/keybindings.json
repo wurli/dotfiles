@@ -1,0 +1,66 @@
+// Place your key bindings in this file to override the defaults
+[
+    // Pane navigation, vim style
+    {
+        "key": "ctrl+alt+h",
+        "command": "workbench.action.navigateLeft"
+    },
+    {
+        "key": "ctrl+alt+l",
+        "command": "workbench.action.navigateRight"
+    },
+    // Editor navigation
+    {
+        "key": "ctrl+alt+k",
+        "command": "workbench.action.previousEditor"
+    },
+    {
+        "key": "ctrl+alt+j",
+        "command": "workbench.action.nextEditor"
+    },
+    // RStudio-style go-to-definition
+    {
+        "key": "f2",
+        "command": "editor.action.revealDefinition",
+        "when": "editorHasDefinitionProvider && editorTextFocus"
+    },
+    // Pane resizing, vim-style
+    {
+        "key": "alt+.",
+        "command": "workbench.action.increaseViewSize",
+        "when": "!isAuxiliaryWindowFocusedContext"
+    },
+    {
+        "key": "alt+,",
+        "command": "workbench.action.decreaseViewSize",
+        "when": "!isAuxiliaryWindowFocusedContext"
+    },
+    // Focus console. Change this shortcut.
+    {
+        "key": "cmd+k f",
+        "command": "workbench.action.positronConsole.focusConsole"
+    },
+    // Open file explorer, vim-style
+    {
+        "key": "ctrl+alt+n",
+        "command": "workbench.view.explorer"
+    },
+    {
+        "key": "ctrl+alt+n",
+        "command": "workbench.action.toggleSidebarVisibility",
+        "when": "explorerViewletVisible"
+    },
+
+    // Editor naviation. Why isn't this default???
+    { "key": "cmd+1", "command": "workbench.action.openEditorAtIndex1" },
+    { "key": "cmd+2", "command": "workbench.action.openEditorAtIndex2" },
+    { "key": "cmd+3", "command": "workbench.action.openEditorAtIndex3" },
+    { "key": "cmd+4", "command": "workbench.action.openEditorAtIndex4" },
+    { "key": "cmd+5", "command": "workbench.action.openEditorAtIndex5" },
+    { "key": "cmd+6", "command": "workbench.action.openEditorAtIndex6" },
+    { "key": "cmd+7", "command": "workbench.action.openEditorAtIndex7" },
+    { "key": "cmd+8", "command": "workbench.action.openEditorAtIndex8" },
+    { "key": "cmd+9", "command": "workbench.action.openEditorAtIndex9" },
+
+]
+

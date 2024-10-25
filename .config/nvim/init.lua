@@ -1,4 +1,10 @@
 ---@diagnostic disable: undefined-global
+
+if vim.g.vscode then
+    vim.cmd[[unmap =]]
+    vim.cmd[[unmap ==]]
+end
+
 -- Set vim options required for lazy -------------------------------------------
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 vim.g.maplocalleader = "\\"
@@ -49,8 +55,8 @@ vim.opt.hlsearch = false
 vim.opt.incsearch = true
 
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = "[Rr]",
-	command = "setlocal shiftwidth=2 tabstop=2 softtabstop=2",
+    pattern = "[Rr]",
+    command = "setlocal shiftwidth=2 tabstop=2 softtabstop=2",
 })
 
 -- Select text after pasting (e.g. for adjusting indentation)
