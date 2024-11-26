@@ -21,7 +21,7 @@ return {
 
         vim.keymap.set(
             "n",
-            "<C-h>",
+            "<leader>hh",
             function() harpoon.ui:toggle_quick_menu(harpoon:list()) end,
             { desc = "Open harpoon UI" }
         )

@@ -16,8 +16,7 @@ vim.g.loaded_netrwPlugin = 1
 vim.opt.so = 7
 
 -- Install lazy if not available ----------------------------------------------
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim" if not (vim.uv or vim.loop).fs_stat(lazypath) then
     local lazyrepo = "https://github.com/folke/lazy.nvim.git"
     local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
     if vim.v.shell_error ~= 0 then
@@ -87,6 +86,8 @@ vim.keymap.set("x", "<leader>p", [["_dP]])
 vim.keymap.set("n", "<leader>p", "p`[=`]")
 vim.keymap.set("n", "<leader>P",  "P`[=`]")
 
+vim.keymap.set("n", "gj", function() vim.fn.append(vim.fn.line("."), "") end)
+vim.keymap.set("n", "gk", function() vim.fn.append(vim.fn.line(".") - 1, "") end)
 
 -- Yank into system clipboard
 vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
