@@ -76,7 +76,7 @@ vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j")
 vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k")
 vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l")
 
--- Source stuff 
+-- Source stuff
 vim.keymap.set("n", "<leader>x", "<cmd>.lua<CR>", { desc = "Execute the current line" })
 vim.keymap.set("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "Execute the current file" })
 
@@ -111,6 +111,18 @@ end)
 vim.keymap.set("n", "<M-k>", function()
     vim.cmd(vim.opt.diff:get() and "normal! [c]" or "m .-2<CR>==")
 end)
+
+vim.api.nvim_create_user_command(
+    "Trim",
+    function()
+        local lines = vim.api.nvim_buf_get_lines(0, 1, -1, true)
+        for lnum, line in ipairs(lines) do
+            lines[lnum] = line:gsub("%s+$", "")
+        end
+        vim.api.nvim_buf_set_lines(0, 1, -1, true, lines)
+    end,
+    { desc = "Trim trailing whitespace from lines" }
+)
 
 -- Workaround for meta-key limitations in iterm2
 vim.keymap.set({ "i", "c" }, "<M-3>", "#", { noremap = true })
