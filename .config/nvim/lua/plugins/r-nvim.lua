@@ -1,4 +1,5 @@
 return {}
+
 -- local nvim_rprofile_path = (
 --     vim.fn.stdpath("config") .. "/nvim-rprofile.R"
 -- ):gsub("\\", "/")
@@ -58,7 +59,8 @@ return {}
 -- end
 --
 -- return {
---     "R-nvim/R.nvim",
+--     dir = "~/Repos/R.nvim",
+--     -- "R-nvim/R.nvim",
 --     config = function()
 --         -- Create a table with the options to be passed to setup()
 --         local opts = {

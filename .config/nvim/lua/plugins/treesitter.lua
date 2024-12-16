@@ -20,7 +20,7 @@ return { -- Highlight, edit, and navigate code
         },
         indent = {
             enable = true,
-            disable = { "ruby" }
+            disable = { "ruby", "markdown" }
         },
         textobjects = {
             -- enable = true,

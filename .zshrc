@@ -3,6 +3,8 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
+export TERM=xterm-256color
+export COLORTERM=truecolor
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -11,7 +13,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+ZSH_THEME="amuse"
 
 # Uncomment the following line if pasting URLs and other text is messed up.
 # DISABLE_MAGIC_FUNCTIONS="true"
@@ -94,3 +96,5 @@ bindkey -s '^[3' \#
 # This section can be safely removed at any time if needed.
 [[ ! -r '/Users/jacobscott/.opam/opam-init/init.zsh' ]] || source '/Users/jacobscott/.opam/opam-init/init.zsh' > /dev/null 2> /dev/null
 # END opam configuration
+
+. "$HOME/.local/bin/env"
