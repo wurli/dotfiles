@@ -13,7 +13,8 @@ Btw because I always forget, you also need to do this for the VSCode Neovim plug
 
 For Positron (Mac):
 ``` bash
-defaults write com.rstudio.positron ApplePressAndHoldEnabled -bool false
+# defaults write com.rstudio.positron ApplePressAndHoldEnabled -bool false
+defaults write co.posit.positron ApplePressAndHoldEnabled -bool false
 ```
 
 For VSCode (on Mac):

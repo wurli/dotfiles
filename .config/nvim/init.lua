@@ -80,11 +80,11 @@ vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l")
 vim.keymap.set("n", "<leader>x", "<cmd>.lua<CR>", { desc = "Execute the current line" })
 vim.keymap.set("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "Execute the current file" })
 
--- Paste without overwriting buffer:
-vim.keymap.set("x", "<leader>p", [["_dP]])
--- Paste and reindent
-vim.keymap.set("n", "<leader>p", "p`[=`]")
-vim.keymap.set("n", "<leader>P",  "P`[=`]")
+-- Reindent on paste; user leader to not indent
+vim.keymap.set("n", "p", "p`[=`]")
+vim.keymap.set("n", "P",  "P`[=`]")
+vim.keymap.set("n", "<leader>p", "p")
+vim.keymap.set("n", "<leader>P", "P")
 
 vim.keymap.set("n", "gj", function() vim.fn.append(vim.fn.line("."), "") end)
 vim.keymap.set("n", "gk", function() vim.fn.append(vim.fn.line(".") - 1, "") end)
@@ -120,19 +120,20 @@ vim.api.nvim_create_autocmd("TermOpen", {
     end
 })
 
-vim.api.nvim_create_user_command(
-    "Trim",
-    function()
-        local lines = vim.api.nvim_buf_get_lines(0, 1, -1, true)
-        for lnum, line in ipairs(lines) do
-            lines[lnum] = line:gsub("%s+$", "")
-        end
-        vim.api.nvim_buf_set_lines(0, 1, -1, true, lines)
-    end,
-    { desc = "Trim trailing whitespace from lines" }
-)
+local trim = function()
+    local lines = vim.api.nvim_buf_get_lines(0, 1, -1, true)
+    for lnum, line in ipairs(lines) do
+        lines[lnum] = line:gsub("%s+$", "")
+    end
+    vim.api.nvim_buf_set_lines(0, 1, -1, true, lines)
+end
 
+vim.api.nvim_create_user_command("Trim", trim, { desc = "Trim trailing whitespace from lines" })
 
+vim.api.nvim_create_autocmd("BufWritePre", {
+    group = vim.api.nvim_create_augroup("trim-on-save", { clear = true }),
+    callback = trim
+})
 
 local command_exists = function(cmd)
     local res = vim.system(
