@@ -2,51 +2,29 @@ return {
     {
         'saghen/blink.cmp',
         lazy = false, -- lazy loading handled internally
-        -- optional: provides snippets for the snippet source
         -- dependencies = 'rafamadriz/friendly-snippets',
 
-        -- use a release tag to download pre-built binaries
         version = 'v0.*',
-        -- OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
-        -- build = 'cargo build --release',
-        -- If you use nix, you can build from source using latest nightly rust with:
-        -- build = 'nix run .#build-plugin',
-
-        dependencies = {
-        },
-
         ---@module 'blink.cmp'
         ---@type blink.cmp.Config
         ---@diagnostic disable: missing-fields
         opts = {
-            -- 'default' for mappings similar to built-in completion
-            -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
-            -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
-            -- see the "default configuration" section below for full documentation on how to define
-            -- your own keymap.
             keymap = {
                 preset = "default",
                 ['<C-l>'] = { 'snippet_forward', 'fallback' },
                 ['<C-h>'] = { 'snippet_backward', 'fallback' },
-                -- ['<Tab>'] = { 'select_and_accept' },
             },
             completion = {
                 list = {
                     selection = "manual"
                 }
             },
-            appearance = {
-                nerd_font_variant = 'mono'
-            },
-            --
-            -- default list of enabled providers defined so that you can extend it
-            -- elsewhere in your config, without redefining it, via `opts_extend`
+            appearance = { nerd_font_variant = 'mono' },
             sources = {
                 default = { 'lsp', 'path', 'snippets', 'buffer' },
                 -- optionally disable cmdline completions
                 -- cmdline = {},
             },
-            --
             -- experimental signature help support
             -- signature = { enabled = true }
         },
@@ -64,7 +42,8 @@ return {
     --         -- Snippet Engine & its associated nvim-cmp source
     --         {
     --             'L3MON4D3/LuaSnip',
-    --             build = (function()
+    --             build = (
+    --             function()
     --                 -- Build Step is needed for regex support in snippets.
     --                 -- This step is not supported in many windows environments.
     --                 -- Remove the below condition to re-enable on windows.
@@ -72,7 +51,8 @@ return {
     --                     return
     --                 end
     --                 return 'make install_jsregexp'
-    --             end)(),
+    --             end
+    --             )(),
     --             dependencies = {
     --                 -- `friendly-snippets` contains a variety of premade snippets.
     --                 --    See the README about individual language/framework/plugin snippets:
