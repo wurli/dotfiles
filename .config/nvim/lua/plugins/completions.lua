@@ -28,7 +28,7 @@ return {
                 preset = "default",
                 ['<C-l>'] = { 'snippet_forward', 'fallback' },
                 ['<C-h>'] = { 'snippet_backward', 'fallback' },
-                ['<Tab>'] = { 'select_and_accept' },
+                -- ['<Tab>'] = { 'select_and_accept' },
             },
             completion = {
                 list = {
