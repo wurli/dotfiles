@@ -1,6 +1,7 @@
 return {
     {
         'saghen/blink.cmp',
+        cond = not vim.g.vscode and false,
         lazy = false, -- lazy loading handled internally
         -- dependencies = 'rafamadriz/friendly-snippets',
 
