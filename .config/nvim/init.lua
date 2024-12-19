@@ -81,10 +81,10 @@ vim.keymap.set("n", "<leader>x", "<cmd>.lua<CR>", { desc = "Execute the current 
 vim.keymap.set("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "Execute the current file" })
 
 -- Reindent on paste; user leader to not indent
-vim.keymap.set("n", "p", "p`[=`]")
-vim.keymap.set("n", "P",  "P`[=`]")
-vim.keymap.set("n", "<leader>p", "p")
-vim.keymap.set("n", "<leader>P", "P")
+vim.keymap.set({ "n", "v" }, "p", "p`[=`]")
+vim.keymap.set({ "n", "v" }, "P",  "P`[=`]")
+vim.keymap.set({ "n", "v" }, "<leader>p", "p")
+vim.keymap.set({ "n", "v" }, "<leader>P", "P")
 
 vim.keymap.set("n", "gj", function() vim.fn.append(vim.fn.line("."), "") end)
 vim.keymap.set("n", "gk", function() vim.fn.append(vim.fn.line(".") - 1, "") end)
