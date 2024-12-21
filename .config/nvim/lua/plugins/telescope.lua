@@ -41,6 +41,12 @@ return {
                 },
             }) end, {})
 
+            vim.keymap.set("n", "<leader>fc", function()
+                builtin.find_files({
+                    cwd = vim.fn.stdpath("config")
+                })
+            end)
+
             -- local actions = require("telescope.actions")
             -- actions.file_vsplit(0)
             vim.keymap.set("n", "<leader>fg", builtin.live_grep, {})

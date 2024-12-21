@@ -72,7 +72,7 @@ vim.keymap.set("i", "<C-c>", "<Esc>")
 -- Move out of terminal mode
 -- vim.keymap.set("t", "<C-c>", "<C-\\><C-n>", { noremap = false })
 vim.keymap.set("t", "<C-c>", "<C-\\><C-n>")
-vim.keymap.set("t", "<leader>c", "<C-c>")
+vim.keymap.set("t", "<C-.>", "<C-c>")
 
 vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h")
 vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j")
