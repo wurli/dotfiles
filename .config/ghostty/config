@@ -1,6 +1,5 @@
-# theme = catppuccin-mocha
 theme = MaterialDarker
-# font-family = FiraCode Nerd Font Mono
+macos-option-as-alt = true
 font-family = Fira Mono
 
 # font-family =
