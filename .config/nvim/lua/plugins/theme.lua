@@ -10,6 +10,8 @@ local cobalt = {
 }
 
 ---@diagnostic disable-next-line: unused-local
+-- This theme is pretty good. But I don't love the browny-grey background.
+-- I'd prefer to look at a blueish theme which doesn't feel like mould :)
 local material = {
     'marko-cerovac/material.nvim',
     config = function()
@@ -35,19 +37,32 @@ local material = {
 }
 
 ---@diagnostic disable-next-line: unused-local
+-- This theme is pretty much ideal... Except that you can't override specific
+-- colours. If you could, I would absolutely change variables to be bright
+-- white instead of grey. Just doesn't *pop* in the way I want.
 local night_owl = {
-  "oxfist/night-owl.nvim",
-  lazy = false, -- make sure we load this during startup if it is your main colorscheme
-  priority = 1000, -- make sure to load this before all the other start plugins
-  config = function()
-    -- load the colorscheme here
-    require("night-owl").setup()
-    vim.cmd.colorscheme("night-owl")
-  end,
+    "oxfist/night-owl.nvim",
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    priority = 1000, -- make sure to load this before all the other start plugins
+    config = function()
+        -- load the colorscheme here
+        require("night-owl").setup()
+        vim.cmd.colorscheme("night-owl")
+    end,
+}
+
+---@diagnostic disable-next-line: unused-local
+local rose_pine = {
+	"rose-pine/neovim",
+	name = "rose-pine",
+	config = function()
+        require("rose-pine").setup({})
+		vim.cmd("colorscheme rose-pine")
+	end
 }
 
 return {
-    night_owl,
+    rose_pine,
     {
         "lukas-reineke/indent-blankline.nvim",
         cond = not vim.g.vscode,
@@ -84,7 +99,7 @@ return {
         config = function()
             require("lualine").setup({
                 options = {
-                    theme = "material",
+                    theme = "rose-pine",
                     section_separators = "",
                 },
                 sections = {
