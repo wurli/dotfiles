@@ -80,9 +80,9 @@ local rose_pine = {
                     -- highlight_med  = "#403d52",
                     -- highlight_high = "#524f67",
                     -- none           = "NONE",
-                    ----------------
+                    -------------------
                     --- Adjustments ---
-                    ----------------
+                    -------------------
                     overlay = "#322f4d",
                     pine = "#c3ebfc"
                 }
@@ -90,8 +90,8 @@ local rose_pine = {
             highlight_groups = {
                 ["@markup.strong"] = { fg = "rose" },
                 ["@markup.italic"] = { fg = "iris" },
-                ["@markup.raw"] = { fg = "leaf" },
-                ["@markup.quote"] = { fg = "subtle", italic = true }
+                ["@markup.raw"]    = { fg = "leaf" },
+                ["@markup.quote"]  = { fg = "subtle", italic = true }
             }
         })
 		vim.cmd("colorscheme rose-pine")

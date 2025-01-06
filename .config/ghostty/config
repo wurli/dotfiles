@@ -1,6 +1,9 @@
 theme = MaterialDarker
 macos-option-as-alt = true
-font-family = Fira Mono
+font-family = FiraCode Nerd Font Mono
+font-feature = -calt
+font-feature = -liga
+font-feature = -dlig
 
 # font-family =
 # font-family-bold =
