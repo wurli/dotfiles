@@ -99,7 +99,7 @@ local rose_pine = {
 }
 
 return {
-    rose_pine,
+    cobalt,
     {
         "lukas-reineke/indent-blankline.nvim",
         cond = not vim.g.vscode,
@@ -136,7 +136,7 @@ return {
         config = function()
             require("lualine").setup({
                 options = {
-                    theme = "rose-pine",
+                    theme = "cobalt",
                     section_separators = "",
                 },
                 sections = {
