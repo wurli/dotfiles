@@ -7,11 +7,9 @@ vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
 -- For multi-line inserts
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
--- Move out of terminal mode
--- vim.keymap.set("t", "<C-c>", "<C-\\><C-n>", { noremap = false })
+-- Terminal mode keymaps
 vim.keymap.set("t", "<C-c>", "<C-\\><C-n>")
 vim.keymap.set("t", "<C-.>", "<C-c>")
-
 vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h")
 vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j")
 vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k")
@@ -21,7 +19,7 @@ vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l")
 vim.keymap.set("n", "<leader>x", "<cmd>.lua<CR>", { desc = "Execute the current line" })
 vim.keymap.set("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "Execute the current file" })
 
--- Reindent on paste; user leader to not indent
+-- Reindent on paste; use leader to not indent
 vim.keymap.set({ "n", "v" }, "p", "p`[=`]")
 vim.keymap.set({ "n", "v" }, "P",  "P`[=`]")
 vim.keymap.set({ "n", "v" }, "<leader>p", "p")
@@ -43,7 +41,7 @@ vim.keymap.set("n", "<M-.>", "<c-w>5>")
 vim.keymap.set("n", "<M-;>", "<C-W>-")
 vim.keymap.set("n", "<M-'>", "<C-W>+")
 
-
+-- Move line down
 vim.keymap.set("n", "<M-j>", function()
     vim.cmd(vim.opt.diff:get() and "normal! ]c]" or "m .+1<CR>==")
 end)
