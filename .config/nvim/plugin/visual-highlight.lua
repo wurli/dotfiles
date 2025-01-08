@@ -1,6 +1,5 @@
 local gfind = function(x, pattern, plain)
-    local matches = {}
-    local init = 0
+    local matches, init = {}, 0
 
     while true do
         local x_collapsed = table.concat(x, "\n")
@@ -39,8 +38,7 @@ vim.api.nvim_create_autocmd({ "CursorMoved", "ModeChanged" }, {
         local start_pos, end_pos = vim.fn.getpos("v"), vim.fn.getpos(".")
         local selection = vim.fn.getregion(start_pos, end_pos, { type = mode })
 
-        local max_lines = 30
-        local min_chars = 6
+        local max_lines, min_chars = 30, 6
 
         if #selection > max_lines then return end
         local selection_collapsed = table.concat(selection, "\n")
@@ -51,7 +49,7 @@ vim.api.nvim_create_autocmd({ "CursorMoved", "ModeChanged" }, {
 
         selection_collapsed = selection_collapsed:gsub("(%p)", "%%%0"):gsub("[ \t]+", "%%s+")
 
-        local first_line   = vim.fn.line("w0", vim.api.nvim_get_current_win()) - #selection
+        local first_line   = math.max(0, vim.fn.line("w0", vim.api.nvim_get_current_win()) - #selection)
         local last_line    = vim.fn.line("w$", vim.api.nvim_get_current_win()) + #selection
         local visible_text = vim.api.nvim_buf_get_lines(0, first_line, last_line, false)
         local matches      = gfind(visible_text, selection_collapsed, false)
