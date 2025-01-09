@@ -1,5 +1,9 @@
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 
+-- Clear search highlight
+vim.keymap.set("n", "<C-c>", function() vim.v.hlsearch = 0 end)
+vim.keymap.set("n", "<Esc>", function() vim.v.hlsearch = 0 end)
+
 -- Select text after pasting (e.g. for adjusting indentation)
 vim.keymap.set("n", "<leader>v", "`[v`]", {}) -- Select last paste
 vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
