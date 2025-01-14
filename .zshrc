@@ -12,6 +12,8 @@ zstyle ':completion:*' sort true                              # Sort completeion
 export LS_COLORS="di=34:fi=0:ln=36:pi=33:so=35:bd=94:cd=93:or=31:mi=41:ex=32"
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS} # Colours
 
+# Use Neovim as the pager for man entries
+export MANPAGER='nvim +Man!'
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # fzf key bindings and fuzzy completion
