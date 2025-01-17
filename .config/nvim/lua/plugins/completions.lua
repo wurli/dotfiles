@@ -17,7 +17,7 @@ return {
             },
             completion = {
                 list = {
-                    selection = "manual"
+                    selection = { preselect = false, auto_insert = false }
                 }
             },
             appearance = { nerd_font_variant = 'mono' },
