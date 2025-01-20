@@ -1,5 +1,9 @@
 return {
     {
+        "wurli/contextindent.nvim",
+        config = true
+    },
+    {
         "junegunn/vim-easy-align",
         config = function()
             vim.keymap.set({ "n", "v" }, "ga", "<Plug>(EasyAlign)")
