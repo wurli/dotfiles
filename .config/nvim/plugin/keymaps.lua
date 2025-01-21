@@ -16,7 +16,7 @@ map("n", "<leader>v", "`[v`]", { desc = "Select last operated region" })
 map("i", "<C-c>", "<Esc>")
 
 -- My keyboard doesn't have this
-map("i", "<C-x>", "<Del>")
+map("i", "<C-l>", "<Del>")
 
 -- Terminal mode keymaps
 map("t", "<C-c>", "<C-\\><C-n>",       { desc = "Terminal exit"  })
