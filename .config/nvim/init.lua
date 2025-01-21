@@ -1,8 +1,3 @@
-if vim.g.vscode then
-    vim.cmd[[unmap =]]
-    vim.cmd[[unmap ==]]
-end
-
 -- Set vim options required for lazy ------------------------------------------
 vim.g.maplocalleader = "\\"
 vim.g.mapleader = " "
