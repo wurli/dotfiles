@@ -1,0 +1,40 @@
+---
+format: html
+toc: true
+title: "IPP Analysis"
+date: "2025-01-13"
+author: "Zurich Integrated Benefits"
+tumber-sectinos: true
+execute:
+echo: false
+---
+
+```{r setup}
+library(tidyverse)
+library(readxl)
+theme_set(
+  theme_minimal() +
+    theme(
+      legend.position = "bottom",
+      plot.title = element_text(size = 25),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.minor.y = element_blank(),
+    )
+)
+
+breaks_seq    <- function(by) function(x) seq(floor(x[1]), ceiling(x[2]), by = by)
+    covid_caption <- "2022 data was not collected due to the COVID-19 pandemic."
+    file          <- "WTW Survey - Zurich IPP Response 2018-2023 - Copilot Ready.xlsx"
+    file2         <- "WTW Survey - Zurich IPP Response 2018-2023 - Copy(DR).xlsx"
+
+    parse_yes_no <- function(x) {
+        x |>
+            tolower() |>
+            case_match(
+                    "yes" ~ TRUE,
+                    "no" ~ FALSE
+                    )
+    }
+```
+
