@@ -7,7 +7,13 @@
     },
     {
         "key": "ctrl+alt+l",
-        "command": "workbench.action.navigateRight"
+        "command": "workbench.action.navigateRight",
+        "when": "!editorFocus"
+    },
+    {
+        "key": "ctrl+alt+l",
+        "command": "workbench.panel.positronConsole.focus",
+        "when": "editorFocus"
     },
     // Editor navigation
     {
@@ -45,29 +51,5 @@
         "command": "workbench.action.toggleSidebarVisibility",
         "when": "explorerViewletVisible"
     },
-
-    // vim-style autocomplete accept
-    {
-        "key": "ctrl+y",
-        "command": "acceptSelectedSuggestion",
-        "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus"
-    },
-
-    // Editor naviation. Why isn't this default???
-    { "key": "cmd+1", "command": "workbench.action.openEditorAtIndex1" },
-    { "key": "cmd+2", "command": "workbench.action.openEditorAtIndex2" },
-    { "key": "cmd+3", "command": "workbench.action.openEditorAtIndex3" },
-    { "key": "cmd+4", "command": "workbench.action.openEditorAtIndex4" },
-    { "key": "cmd+5", "command": "workbench.action.openEditorAtIndex5" },
-    { "key": "cmd+6", "command": "workbench.action.openEditorAtIndex6" },
-    { "key": "cmd+7", "command": "workbench.action.openEditorAtIndex7" },
-    { "key": "cmd+8", "command": "workbench.action.openEditorAtIndex8" },
-    { "key": "cmd+9", "command": "workbench.action.openEditorAtIndex9" },
-
-    // No command to toggle expansion for these views yet :'(
-    { "key": "cmd+k p", "command": "workbench.panel.positronPlots.focus" },
-    { "key": "cmd+k o", "command": "workbench.panel.positronConsole.focus" },
-    { "key": "cmd+k i", "command": "workbench.panel.positronVariables.focus" },
 ]
-
 
