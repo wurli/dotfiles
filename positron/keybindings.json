@@ -35,11 +35,6 @@
         "command": "workbench.action.decreaseViewSize",
         "when": "!isAuxiliaryWindowFocusedContext"
     },
-    // Focus console. Change this shortcut.
-    {
-        "key": "cmd+k f",
-        "command": "workbench.action.positronConsole.focusConsole"
-    },
     // Open file explorer, vim-style
     {
         "key": "ctrl+alt+n",
@@ -49,6 +44,13 @@
         "key": "ctrl+alt+n",
         "command": "workbench.action.toggleSidebarVisibility",
         "when": "explorerViewletVisible"
+    },
+
+    // vim-style autocomplete accept
+    {
+        "key": "ctrl+y",
+        "command": "acceptSelectedSuggestion",
+        "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus"
     },
 
     // Editor naviation. Why isn't this default???
@@ -62,5 +64,10 @@
     { "key": "cmd+8", "command": "workbench.action.openEditorAtIndex8" },
     { "key": "cmd+9", "command": "workbench.action.openEditorAtIndex9" },
 
+    // No command to toggle expansion for these views yet :'(
+    { "key": "cmd+k p", "command": "workbench.panel.positronPlots.focus" },
+    { "key": "cmd+k o", "command": "workbench.panel.positronConsole.focus" },
+    { "key": "cmd+k i", "command": "workbench.panel.positronVariables.focus" },
 ]
+
 

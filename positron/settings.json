@@ -3,7 +3,7 @@
         "asvetliakov.vscode-neovim": 1
     },
     "workbench.colorTheme": "Cobalt2",
-    "python.defaultInterpreterPath": "/usr/bin/python3",
+    "python.defaultInterpreterPath": "/usr/local/bin/python3.13",
     "security.workspace.trust.untrustedFiles": "open",
     "editor.rulers": [
         80,120
@@ -14,41 +14,13 @@
     "zenMode.hideLineNumbers": false,
     "notebook.lineNumbers": "on",
     "editor.lineNumbers": "relative",
-    "workbench.externalUriOpeners": {
-        "default browser"
-    },
+    "vscode-neovim.ctrlKeysForInsertMode": [
+        "a", "c", "d", "h", "j", "l", "m", "o", "r", "t", "u", "w",
+    ],
     "vscode-neovim.ctrlKeysForNormalMode": [
-        "a",
-        "b",
-        "c",
-        "d",
-        "e",
-        "f",
-        "h",
-        "i",
-        "j",
-        "k",
-        "l",
-        "m",
-        "o",
-        "r",
-        "s",
-        "t",
-        "u",
-        "v",
-        "w",
-        "x",
-        "y",
-        "z",
-        "/",
-        "]",
-        "=",
-        "right",
-        "left",
-        "up",
-        "down",
-        "backspace",
-        "delete"
-    ]
+        "a", "b", "c", "d", "e", "f", "h", "i", "j", "k", "l", "m",
+        "o", "r", "s", "t", "u", "v", "w", "x", "y", "z", "/", "]",
+        "right", "left", "up", "down", "backspace", "delete",
+    ],
 }
 
