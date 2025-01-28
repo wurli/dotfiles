@@ -1,3 +1,15 @@
+vim.api.nvim_create_user_command(
+    "Dump",
+    function(x)
+        local cmd = ("put =execute('%s')"):format(x.args)
+        vim.cmd(cmd)
+    end,
+    {
+        nargs = "+",
+        desc = "Dump the output of a command at the cursor position"
+    }
+)
+
 -- local system_command_exists = function(cmd)
 --     local res = vim.system(
 --         { "which", "-s", cmd },
