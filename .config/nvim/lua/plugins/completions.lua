@@ -4,8 +4,7 @@ return {
         cond = not vim.g.vscode,
         lazy = false, -- lazy loading handled internally
         -- dependencies = 'rafamadriz/friendly-snippets',
-
-        version = 'v0.*',
+        dependencies = { 'L3MON4D3/LuaSnip', version = 'v2.*' },       version = 'v0.*',
         ---@module 'blink.cmp'
         ---@type blink.cmp.Config
         ---@diagnostic disable: missing-fields
@@ -20,6 +19,7 @@ return {
                     selection = { preselect = false, auto_insert = false }
                 }
             },
+            snippets = { preset = 'luasnip' },
             appearance = { nerd_font_variant = 'mono' },
             sources = {
                 default = { 'lsp', 'path', 'snippets', 'buffer' },
