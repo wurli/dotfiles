@@ -8,12 +8,12 @@ Just use symlinks:
 ln -s ~/Repos/dotfiles/.config/ .config
 ```
 
-## Installation on Windows 
+## Installation on Windows
 
 I.e. at work where _actual_ symlinks aren't allowed without admin permissions
 for some reason??
 
-``` powershell
+``` bash
 function symlink ([String] $real, [String] $link) {
     if (Test-Path $real -pathType container) {
         # Create a hardlink for individual files
