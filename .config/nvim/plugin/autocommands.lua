@@ -23,3 +23,14 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     callback = trim
 })
 
+vim.api.nvim_create_autocmd("BufWinEnter", {
+    group = vim.api.nvim_create_augroup("diff-line-nums", { clear = true }),
+    callback = function()
+        local wins = vim.api.nvim_tabpage_list_wins(0)
+        for _, w in ipairs(wins) do
+            if vim.wo[w].diff then
+                vim.wo[w].relativenumber = false
+            end
+        end
+    end
+})

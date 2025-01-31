@@ -7,11 +7,15 @@ return {
         "NeogitOrg/neogit",
         dependencies = {
             "nvim-lua/plenary.nvim",         -- required
-            "sindrets/diffview.nvim",        -- optional - Diff integration
             "nvim-telescope/telescope.nvim",
+            {
+                "sindrets/diffview.nvim",        -- optional - Diff integration
+                opts = { enhanced_diff_hl = true },
+            },
         },
         config = function()
             require("neogit").setup({})
+            vim.opt.fillchars:append("diff:╱")
             vim.keymap.set("n", "<leader>lg", "<cmd>Neogit<cr>")
         end
     },

@@ -1,0 +1,3 @@
+[tool.ruff]
+builtins = [ "dbutils", "spark", "sql", "getArgument", "displayHTML", "udf" ]
+

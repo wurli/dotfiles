@@ -49,7 +49,9 @@ return {
 
             -- local actions = require("telescope.actions")
             -- actions.file_vsplit(0)
-            vim.keymap.set("n", "<leader>fg", builtin.live_grep, {})
+            vim.keymap.set("n", "<leader>fg", function() builtin.live_grep({
+                additional_args = { "--hidden", "--no-ignore", "--glob=!.git/*" }
+            }) end, {})
             vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
             vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
             vim.keymap.set('n', '<leader>fm', builtin.man_pages, {})

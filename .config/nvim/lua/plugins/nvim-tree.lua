@@ -12,6 +12,9 @@ return {
                 },
             },
             update_focused_file = { enable = true },
+            filters = {
+                git_ignored = false
+            }
         }
         local api = require("nvim-tree.api")
         vim.keymap.set({ "n", "i" }, "<C-n>", api.tree.toggle)

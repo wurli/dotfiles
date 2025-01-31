@@ -19,12 +19,13 @@ map("i", "<C-c>", "<Esc>")
 map("i", "<C-l>", "<Del>")
 
 -- Terminal mode keymaps
+map("t", "<M-c>", "<C-c>",             { desc = "Terminal cancel" })
+map("t", "<M-l>", "<C-l>",             { desc = "Terminal clear" })
 map("t", "<C-c>", "<C-\\><C-n>",       { desc = "Terminal exit"  })
-map("t", "<C-.>", "<C-c>",             { desc = "Terminal clear" })
-map("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Terminal clear" })
-map("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Terminal clear" })
-map("t", "<C-k>", "<C-\\C-w>k", { desc = "Terminal clear" })
-map("t", "<C-l>", "<C-\\><C-n><C-w>l", { desc = "Terminal clear" })
+map("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Terminal exit left" })
+map("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Terminal exit down" })
+map("t", "<C-k>", "<C-\\C-w>k",      { desc = "Terminal exit up" })
+map("t", "<C-l>", "<C-\\><C-n><C-w>l", { desc = "Terminal exit right" })
 
 -- Source stuff
 map("n", "<leader>x",         "<cmd>.lua<CR>",     { desc = "Execute the current line" })
