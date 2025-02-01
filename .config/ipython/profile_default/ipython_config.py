@@ -12,10 +12,11 @@ class MyPrompt(Prompts):
     def continuation_prompt_tokens(self, width=None):
         return [(Token.Prompt, "+ ")]
 
-    # def  rewrite_prompt_tokens()
+    # def rewrite_prompt_tokens(self):
+    #     pass
 
     def out_prompt_tokens(self):
-        return [(Token.OutPrompt, "# ")]
+        return [(Token.OutPrompt, "")]
 
 c.TerminalInteractiveShell.prompts_class = MyPrompt
 

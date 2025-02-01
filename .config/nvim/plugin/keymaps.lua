@@ -2,8 +2,8 @@ local map = vim.keymap.set
 
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 
-map("n", "<M-h>", "gT", { desc = "Cycle through tabs" })
-map("n", "<M-l>", "gt", { desc = "Cycle through tabs" })
+map({ "n", "t" }, "<M-l>", vim.cmd.tabN, { desc = "Next tabpage" })
+map({ "n", "t" }, "<M-h>", vim.cmd.tabp, { desc = "Previous tabpage" })
 
 -- Clear search highlight
 map("n", "<C-c>", function() vim.v.hlsearch = 0 end, { desc = "Clear search highlights" })

@@ -10,6 +10,16 @@ vim.api.nvim_create_user_command(
     }
 )
 
+vim.api.nvim_create_user_command(
+    "Tab",
+    function()
+        local win = vim.api.nvim_get_current_win()
+        vim.cmd[[ tab split ]]
+        vim.api.nvim_win_close(win, true)
+    end,
+    { desc = "Move current window to its own tab" }
+)
+
 -- local system_command_exists = function(cmd)
 --     local res = vim.system(
 --         { "which", "-s", cmd },
