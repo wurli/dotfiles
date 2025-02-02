@@ -33,4 +33,3 @@ vim.keymap.set(
     { desc = "Start R" }
 )
 
-return M

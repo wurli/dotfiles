@@ -5,6 +5,14 @@ M.make_toggler = function(cmd, name)
         buf = -1,
         win = -1,
         channel = -1,
+        send = function(self, lines, compress)
+            table.insert(lines, "")
+            -- To turn on autoscroll
+            vim.api.nvim_buf_call(self.buf, function()
+                vim.fn.cursor(vim.fn.line("$"), 0)
+            end)
+            vim.fn.chansend(self.channel, lines)
+        end
     }
 
     return function()

@@ -20,13 +20,15 @@ local function get_statement_range(pos)
     end
 
     local top_level_nodes = {
+        "assert_statement",
+        "decorated_definition",
+        "expression_statement",
+        "for_statement",
         "function_definition",
         "if_statement",
         "import_from_statement",
         "import_statement",
-        "expression_statement",
-        "assert_statement",
-        "decorated_definition"
+        "while_statement"
     }
 
     local id = node:id()
@@ -45,21 +47,12 @@ local function get_statement_range(pos)
     return { node:range() }
 end
 
-local preformat_code = function(x)
+local send_to_python = function(x)
     x = vim.tbl_filter(function(l) return not l:match("^%s*$") end, x)
     -- If the last line has indent, then we need to append *2* trailing lines
     -- in order to send the statement to IPython
     if x[#x]:match("^%s") then table.insert(x, "") end
-    table.insert(x, "")
-    return x
-end
-
-local send_code = function(code)
-    -- Move the cursor to the bottom of the terminal for autoscroll
-    vim.api.nvim_buf_call(term.buf, function()
-        fn.cursor(fn.line("$"), 0)
-    end)
-    fn.chansend(term.channel, preformat_code(code))
+    term:send(x)
 end
 
 vim.keymap.set(
@@ -73,7 +66,7 @@ vim.keymap.set(
             return
         end
 
-        send_code(vim.api.nvim_buf_get_text(0, rng[1], rng[2], rng[3], rng[4], {}))
+        send_to_python(vim.api.nvim_buf_get_text(0, rng[1], rng[2], rng[3], rng[4], {}))
         fn.cursor(fn.nextnonblank(math.min(rng[3] + 2, fn.line("$"))), 0)
     end,
     { buffer = 0, desc = "Send python code to terminal" }
@@ -85,7 +78,7 @@ vim.keymap.set(
         if not term then return end
         local start, stop = fn.getpos("v"), fn.getpos(".")
 
-        send_code(fn.getregion(start, stop, { type = fn.mode() }))
+        send_to_python(fn.getregion(start, stop, { type = fn.mode() }))
         local escape_keycode = "\27"
         fn.feedkeys(escape_keycode, "L")
         fn.cursor(math.min(fn.nextnonblank(stop[2] + 1), stop[2]), 0)
@@ -97,7 +90,7 @@ vim.keymap.set(
     { "n", "v", "i" }, "<c-Enter>",
     function()
         if not term then return end
-        send_code(fn.getline("^", "$"))
+        send_to_python(fn.getline("^", "$"))
     end
 )
 
