@@ -1,8 +1,11 @@
 M = { terminals = {} }
 
-M.make_toggler = function(init, name)
-    M.terminals[name] = { buf = -1, win = -1 }
-    if type(init) == "function" then init = init() end
+M.make_toggler = function(cmd, name)
+    M.terminals[name] = {
+        buf = -1,
+        win = -1,
+        channel = -1,
+    }
 
     return function()
         for open_term, info in pairs(M.terminals) do
@@ -18,14 +21,12 @@ M.make_toggler = function(init, name)
         t.win = vim.api.nvim_open_win(t.buf, true, { split = "right" })
 
         if vim.bo[t.buf].buftype ~= "terminal" then
-            vim.cmd.terminal()
-            -- if init then vim.fn.chansend(vim.bo.channel, init) end
-            if init then vim.api.nvim_chan_send(vim.bo.channel, init) end
+            local cmd1 = type(cmd) == "function" and cmd() or cmd
+            t.channel = vim.fn.termopen(cmd1 or vim.o.shell)
             if name then pcall(vim.cmd.file, name) end
         end
 
         vim.fn.cursor(vim.fn.line("$"), 0)
-        t.channel = vim.bo.channel
     end
 end
 
