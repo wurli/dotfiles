@@ -1,5 +1,6 @@
-local term = require("utils.term").terminals.Python
-local fn = vim.fn
+-- local term = require("utils.term").terminals.Python
+local fn     = vim.fn
+local term   = require("toggleterm.terminal").Terminal
 
 local function get_statement_range(pos)
     local row, col =  fn.line(".") - 1, fn.col(".") - 1
@@ -55,17 +56,14 @@ local preformat_code = function(x)
 end
 
 local send_code = function(code)
-    -- Move the cursor to the bottom of the terminal for autoscroll
-    vim.api.nvim_buf_call(term.buf, function()
-        fn.cursor(fn.line("$"), 0)
-    end)
-    fn.chansend(term.channel, preformat_code(code))
+    pyterm:send(preformat_code(code), true)
 end
 
 vim.keymap.set(
     "n", "<Enter>",
     function()
-        if not term then return end
+        print("Buf: " .. vim.inspect(pyterm.bufnr))
+        if not pyterm.bufnr then return end
         local rng = get_statement_range()
 
         if not rng then
@@ -82,7 +80,7 @@ vim.keymap.set(
 vim.keymap.set(
     "v", "<Enter>",
     function()
-        if not term then return end
+        if not pyterm.bufnr then return end
         local start, stop = fn.getpos("v"), fn.getpos(".")
 
         send_code(fn.getregion(start, stop, { type = fn.mode() }))
@@ -96,7 +94,7 @@ vim.keymap.set(
 vim.keymap.set(
     { "n", "v", "i" }, "<c-Enter>",
     function()
-        if not term then return end
+        if not pyterm.bufnr then return end
         send_code(fn.getline("^", "$"))
     end
 )
