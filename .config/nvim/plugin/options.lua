@@ -19,4 +19,7 @@ vim.opt.formatoptions:remove "o"
 vim.wo.number = true
 vim.wo.relativenumber = true
 
+vim.opt.number = true
+vim.opt.relativenumber = true
+
 

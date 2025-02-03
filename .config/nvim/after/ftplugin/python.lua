@@ -58,7 +58,7 @@ end
 vim.keymap.set(
     "n", "<Enter>",
     function()
-        if not term then return end
+        if not term:exists() then return end
         local rng = get_statement_range()
 
         if not rng then
@@ -75,7 +75,7 @@ vim.keymap.set(
 vim.keymap.set(
     "v", "<Enter>",
     function()
-        if not term then return end
+        if not term:exists() then return end
         local start, stop = fn.getpos("v"), fn.getpos(".")
 
         send_to_python(fn.getregion(start, stop, { type = fn.mode() }))
@@ -89,8 +89,37 @@ vim.keymap.set(
 vim.keymap.set(
     { "n", "v", "i" }, "<c-Enter>",
     function()
-        if not term then return end
+        if not term:exists() then return end
         send_to_python(fn.getline("^", "$"))
     end
 )
 
+-- local make_python_run_command = function(script)
+--     -- Get the current script's name as a python module
+--     script         = script or vim.api.nvim_buf_get_name(0)
+--     local wd       = vim.fn.getcwd(0, 0) .. "/"
+--     local pattern  = "^" .. wd:gsub("%p", "%%%1")
+--     local rel_path = script:gsub(pattern, "")
+--     local mod      = rel_path:gsub("/", "."):gsub("%.py$", "")
+--
+--     -- Use the virtual enfironment if applicable
+--     local venv = vim.fs.find("activate", { path = ".venv/bin" })[1]
+--     local python = venv and venv or "python"
+--
+--     return python .. " -m " .. mod
+-- end
+--
+-- vim.keymap.set(
+--     { "n", "v", "i" }, "<c-Enter>",
+--     function()
+--         vim.system(
+--             { make_python_run_command() },
+--             {
+--                 stdout = function(err, data)
+--                     vim.print(data)
+--                 end
+--             }
+--         )
+--     end
+-- )
+--

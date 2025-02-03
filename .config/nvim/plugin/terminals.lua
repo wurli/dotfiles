@@ -15,7 +15,7 @@ vim.keymap.set(
 local make_python_cmd = function()
     local venv = vim.fs.find("activate", { path = ".venv/bin" })[1]
     local prefix = venv and "source " .. venv .. " && " or ""
-    return prefix .. "ipython --no-autoindent\n"
+    return prefix .. "ipython --no-autoindent"
 end
 
 vim.keymap.set(
@@ -29,7 +29,12 @@ vim.keymap.set(
 -------
 vim.keymap.set(
     "n", "<leader><leader>r",
-    term.make_toggler("R\n", "R"),
+    term.make_toggler("R --no-save --no-restore", "R", {
+        env = {
+            R_CRAN_WEB = "http://cran.rstudio.com/",
+            R_REPOSITORIES = "NULL"
+        }
+    }),
     { desc = "Start R" }
 )
 
