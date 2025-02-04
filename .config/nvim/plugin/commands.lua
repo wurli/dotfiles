@@ -14,10 +14,24 @@ vim.api.nvim_create_user_command(
     "Tab",
     function()
         local win = vim.api.nvim_get_current_win()
-        vim.cmd[[ tab split ]]
+        vim.cmd [[ tab split ]]
         vim.api.nvim_win_close(win, true)
     end,
     { desc = "Move current window to its own tab" }
+)
+
+vim.api.nvim_create_user_command(
+    "LspFormat",
+    function(x)
+        vim.lsp.buf.format({
+            name = x.fargs[1],
+            range = x.range == 0 and nil or {
+                ["start"] = { x.line1, 0 },
+                ["end"] = { x.line2, 0 }
+            }
+        })
+    end,
+    { nargs = "?", range = "%", desc = "LSP format" }
 )
 
 -- local system_command_exists = function(cmd)
