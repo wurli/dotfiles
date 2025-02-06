@@ -7,7 +7,13 @@ local function get_statement_range(pos)
     if not ok or not node then return end
 
     local is_skipping_blanks = false
+    local n_iterations = 0
     while node:type() == "comment" or node:type() == "module" do
+        n_iterations = n_iterations + 1
+        if n_iterations > 100 then
+            print("Quitting: exceeded 100 iterations when ascending treesitter tree")
+            return
+        end
         is_skipping_blanks = true
         row = row + 1
         ok, node = pcall(vim.treesitter.get_node, { pos = { row, 0 } })
@@ -86,40 +92,29 @@ vim.keymap.set(
 
 )
 
-vim.keymap.set(
-    { "n", "v", "i" }, "<c-Enter>",
-    function()
-        if not term:exists() then return end
-        send_to_python(fn.getline("^", "$"))
-    end
-)
-
--- local make_python_run_command = function(script)
---     -- Get the current script's name as a python module
---     script         = script or vim.api.nvim_buf_get_name(0)
---     local wd       = vim.fn.getcwd(0, 0) .. "/"
---     local pattern  = "^" .. wd:gsub("%p", "%%%1")
---     local rel_path = script:gsub(pattern, "")
---     local mod      = rel_path:gsub("/", "."):gsub("%.py$", "")
---
---     -- Use the virtual enfironment if applicable
---     local venv = vim.fs.find("activate", { path = ".venv/bin" })[1]
---     local python = venv and venv or "python"
---
---     return python .. " -m " .. mod
--- end
---
 -- vim.keymap.set(
 --     { "n", "v", "i" }, "<c-Enter>",
 --     function()
---         vim.system(
---             { make_python_run_command() },
---             {
---                 stdout = function(err, data)
---                     vim.print(data)
---                 end
---             }
---         )
+--         if not term:exists() then return end
+--         send_to_python(fn.getline("^", "$"))
 --     end
 -- )
---
+
+vim.keymap.set(
+    { "n", "v", "i" }, "<c-Enter>",
+    function()
+        local venv = vim.fs.find("python", { path = ".venv/bin" })[1]
+        local python = venv and venv or "python"
+
+        local file = vim.api.nvim_buf_get_name(0)
+        local wd = vim.fn.getcwd():gsub("%p", "%%%1") .. "%/"
+        local file_rel = file:gsub(wd, "")
+
+        local mod = file_rel:gsub("/", "."):gsub("%.py$", "")
+
+        local cmd = python .. " -m " .. mod
+
+        require("utils.jobs"):open()
+        require("utils.jobs"):run(cmd)
+    end
+)

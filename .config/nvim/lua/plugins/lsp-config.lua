@@ -34,24 +34,27 @@ return {
                 group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
                 callback = function(event)
 
-                    local map = function(keys, func, desc)
-                        vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+                    local map = function(mode, keys, func, desc)
+                        vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
                     end
 
+                    local mapn = function(...) map("n", ...) end
+                    local mapv = function(...) map({ "n", "v" }, ...) end
+
                     --  To jump back, press <C-t>.
-                    map('gd',         require('telescope.builtin').lsp_definitions,                          'LSP: [G]oto [D]efinition')
-                    map('gr',         require('telescope.builtin').lsp_references,                           'LSP: [G]oto [R]eferences')
-                    map('gI',         require('telescope.builtin').lsp_implementations,                      'LSP: [G]oto [I]mplementation')
-                    map('<leader>D',  require('telescope.builtin').lsp_type_definitions,                     'LSP: Type [D]efinition')
-                    map('<leader>ds', require('telescope.builtin').lsp_document_symbols,                     'LSP: [D]ocument [S]ymbols')
-                    map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols,            'LSP: [W]orkspace [S]ymbols')
-                    map("<leader>lf", vim.lsp.buf.format,                                                    'LSP: [L]sp [F]ormat')
-                    map('<leader>rn', vim.lsp.buf.rename,                                                    'LSP: [R]e[n]ame')
-                    map('<leader>ca', vim.lsp.buf.code_action,                                               'LSP: [C]ode [A]ction')
-                    map('K',          vim.lsp.buf.hover,                                                     'LSP: Hover Documentation')
-                    map('gD',         vim.lsp.buf.declaration,                                               'LSP: [G]oto [D]eclaration')
-                    map('<leader>ld', vim.diagnostic.open_float,                                             'LSP: [L]sp [D]iagnostic')
-                    map('<leader>td', function() vim.diagnostic.enable(not vim.diagnostic.is_enabled()) end, 'LSP: [T]oggle [D]iagnostic')
+                    mapn('gd',         require('telescope.builtin').lsp_definitions,                          'LSP: [G]oto [D]efinition')
+                    mapn('gr',         require('telescope.builtin').lsp_references,                           'LSP: [G]oto [R]eferences')
+                    mapn('gI',         require('telescope.builtin').lsp_implementations,                      'LSP: [G]oto [I]mplementation')
+                    mapn('<leader>D',  require('telescope.builtin').lsp_type_definitions,                     'LSP: Type [D]efinition')
+                    mapn('<leader>ds', require('telescope.builtin').lsp_document_symbols,                     'LSP: [D]ocument [S]ymbols')
+                    mapn('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols,            'LSP: [W]orkspace [S]ymbols')
+                    mapv("<leader>lf", vim.lsp.buf.format,                                                    'LSP: [L]sp [F]ormat')
+                    mapn('<leader>rn', vim.lsp.buf.rename,                                                    'LSP: [R]e[n]ame')
+                    mapn('<leader>ca', vim.lsp.buf.code_action,                                               'LSP: [C]ode [A]ction')
+                    mapn('K',          vim.lsp.buf.hover,                                                     'LSP: Hover Documentation')
+                    mapn('gD',         vim.lsp.buf.declaration,                                               'LSP: [G]oto [D]eclaration')
+                    mapn('<leader>ld', vim.diagnostic.open_float,                                             'LSP: [L]sp [D]iagnostic')
+                    mapn('<leader>td', function() vim.diagnostic.enable(not vim.diagnostic.is_enabled()) end, 'LSP: [T]oggle [D]iagnostic')
 
                     -- The following two autocommands are used to highlight references of the
                     -- word under your cursor when your cursor rests there for a little while.
@@ -85,7 +88,7 @@ return {
                     -- The following code creates a keymap to toggle inlay hints in your
                     -- code, if the language server you are using supports them.
                     if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
-                        map('<leader>th', function()
+                        mapn('<leader>th', function()
                             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
                         end, '[T]oggle Inlay [H]ints')
                     end
@@ -100,19 +103,31 @@ return {
             local capabilities = vim.lsp.protocol.make_client_capabilities()
 
             local servers = {
-                pyright = {},
+                pyright = {
+                    settings = {
+                        pyright = {
+                            disableOrganizeImports = true
+                        },
+                        python = {
+                            analysis = {
+                                ignore = { "*" },
+                                stubPath = vim.fn.stdpath("config") .. "/misc/python-typings"
+                            }
+                        }
+                    }
+                },
+                ruff = {
+                    capabilities = {
+                        hoverProvider = false
+                    }
+                },
                 rust_analyzer = {},
                 lua_ls = {
-                    -- cmd = {...},
-                    -- filetypes = { ...},
-                    -- capabilities = {},
                     settings = {
                         Lua = {
                             completion = {
                                 callSnippet = 'Replace',
                             },
-                            -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-                            -- diagnostics = { disable = { 'missing-fields' } },
                         },
                     },
                 },
