@@ -64,4 +64,8 @@ map(
 )
 
 -- Workaround for meta-key limitations in terminal emulators
-map({ "i", "c" }, "<M-3>", "#", { noremap = true, desc = "Insert #" })
+map(
+    { "i", "n", "c", "v", "t" },
+    "<M-3>", "#",
+    { noremap = true, desc = "Insert #" }
+)
