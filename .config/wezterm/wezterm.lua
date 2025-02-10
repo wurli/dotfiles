@@ -29,7 +29,8 @@ local config = {
         "FiraMono Nerd Font Mono",
         "JetBrains Mono"
     }),
-    font_size = 14
+    font_size = 14,
+    hide_tab_bar_if_only_one_tab = true
 }
 
 return config
