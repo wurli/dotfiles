@@ -61,10 +61,13 @@ alias lg="lazygit"
 alias vim="nvim"
 alias ff="fzf"
 alias co="git checkout"
+alias ga="git add"
+alias gc="git commit"
 alias gp="git pull"
 alias gP="git push"
 alias gl="git nl"
 alias gs="git status"
+alias gd="git diff"
 
 function fg() {
     RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
