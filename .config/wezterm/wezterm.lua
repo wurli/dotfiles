@@ -3,8 +3,8 @@ local wezterm = require "wezterm"
 wezterm.on("toggle-opacity", function(window, pane)
     local overrides = window:get_config_overrides() or {}
     if not overrides.window_background_opacity then
-        overrides.text_background_opacity = 0.4
-        overrides.window_background_opacity = 0.4
+        overrides.text_background_opacity = 0.3
+        overrides.window_background_opacity = 0.3
         overrides.macos_window_background_blur = 0
     else
         overrides.window_background_opacity = nil
@@ -24,6 +24,11 @@ local config = {
             mods = "CMD",
             action = wezterm.action.EmitEvent "toggle-opacity",
         },
+        {
+            key = "w",
+            mods = "CMD",
+            action = wezterm.action.CloseCurrentTab { confirm = false }
+        }
     },
     font = wezterm.font_with_fallback({
         "FiraMono Nerd Font Mono",

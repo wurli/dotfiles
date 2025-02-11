@@ -20,7 +20,7 @@ M.make_toggler = function(cmd, name, opts)
 
     return function()
         for open_term, info in pairs(M.terminals or {}) do
-            if vim.api.nvim_win_is_valid(info.win) then
+            if vim.api.nvim_win_is_valid(info.win) and vim.api.nvim_win_get_buf(info.win) == info.buf then
                 vim.api.nvim_win_hide(info.win)
                 if open_term == name then return end
             end
@@ -48,4 +48,3 @@ M.make_toggler = function(cmd, name, opts)
 end
 
 return M
-

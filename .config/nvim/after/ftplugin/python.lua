@@ -34,7 +34,8 @@ local function get_statement_range(pos)
         "if_statement",
         "import_from_statement",
         "import_statement",
-        "while_statement"
+        "while_statement",
+        "with_statement",
     }
 
     local id = node:id()
