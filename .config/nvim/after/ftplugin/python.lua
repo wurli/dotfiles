@@ -1,3 +1,7 @@
+if not vim.g.vscode then
+    return
+end
+
 local term = require("utils.term").terminals.Python
 local fn = vim.fn
 

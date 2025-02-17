@@ -1,3 +1,4 @@
+-- TODO: Might be possible to do this with treesitter
 local get_comment_subsections = function()
     local commentstring = vim.bo.commentstring
     if commentstring == "" then
