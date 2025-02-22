@@ -1,5 +1,12 @@
 local wezterm = require "wezterm"
 
+local fonts = {
+    CommitMono = { name = "CommitMono Nerd Font",    height = 1.1 },
+    FiraMono   = { name = "FiraMono Nerd Font Mono", height = 1 },
+}
+
+local font = fonts.CommitMono
+
 wezterm.on("toggle-opacity", function(window, pane)
     local overrides = window:get_config_overrides() or {}
     if not overrides.window_background_opacity then
@@ -30,11 +37,9 @@ local config = {
             action = wezterm.action.CloseCurrentTab { confirm = false }
         }
     },
-    font = wezterm.font_with_fallback({
-        "FiraMono Nerd Font Mono",
-        "JetBrains Mono"
-    }),
+    font = wezterm.font_with_fallback({ font.name, "JetBrains Mono" }),
     font_size = 14,
+    line_height = font.height,
     hide_tab_bar_if_only_one_tab = true
 }
 

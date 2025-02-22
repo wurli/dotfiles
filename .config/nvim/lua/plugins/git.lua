@@ -5,6 +5,7 @@ return {
     },
     {
         "NeogitOrg/neogit",
+        cond = not vim.g.vscode,
         dependencies = {
             "nvim-lua/plenary.nvim",         -- required
             "nvim-telescope/telescope.nvim",
@@ -55,22 +56,4 @@ return {
             }
         end
     },
-    -- {
-    --     "kdheepak/lazygit.nvim",
-    --     cond = not vim.g.vscode,
-    --     cmd = {
-    --         "LazyGit",
-    --         "LazyGitConfig",
-    --         "LazyGitCurrentFile",
-    --         "LazyGitFilter",
-    --         "LazyGitFilterCurrentFile",
-    --     },
-    --     -- optional for floating window border decoration
-    --     dependencies = {
-    --         "nvim-lua/plenary.nvim",
-    --     },
-    --     keys = {
-    --         { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
-    --     },
-    -- },
 }

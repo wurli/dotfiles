@@ -1,11 +1,26 @@
 ---@diagnostic disable-next-line: unused-local
 local cobalt = {
     dir = "~/Repos/cobalt.nvim",
-    -- "wurli/cobalt.nvim",
-    cond = not vim.g.vscode,
     config = function()
         require("cobalt").setup({ })
         vim.cmd[[colorscheme cobalt]]
+    end
+}
+
+local nightfox = {
+    "EdenEast/nightfox.nvim",
+    config = function()
+        require("nightfox").setup({
+            colorblind = {
+                enable = true,
+                severity = {
+                    protan = 1,
+                    tritan = 1,
+                    deutan = 1
+                }
+            }
+        })
+        vim.cmd("colorscheme duskfox")
     end
 }
 
@@ -99,7 +114,7 @@ local rose_pine = {
 }
 
 return {
-    cobalt,
+    vim.tbl_extend("keep", cobalt, { cond = not vim.g.vscode }),
     {
         "lukas-reineke/indent-blankline.nvim",
         cond = not vim.g.vscode,

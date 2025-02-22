@@ -1,4 +1,5 @@
 return {
+    cond = not vim.g.vscode,
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
     ft = { "markdown" },

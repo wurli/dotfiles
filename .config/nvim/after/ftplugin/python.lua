@@ -1,4 +1,4 @@
-if not vim.g.vscode then
+if vim.g.vscode then
     return
 end
 
@@ -97,29 +97,30 @@ vim.keymap.set(
 
 )
 
--- vim.keymap.set(
---     { "n", "v", "i" }, "<c-Enter>",
---     function()
---         if not term:exists() then return end
---         send_to_python(fn.getline("^", "$"))
---     end
--- )
-
 vim.keymap.set(
     { "n", "v", "i" }, "<c-Enter>",
     function()
-        local venv = vim.fs.find("python", { path = ".venv/bin" })[1]
-        local python = venv and venv or "python"
-
-        local file = vim.api.nvim_buf_get_name(0)
-        local wd = vim.fn.getcwd():gsub("%p", "%%%1") .. "%/"
-        local file_rel = file:gsub(wd, "")
-
-        local mod = file_rel:gsub("/", "."):gsub("%.py$", "")
-
-        local cmd = python .. " -m " .. mod
-
-        require("utils.jobs"):open()
-        require("utils.jobs"):run(cmd)
+        if not term:exists() then return end
+        send_to_python(fn.getline("^", "$"))
     end
 )
+
+-- vim.keymap.set(
+--     { "n", "v", "i" }, "<c-Enter>",
+--     function()
+--         local venv = vim.fs.find("python", { path = ".venv/bin" })[1]
+--         local python = venv and venv or "python"
+--
+--         local file = vim.api.nvim_buf_get_name(0)
+--         local wd = vim.fn.getcwd():gsub("%p", "%%%1") .. "%/"
+--         local file_rel = file:gsub(wd, "")
+--
+--         local mod = file_rel:gsub("/", "."):gsub("%.py$", "")
+--
+--         local cmd = python .. " -m " .. mod
+--
+--         require("utils.jobs"):open()
+--         require("utils.jobs"):run(cmd)
+--     end
+-- )
+--
