@@ -113,6 +113,25 @@ local rose_pine = {
 	end
 }
 
+local get_wordcount = function()
+    local wordcount = vim.fn.wordcount()
+    local mode = vim.fn.mode()
+    if mode == "V" or mode == "v" then
+        return string.format("w: %s/%s", wordcount.visual_words, wordcount.words)
+    else
+        return string.format("w: %s", wordcount.words)
+    end
+end
+local get_charcount = function()
+    local wordcount = vim.fn.wordcount()
+    local mode = vim.fn.mode()
+    if mode == "V" or mode == "v" then
+        return string.format("c: %s/%s", wordcount.visual_chars, wordcount.chars)
+    else
+        return string.format("c: %s", wordcount.chars)
+    end
+end
+
 return {
     vim.tbl_extend("keep", cobalt, { cond = not vim.g.vscode }),
     {
@@ -157,6 +176,19 @@ return {
                 sections = {
                     -- show relative path, not just filename
                     lualine_c = {{ 'filename', path = 1 }},
+                },
+                extensions = {
+                    {
+                        sections = {
+                            lualine_a = {'mode'},
+                            lualine_b = {'branch', 'diff', 'diagnostics'},
+                            lualine_c = {{ 'filename', path = 1 }},
+                            lualine_x = { get_wordcount, get_charcount },
+                            lualine_y = {'progress'},
+                            lualine_z = {'location'}
+                        },
+                        filetypes = { "markdown", "quarto", "txt" }
+                    }
                 }
             })
         end,
@@ -170,7 +202,7 @@ return {
                 RGB      = true,  -- #RGB hex codes
                 RRGGBB   = true,  -- #RRGGBB hex codes like #000000
                 names    = false, -- "Name" codes like 'Blue'
-                RRGGBBAA = false, -- #RRGGBBAA hex codes
+                RRGGBBAA = true, -- #RRGGBBAA hex codes
                 rgb_fn   = false, -- CSS rgb() and rgba() functions
                 hsl_fn   = false, -- CSS hsl() and hsla() functions
                 css      = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
