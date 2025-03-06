@@ -14,6 +14,11 @@ return {
             update_focused_file = { enable = true },
             filters = {
                 git_ignored = false
+            },
+            actions = {
+                open_file = {
+                    resize_window = false
+                }
             }
         }
         local api = require("nvim-tree.api")

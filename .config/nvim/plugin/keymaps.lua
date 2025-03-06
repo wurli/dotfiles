@@ -9,6 +9,9 @@ map({ "n", "t" }, "<M-h>", vim.cmd.tabp, { desc = "Previous tabpage" })
 map("n", "<C-c>", function() vim.v.hlsearch = 0 end, { desc = "Clear search highlights" })
 map("n", "<Esc>", function() vim.v.hlsearch = 0 end, { desc = "Clear search highlights" })
 
+-- Search within selection
+map("x", "g/", "<Esc>/\\%V", { desc = "Search within selection" })
+
 -- Select text after pasting (e.g. for adjusting indentation)
 map("n", "<leader>v", "`[v`]", { desc = "Select last operated region" })
 

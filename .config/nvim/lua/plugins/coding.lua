@@ -35,7 +35,28 @@ return {
                     return "after_pattern"
                 end,
             },
-        }
+            interactive_options = {
+                [","] = ",",
+                [";"] = ";",
+                [" "] = "%s+",
+                ["+"] = " [+-/%%] ",
+                ["<"] = {
+                    pattern = "[<>=]=?",
+                    break_placement = "before_pattern",
+                },
+                ["."] = {
+                    pattern = "[%.?!]%s+",
+                    unsplitter = " ",
+                    smart_ignore = "code",
+                    quote_characters = {},
+                    brace_characters = {}
+                },
+                ["|"] = {
+                    pattern = { "%s+%|>", "%s+%%>%%" },
+                    indenter = "equalprg"
+                }
+            },
+        },
     }
 }
 

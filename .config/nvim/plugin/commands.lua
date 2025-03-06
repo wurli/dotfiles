@@ -1,8 +1,7 @@
 vim.api.nvim_create_user_command(
     "Dump",
     function(x)
-        local cmd = ("put =execute('%s')"):format(x.args)
-        vim.cmd(cmd)
+        vim.cmd(string.format("put =execute('%s')", x.args))
     end,
     {
         nargs = "+",
