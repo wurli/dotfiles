@@ -22,8 +22,8 @@ wezterm.on("toggle-opacity", function(window, pane)
 end)
 
 local config = {
-    window_background_opacity = 0.75,
-    text_background_opacity = 0.75,
+    window_background_opacity = 1,
+    text_background_opacity = 1,
     macos_window_background_blur = 40,
     keys = {
         {

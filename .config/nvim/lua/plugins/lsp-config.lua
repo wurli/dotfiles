@@ -38,7 +38,7 @@ return {
             -- 'williamboman/mason-lspconfig.nvim',
             'WhoIsSethDaniel/mason-tool-installer.nvim',
             { 'j-hui/fidget.nvim', opts = {} },
-            { "hrsh7th/cmp-nvim-lsp", "hrsh7th/nvim-cmp" },
+            -- { "hrsh7th/cmp-nvim-lsp", "hrsh7th/nvim-cmp" },
         },
         config = function()
             vim.api.nvim_create_autocmd('LspAttach', {
@@ -112,7 +112,8 @@ return {
             --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
             --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
             local capabilities = vim.lsp.protocol.make_client_capabilities()
-            capabilities = require("cmp_nvim_lsp").default_capabilities()
+            -- capabilities = require("blink.cmp").default_capabilities()
+            -- require('blink.cmp').get_lsp_capabilities()
 
             local servers = {
                 air = {},
@@ -169,33 +170,33 @@ return {
                 log_level = vim.log.levels.DEBUG
             })
 
-            -- You can add other tools here that you want Mason to install for
-            -- you, so that they are available from within Neovim.
-            local ensure_installed = vim.tbl_keys(servers or {})
-            vim.list_extend(ensure_installed, {
-                'stylua',
-            })
-            require('mason-tool-installer').setup({
-                ensure_installed = ensure_installed
-            })
+            -- -- You can add other tools here that you want Mason to install for
+            -- -- you, so that they are available from within Neovim.
+            -- local ensure_installed = vim.tbl_keys(servers or {})
+            -- vim.list_extend(ensure_installed, {
+            --     'stylua',
+            -- })
+            -- require('mason-tool-installer').setup({
+            --     ensure_installed = ensure_installed
+            -- })
 
-            require('mason-lspconfig').setup {
-                handlers = {
-                    function(server_name)
-                        if server_name == "r_language_server" then
-                            print("skipping r lsp setup")
-                            return
-                        end
-                        local server = servers[server_name] or {}
-                        server.capabilities = vim.tbl_deep_extend(
-                            'force', {},
-                            capabilities,
-                            server.capabilities or {}
-                        )
-                        require('lspconfig')[server_name].setup(server)
-                    end,
-                },
-            }
+            -- require('mason-lspconfig').setup {
+            --     handlers = {
+            --         function(server_name)
+            --             if server_name == "r_language_server" then
+            --                 print("skipping r lsp setup")
+            --                 return
+            --             end
+            --             local server = servers[server_name] or {}
+            --             server.capabilities = vim.tbl_deep_extend(
+            --                 'force', {},
+            --                 capabilities,
+            --                 server.capabilities or {}
+            --             )
+            --             require('lspconfig')[server_name].setup(server)
+            --         end,
+            --     },
+            -- }
         end,
     }
 }
