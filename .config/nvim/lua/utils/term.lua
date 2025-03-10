@@ -1,7 +1,7 @@
-M = { terminals = {} }
+local Terms = { terminals = {} }
 
-M.make_toggler = function(cmd, name, opts)
-    M.terminals[name] = {
+Terms.make_toggler = function(cmd, name, opts)
+    Terms.terminals[name] = {
         buf = -1,
         win = -1,
         channel = -1,
@@ -19,7 +19,7 @@ M.make_toggler = function(cmd, name, opts)
     }
 
     return function()
-        for open_term, info in pairs(M.terminals or {}) do
+        for open_term, info in pairs(Terms.terminals or {}) do
             if vim.api.nvim_win_is_valid(info.win) and vim.api.nvim_win_get_buf(info.win) == info.buf then
                 vim.api.nvim_win_hide(info.win)
                 if open_term == name then return end
@@ -27,7 +27,7 @@ M.make_toggler = function(cmd, name, opts)
         end
 
         local initial_win = vim.api.nvim_get_current_win()
-        local t = M.terminals[name]
+        local t = Terms.terminals[name]
 
         t.buf = vim.api.nvim_buf_is_valid(t.buf) and t.buf or vim.api.nvim_create_buf(false, true)
         local ok, win = pcall(vim.api.nvim_open_win, t.buf, true, { split = "right" })
@@ -47,4 +47,4 @@ M.make_toggler = function(cmd, name, opts)
     end
 end
 
-return M
+return Terms

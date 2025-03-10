@@ -20,14 +20,25 @@ return {
     },
     {
         'neovim/nvim-lspconfig',
+        branch = "air-lsp",
         cond = not vim.g.vscode,
         dependencies = {
             -- Automatically install LSPs and related tools to stdpath for Neovim
-            { 'williamboman/mason.nvim', config = true },
-            'williamboman/mason-lspconfig.nvim',
+            {
+                'williamboman/mason.nvim',
+                opts = {
+                    registries = {
+                        -- Temporary while trying to add Air to the registry
+                        "file:~/Repos/mason-registry",
+                        "github:mason-org/mason-registry",
+                    },
+                }
+            },
+            { dir = "~/Repos/mason-lspconfig.nvim" },
+            -- 'williamboman/mason-lspconfig.nvim',
             'WhoIsSethDaniel/mason-tool-installer.nvim',
-            -- Useful status updates for LSP.
             { 'j-hui/fidget.nvim', opts = {} },
+            { "hrsh7th/cmp-nvim-lsp", "hrsh7th/nvim-cmp" },
         },
         config = function()
             vim.api.nvim_create_autocmd('LspAttach', {
@@ -101,8 +112,10 @@ return {
             --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
             --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
             local capabilities = vim.lsp.protocol.make_client_capabilities()
+            capabilities = require("cmp_nvim_lsp").default_capabilities()
 
             local servers = {
+                air = {},
                 pyright = {
                     settings = {
                         pyright = {
@@ -134,19 +147,27 @@ return {
 
                 -- r_language_server = {
                 --     -- Turn off lintr because it's a bit slow and annoying for interactive use
-                --     settings = { r = { lsp = {
-                --         diagnostics = false,
-                --         rich_documentation = false
-                --     } } },
+                --     settings = {
+                --         r = { lsp = { diagnostics = false, rich_documentation = false } }
+                --     },
                 --     on_attach = function(conf)
                 --         -- Turn off lsp autcomplete (we're using cmp-r instead)
                 --         conf.server_capabilities.completionProvider = false
+                --         conf.server_capabilities.documentFormattingProvider = false
+                --         conf.server_capabilities.documentRangeFormattingProvider = false
                 --         return conf
                 --     end,
                 -- },
             }
 
-            require('mason').setup()
+            require('mason').setup({
+                registries = {
+                    -- Temporary while trying to add Air to the registry
+                    "github:mason-org/mason-registry",
+                    "file:~/Repos/mason-registry",
+                },
+                log_level = vim.log.levels.DEBUG
+            })
 
             -- You can add other tools here that you want Mason to install for
             -- you, so that they are available from within Neovim.
@@ -161,6 +182,10 @@ return {
             require('mason-lspconfig').setup {
                 handlers = {
                     function(server_name)
+                        if server_name == "r_language_server" then
+                            print("skipping r lsp setup")
+                            return
+                        end
                         local server = servers[server_name] or {}
                         server.capabilities = vim.tbl_deep_extend(
                             'force', {},
