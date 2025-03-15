@@ -16,9 +16,6 @@ return {
                 -- Jump forwards/backwards with '{' and '}'
                 vim.keymap.set("n", "<leader>{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
                 vim.keymap.set("n", "<leader>}", "<cmd>AerialNext<CR>", { buffer = bufnr })
-            end,
-            get_highlight = function(symbol, _, _)
-                return symbol.kind == "String" and "Comment" or nil
             end
         })
         vim.keymap.set("n", "<leader>at", "<cmd>AerialToggle<CR>")

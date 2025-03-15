@@ -24,19 +24,19 @@ vim.keymap.set(
     { desc = "Start IPython" }
 )
 
--------
--- R --
--------
-vim.keymap.set(
-    "n", "<leader><leader>r",
-    term.make_toggler("R --no-save --no-restore", "R", {
-        env = {
-            R_CRAN_WEB = "http://cran.rstudio.com/",
-            R_REPOSITORIES = "NULL"
-        }
-    }),
-    { desc = "Start R" }
-)
+-- -------
+-- -- R --
+-- -------
+-- vim.keymap.set(
+--     "n", "<leader><leader>r",
+--     term.make_toggler("R --no-save --no-restore", "R", {
+--         env = {
+--             R_CRAN_WEB = "http://cran.rstudio.com/",
+--             R_REPOSITORIES = "NULL"
+--         }
+--     }),
+--     { desc = "Start R" }
+-- )
 
 
 -- ----------
