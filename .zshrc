@@ -82,8 +82,33 @@ function fg() {
     --bind 'enter:become(nvim {1} +{2})'
 }
 
-bindkey -s '^[3' \#
 
+# Transform a video into a gif with nice settings.
+# This is pretty much impossible to remember if you're not intimately familiar
+# with ffmpeg.
+gif() {
+    local input="$1"
+    local output="$2"
+    local width="${3:-1080}"
+    local speed="${4:-1}"
+
+    if [[ -z "$input" || -z "$output" ]]; then
+        echo "Usage: gif <input.mov> <output.gif> [<width>] [<speed>]"
+        return 1
+    fi
+
+    ffmpeg -i "$input" \
+        -vf "setpts=${speed}*PTS, \
+        fps=20, \
+        scale=${width}:-1:flags=lanczos, \
+        split[s0][s1], \
+        [s0]palettegen[p]; \
+        [s1][p]paletteuse" \
+        -loop 1 \
+        "$output"
+}
+
+# ffmpeg -i input.mov -vf "fps=20,scale=1280:-1:flags=lanczos,split[s0][s1],[s0]palettegen[p];[s1][p]paletteuse” -loop 1 output.gif
 
 # BEGIN opam configuration
 # This is useful if you're using opam as it adds:
@@ -94,3 +119,6 @@ bindkey -s '^[3' \#
 # END opam configuration
 
 . "$HOME/.local/bin/env"
+
+bindkey -s '^[3' \#
+
