@@ -54,15 +54,30 @@ map("n", "<M-'>", "<C-W>+",  { desc = "Increase split height" })
 
 -- Move line down
 map(
-    "n", "<M-j>",
-    function() vim.cmd(vim.opt.diff:get() and "normal! ]c]" or "m .+1<CR>==") end,
+    { "n", "v" }, "<M-j>", function()
+        if vim.opt.diff:get() then
+            vim.cmd("normal! ]c]")
+        elseif vim.fn.mode() == "v" or vim.fn.mode() == "V" then
+            -- vim.cmd("m .-2<CR>==")
+        else
+            vim.cmd("m .+1<CR>==")
+        end
+    end,
     { desc = "Move line down" }
 )
 
 -- Move line up
 map(
-    "n", "<M-k>",
-    function() vim.cmd(vim.opt.diff:get() and "normal! [c]" or "m .-2<CR>==") end,
+    { "n", "v" }, "<M-k>",
+    function()
+        if vim.opt.diff:get() then
+            vim.cmd("normal! [c]")
+        elseif vim.fn.mode() == "v" or vim.fn.mode() == "V" then
+            -- vim.cmd("m .-2<CR>==")
+        else
+            vim.cmd("m .-2<CR>==")
+        end
+    end,
     { desc = "Move line up" }
 )
 

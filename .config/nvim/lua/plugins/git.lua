@@ -15,8 +15,14 @@ return {
             },
         },
         config = function()
-            require("neogit").setup({})
-            vim.opt.fillchars:append("diff:╱")
+            require("neogit").setup({
+                integrations = {
+                    telescope = true
+                },
+                telescope_sorter = function()
+                    return require("telescope.sorters").get_fzy_sorter()
+                end
+            })
             vim.keymap.set("n", "<leader>lg", "<cmd>Neogit<cr>")
         end
     },
@@ -48,7 +54,7 @@ return {
                     map('n', '<leader>tb', gitsigns.toggle_current_line_blame)
                     map('n', '<leader>hd', gitsigns.diffthis)
                     map('n', '<leader>hD', function() gitsigns.diffthis('~') end)
-                    map('n', '<leader>td', gitsigns.toggle_deleted)
+                    map('n', '<leader>td', gitsigns.preview_hunk_inline)
 
                     -- Text object
                     map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')

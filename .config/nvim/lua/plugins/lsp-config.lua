@@ -24,16 +24,7 @@ return {
         cond = not vim.g.vscode,
         dependencies = {
             -- Automatically install LSPs and related tools to stdpath for Neovim
-            {
-                'williamboman/mason.nvim',
-                opts = {
-                    registries = {
-                        -- Temporary while trying to add Air to the registry
-                        "file:~/Repos/mason-registry",
-                        "github:mason-org/mason-registry",
-                    },
-                }
-            },
+            { 'williamboman/mason.nvim' },
             { dir = "~/Repos/mason-lspconfig.nvim" },
             -- 'williamboman/mason-lspconfig.nvim',
             'WhoIsSethDaniel/mason-tool-installer.nvim',

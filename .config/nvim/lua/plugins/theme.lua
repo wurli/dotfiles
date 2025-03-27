@@ -134,6 +134,7 @@ end
 
 return {
     vim.tbl_extend("keep", cobalt, { cond = not vim.g.vscode }),
+
     {
         "lukas-reineke/indent-blankline.nvim",
         cond = not vim.g.vscode,
@@ -163,6 +164,13 @@ return {
         },
         main = "ibl",
     },
+
+    {
+        "petertriho/nvim-scrollbar",
+        cond = not vim.g.vscode,
+        opts = {}
+    },
+
     {
         "nvim-lualine/lualine.nvim",
         cond = not vim.g.vscode,
@@ -193,6 +201,7 @@ return {
             })
         end,
     },
+
     {
         -- Colour hex codes like #000000
         "norcalli/nvim-colorizer.lua",
