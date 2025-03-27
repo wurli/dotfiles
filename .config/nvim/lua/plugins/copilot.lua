@@ -1,0 +1,81 @@
+vim.keymap.set("n", "<leader><leader>c", "<cmd>CodeCompanionChat Toggle<cr>", { desc = "Code companion chat" })
+vim.keymap.set("n", "<leader>fa",        "<cmd>CodeCompanionActions<cr>",     { desc = "Code completion actions" })
+vim.cmd[[cnoreabbrev CC CodeCompanion]]
+vim.cmd[[cnoreabbrev CB CodeCompanion #buffer]]
+vim.cmd[[cnoreabbrev CPE Copilot enable]]
+vim.cmd[[cnoreabbrev CPD Copilot disable]]
+
+return {
+    {
+        "github/copilot.vim",
+        cmd = "Copilot",
+        event = "BufWinEnter",
+        config = function()
+            vim.keymap.set("i", "<c-d>", "<Plug>(copilot-dismiss)",  { desc = "Copilot dismiss" })
+            vim.keymap.set("i", "<m-n>", "<Plug>(copilot-next)",     { desc = "Copilot next" })
+            vim.keymap.set("i", "<m-p>", "<Plug>(copilot-previous)", { desc = "Copilot previous" })
+            vim.keymap.set("i", "<m-y>", 'copilot#Accept("\\<CR>")', {
+                desc = "Copilot accept",
+                expr = true,
+                replace_keycodes = false,
+            })
+        end,
+    },
+    {
+        "olimorris/codecompanion.nvim",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-treesitter/nvim-treesitter",
+            "j-hui/fidget.nvim",
+            {
+                -- Not strictly necessary but does make things nicer overall
+                "echasnovski/mini.diff",
+                opts = {}
+            }
+        },
+        init = function()
+            require("utils.codecompanion-fidget-spinner"):init()
+        end,
+        opts = {
+            strategies = {
+                -- Change the default chat adapter
+                chat = {
+                    adapter = "copilot",
+                    keymaps = {
+                        -- I don't think there's a way to remove the insert
+                        -- mode keymap altogether
+                        close = { modes = { i = "<m-q>" } }
+                    }
+                },
+                inline = { adapter = "copilot" },
+            },
+            adapters = {
+                copilot = function()
+                    return require("codecompanion.adapters").extend("copilot", {
+                        schema = {
+                            model = {
+                                default = "claude-3.7-sonnet",
+                            },
+                        },
+                    })
+                end
+            },
+            display = {
+                chat = {
+                    window = {
+                        opts = {
+                            number = false,
+                            relativenumber = false
+                        }
+                    }
+                },
+                diff = {
+                    enabled = true,
+                    provider = "mini_diff",
+                }
+            }
+        },
+    },
+}
+
+
