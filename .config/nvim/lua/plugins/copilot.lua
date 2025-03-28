@@ -2,18 +2,20 @@ vim.keymap.set("n", "<leader><leader>c", "<cmd>CodeCompanionChat Toggle<cr>", { 
 vim.keymap.set("n", "<leader>fa",        "<cmd>CodeCompanionActions<cr>",     { desc = "Code completion actions" })
 vim.cmd[[cnoreabbrev CC CodeCompanion]]
 vim.cmd[[cnoreabbrev CB CodeCompanion #buffer]]
-vim.cmd[[cnoreabbrev CPE Copilot enable]]
-vim.cmd[[cnoreabbrev CPD Copilot disable]]
+vim.cmd[[cnoreabbrev CE Copilot enable]]
+vim.cmd[[cnoreabbrev CD Copilot disable]]
 
 return {
     {
         "github/copilot.vim",
         cmd = "Copilot",
         event = "BufWinEnter",
+        cond = not vim.g.vscode,
         config = function()
-            vim.keymap.set("i", "<c-d>", "<Plug>(copilot-dismiss)",  { desc = "Copilot dismiss" })
-            vim.keymap.set("i", "<m-n>", "<Plug>(copilot-next)",     { desc = "Copilot next" })
-            vim.keymap.set("i", "<m-p>", "<Plug>(copilot-previous)", { desc = "Copilot previous" })
+            vim.keymap.set("i", "<m-e>",     "<Plug>(copilot-dismiss)",  { desc = "Copilot dismiss" })
+            vim.keymap.set("i", "<m-n>",     "<Plug>(copilot-next)",     { desc = "Copilot next" })
+            vim.keymap.set("i", "<m-p>",     "<Plug>(copilot-previous)", { desc = "Copilot previous" })
+            vim.keymap.set("i", "<m-space>", "<Plug>(copilot-suggest)",  { desc = "Copilot suggest" })
             vim.keymap.set("i", "<m-y>", 'copilot#Accept("\\<CR>")', {
                 desc = "Copilot accept",
                 expr = true,
@@ -23,15 +25,11 @@ return {
     },
     {
         "olimorris/codecompanion.nvim",
+        cond = not vim.g.vscode,
         dependencies = {
             "nvim-lua/plenary.nvim",
             "nvim-treesitter/nvim-treesitter",
             "j-hui/fidget.nvim",
-            {
-                -- Not strictly necessary but does make things nicer overall
-                "echasnovski/mini.diff",
-                opts = {}
-            }
         },
         init = function()
             require("utils.codecompanion-fidget-spinner"):init()
@@ -72,10 +70,10 @@ return {
                 diff = {
                     enabled = true,
                     provider = "mini_diff",
+                    opts = { "algorithm:patience" }
                 }
             }
         },
     },
 }
-
 

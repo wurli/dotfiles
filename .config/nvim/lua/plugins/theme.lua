@@ -2,7 +2,7 @@
 local cobalt = {
     dir = "~/Repos/cobalt.nvim",
     config = function()
-        require("cobalt").setup({ })
+        require("cobalt").setup({})
         vim.cmd[[colorscheme cobalt]]
     end
 }
@@ -25,10 +25,10 @@ local nightfox = {
 }
 
 ---@diagnostic disable-next-line: unused-local
--- This theme is pretty good. But I don't love the browny-grey background.
--- I'd prefer to look at a blueish theme which doesn't feel like mould :)
+-- This theme is pretty good. But I don"t love the browny-grey background.
+-- I"d prefer to look at a blueish theme which doesn"t feel like mould :)
 local material = {
-    'marko-cerovac/material.nvim',
+    "marko-cerovac/material.nvim",
     config = function()
         require("material").setup({
             high_visibility = {
@@ -47,14 +47,14 @@ local material = {
             end
         })
         vim.g.material_style = "darker"
-        vim.cmd 'colorscheme material'
+        vim.cmd "colorscheme material"
     end
 }
 
 ---@diagnostic disable-next-line: unused-local
--- This theme is pretty much ideal... Except that you can't override specific
+-- This theme is pretty much ideal... Except that you can"t override specific
 -- colours. If you could, I would absolutely change variables to be bright
--- white instead of grey. Just doesn't *pop* in the way I want.
+-- white instead of grey. Just doesn"t *pop* in the way I want.
 local night_owl = {
     "oxfist/night-owl.nvim",
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
@@ -182,21 +182,26 @@ return {
                     section_separators = "",
                 },
                 sections = {
+                    lualine_a = { "mode" },
+                    lualine_b = { "branch", "diff", "diagnostics" },
                     -- show relative path, not just filename
-                    lualine_c = {{ 'filename', path = 1 }},
+                    lualine_c = { { "filename", path = 1 } },
+                    lualine_x = { "encoding", "fileformat", "filetype" },
+                    lualine_y = { "progress" },
+                    lualine_z = { "location" }
                 },
                 extensions = {
                     {
                         sections = {
-                            lualine_a = {'mode'},
-                            lualine_b = {'branch', 'diff', 'diagnostics'},
-                            lualine_c = {{ 'filename', path = 1 }},
+                            lualine_a = { "mode" },
+                            lualine_b = { "branch", "diff", "diagnostics" },
+                            lualine_c = { { "filename", path = 1 } },
                             lualine_x = { get_wordcount, get_charcount },
-                            lualine_y = {'progress'},
-                            lualine_z = {'location'}
+                            lualine_y = { "progress" },
+                            lualine_z = { "location" }
                         },
                         filetypes = { "markdown", "quarto", "txt" }
-                    }
+                    },
                 }
             })
         end,
@@ -210,7 +215,7 @@ return {
             require("colorizer").setup({ "*" }, {
                 RGB      = true,  -- #RGB hex codes
                 RRGGBB   = true,  -- #RRGGBB hex codes like #000000
-                names    = false, -- "Name" codes like 'Blue'
+                names    = false, -- "Name" codes like "Blue"
                 RRGGBBAA = true, -- #RRGGBBAA hex codes
                 rgb_fn   = false, -- CSS rgb() and rgba() functions
                 hsl_fn   = false, -- CSS hsl() and hsla() functions
@@ -218,7 +223,7 @@ return {
                 css_fn   = false, -- Enable all CSS *functions*: rgb_fn, hsl_fn
 
                 -- Available modes: foreground, background
-                mode     = 'background', -- Set the display mode.
+                mode     = "background", -- Set the display mode.
             })
         end
     },
