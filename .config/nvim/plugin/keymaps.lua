@@ -5,10 +5,6 @@ vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 map({ "n", "t" }, "<M-l>", vim.cmd.tabn, { desc = "Next tabpage" })
 map({ "n", "t" }, "<M-h>", vim.cmd.tabp, { desc = "Previous tabpage" })
 
--- Clear search highlight
-map("n", "<C-c>", function() vim.v.hlsearch = 0 end, { desc = "Clear search highlights" })
-map("n", "<Esc>", function() vim.v.hlsearch = 0 end, { desc = "Clear search highlights" })
-
 -- Search within selection
 map("x", "g/", "<Esc>/\\%V", { desc = "Search within selection" })
 
