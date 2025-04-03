@@ -5,6 +5,10 @@ vim.cmd[[cnoreabbrev CB CodeCompanion #buffer]]
 vim.cmd[[cnoreabbrev CE Copilot enable]]
 vim.cmd[[cnoreabbrev CD Copilot disable]]
 
+vim.g.copilot_filetypes = {
+    markdown = false,
+}
+
 return {
     {
         "github/copilot.vim",
