@@ -14,6 +14,24 @@ map("n", "<leader>v", "`[v`]", { desc = "Select last operated region" })
 -- For multi-line inserts
 map("i", "<C-c>", "<Esc>")
 
+-- I like to spam Ctrl-C to remove highlights
+map("n", "<C-c>", function()
+    vim.cmd[[nohls]]
+    vim.cmd[[normal! <C-c>]]
+end)
+map("n", "<Esc>", function()
+    vim.cmd[[nohls]]
+    vim.cmd[[normal! <Esc>]]
+end)
+
+-- The above borks up the cmdline window, so temporarily restore default behaviour
+vim.api.nvim_create_autocmd("CmdwinEnter", {
+    callback = function()
+        map("n", "<C-c>", "<C-c>", { buffer = 0 })
+        map("n", "<Esc>", "<Esc>", { buffer = 0 })
+    end
+})
+
 -- My keyboard doesn't have this
 map("i", "<C-l>", "<Del>")
 
