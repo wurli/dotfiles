@@ -11,6 +11,7 @@ return {
     -- "wurli/ark.nvim",
     dependencies = { "blink.cmp" },
     dir = "~/Repos/ark.nvim",
+    cond = not vim.g.vscode,
     config = function()
         require("ark").setup({
             lsp_capabilities = require("blink.cmp").get_lsp_capabilities(),
