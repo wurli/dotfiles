@@ -17,11 +17,11 @@ map("i", "<C-c>", "<Esc>")
 -- I like to spam Ctrl-C to remove highlights
 map("n", "<C-c>", function()
     vim.cmd[[nohls]]
-    vim.cmd[[normal! <C-c>]]
+    if not vim.g.vscode then vim.cmd[[normal! <C-c>]] end
 end)
 map("n", "<Esc>", function()
     vim.cmd[[nohls]]
-    vim.cmd[[normal! <Esc>]]
+    if not vim.g.vscode then vim.cmd[[normal! <Esc>]] end
 end)
 
 -- The above borks up the cmdline window, so temporarily restore default behaviour
