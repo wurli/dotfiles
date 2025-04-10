@@ -3,9 +3,20 @@ return {
         "nvim-telescope/telescope.nvim",
         cond = not vim.g.vscode,
         tag = "0.1.5",
-        dependencies = { "nvim-lua/plenary.nvim" },
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
+        },
         config = function()
             require("telescope").setup({
+                extensions = {
+                    fzf = {
+                        fuzzy = true,
+                        override_generic_sorter = true,
+                        override_file_sorter = true,
+                        case_mode = "smart_case", -- or "ignore_case" or "respect_case"
+                    }
+                },
                 pickers = {
                     help_tags = {
                         mappings = {
@@ -24,6 +35,7 @@ return {
                 }
             })
 
+            require("telescope").load_extension("fzf")
             local builtin = require("telescope.builtin")
             vim.keymap.set("n", "<leader>ff", function() builtin.find_files({
                 hidden = true,
@@ -55,6 +67,8 @@ return {
             vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
             vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
             vim.keymap.set('n', '<leader>fm', builtin.man_pages, {})
+            vim.keymap.set('n', '<leader>fr', builtin.registers, {})
+            vim.keymap.set('n', '<leader>fk', builtin.keymaps, {})
         end,
     },
     {
