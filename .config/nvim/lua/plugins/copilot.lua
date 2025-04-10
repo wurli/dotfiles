@@ -16,10 +16,11 @@ return {
         event = "BufWinEnter",
         cond = not vim.g.vscode,
         config = function()
-            vim.keymap.set("i", "<m-e>",     "<Plug>(copilot-dismiss)",  { desc = "Copilot dismiss" })
-            vim.keymap.set("i", "<m-n>",     "<Plug>(copilot-next)",     { desc = "Copilot next" })
-            vim.keymap.set("i", "<m-p>",     "<Plug>(copilot-previous)", { desc = "Copilot previous" })
-            vim.keymap.set("i", "<m-space>", "<Plug>(copilot-suggest)",  { desc = "Copilot suggest" })
+            vim.keymap.set("i", "<m-e>",     "<Plug>(copilot-dismiss)",     { desc = "Copilot dismiss" })
+            vim.keymap.set("i", "<m-n>",     "<Plug>(copilot-next)",        { desc = "Copilot next" })
+            vim.keymap.set("i", "<m-p>",     "<Plug>(copilot-previous)",    { desc = "Copilot previous" })
+            vim.keymap.set("i", "<m-i>",     "<Plug>(copilot-accept-word)", { desc = "Copilot accept word" })
+            vim.keymap.set("i", "<m-space>", "<Plug>(copilot-suggest)",     { desc = "Copilot suggest" })
             vim.keymap.set("i", "<m-y>", 'copilot#Accept("\\<CR>")', {
                 desc = "Copilot accept",
                 expr = true,
