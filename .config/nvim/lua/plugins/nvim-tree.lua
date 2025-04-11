@@ -30,7 +30,10 @@ return {
             },
             update_focused_file = { enable = true },
             filters = {
-                git_ignored = false
+                git_ignored = false,
+                custom = {
+                    "^%.DS_Store$",
+                }
             },
             actions = {
                 open_file = {
