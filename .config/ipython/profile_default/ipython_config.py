@@ -3,6 +3,13 @@ from pygments.token import Token
 
 c = get_config()  # noqa: F821
 
+try:
+    from IPython.core import ultratb
+    ultratb.VerboseTB.tb_highlight = "bg:ansired"
+except Exception:
+    print("Could not override IPython exception colors.")
+
+
 # https://ipython.readthedocs.io/en/stable/config/details.html#MyPrompts.in_prompt_tokens
 # Make the IPython prompt a bit less imposing
 class MyPrompt(Prompts):
@@ -18,5 +25,5 @@ class MyPrompt(Prompts):
     def out_prompt_tokens(self):
         return [(Token.OutPrompt, "")]
 
-c.TerminalInteractiveShell.prompts_class = MyPrompt
 
+c.TerminalInteractiveShell.prompts_class = MyPrompt
