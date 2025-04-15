@@ -44,6 +44,7 @@ required = true
 
 [merge]
     conflictstyle = zdiff3
+	ff = false
 
 [credential "https://github.com"]
 	helper = 
