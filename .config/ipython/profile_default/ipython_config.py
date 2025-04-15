@@ -5,7 +5,7 @@ c = get_config()  # noqa: F821
 
 try:
     from IPython.core import ultratb
-    ultratb.VerboseTB.tb_highlight = "bg:ansired"
+    ultratb.VerboseTB.tb_highlight = "bg:#8B0000"
 except Exception:
     print("Could not override IPython exception colors.")
 
