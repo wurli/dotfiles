@@ -20,7 +20,6 @@ return {
     },
     {
         'neovim/nvim-lspconfig',
-        branch = "air-lsp",
         cond = not vim.g.vscode,
         dependencies = {
             -- Automatically install LSPs and related tools to stdpath for Neovim
@@ -58,13 +57,26 @@ return {
                     mapn('<leader>ld', vim.diagnostic.open_float,                                             'LSP: [L]sp [D]iagnostic')
                     mapn('<leader>td', function() vim.diagnostic.enable(not vim.diagnostic.is_enabled()) end, 'LSP: [T]oggle [D]iagnostic')
 
+                    local toggle = function(x) vim.diagnostic.config({ [x] = not vim.diagnostic.config()[x] }) end
+
+                    mapn('<leader>tt', function() toggle("virtual_text") end,                                 'LSP: [T]oggle Virtual [T]ext')
+                    mapn('<leader>tl', function() toggle("virtual_lines") end,                                'LSP: [T]oggle Virtual [L]ines')
+                    mapn('<leader>ts', function() toggle("signs") end,                                        'LSP: [T]oggle [S]igns')
+
+                    vim.diagnostic.config({
+                        virtual_text = true,
+                        virtual_lines = false,
+                        signs = true,
+                        update_in_insert = true
+                    })
+
                     -- The following two autocommands are used to highlight references of the
                     -- word under your cursor when your cursor rests there for a little while.
                     --    See `:help CursorHold` for information about when this is executed
                     --
                     -- When you move your cursor, the highlights will be cleared (the second autocommand).
                     local client = vim.lsp.get_client_by_id(event.data.client_id)
-                    if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, 0) then
+                    if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, 0) then
                         local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
                         vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
                             buffer = event.buf,
@@ -89,7 +101,7 @@ return {
 
                     -- The following code creates a keymap to toggle inlay hints in your
                     -- code, if the language server you are using supports them.
-                    if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+                    if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
                         mapn('<leader>th', function()
                             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
                         end, '[T]oggle Inlay [H]ints')
@@ -115,8 +127,12 @@ return {
                         },
                         python = {
                             analysis = {
-                                ignore = { "*" },
-                                stubPath = vim.fn.stdpath("config") .. "/misc/python-typings"
+                                -- -- For some reason these settings don't work here, only in pyrightconfig.json. This
+                                -- -- seems to disagree with the docs here:
+                                -- -- https://github.com/microsoft/pyright/blob/main/docs/import-resolution.md#configuring-your-python-environment
+                                -- venvPath = ".",
+                                -- venv = ".venv",
+                                stubPath = vim.fn.stdpath("config") .. "/misc/python-typings",
                             }
                         }
                     }
@@ -152,14 +168,7 @@ return {
                 -- },
             }
 
-            require('mason').setup({
-                registries = {
-                    -- Temporary while trying to add Air to the registry
-                    "github:mason-org/mason-registry",
-                    "file:~/Repos/mason-registry",
-                },
-                log_level = vim.log.levels.DEBUG
-            })
+            require('mason').setup()
 
             -- You can add other tools here that you want Mason to install for
             -- you, so that they are available from within Neovim.
