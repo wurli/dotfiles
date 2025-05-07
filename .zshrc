@@ -115,6 +115,34 @@ gif() {
         "$output"
 }
 
+scratch() {
+    local name="$1"
+    if [[ -z "$name" ]]; then
+        echo "Usage: scratch <name> [<type>] [<directory>]"
+        return 1
+    fi
+
+    local scratch_type="${2:-r}"
+    if [[ "$scratch_type" == "r" ]]; then
+        local filetype="R"
+    else
+        local filetype="$scratch_type"
+    fi
+
+    local directory="$HOME/${3:-Repos/$scratch_type-scratch}"
+    local today="$(date +%Y-%m-%d)"
+    local filename="$directory/${today}_$1.$filetype"
+
+    if command -v positron >/dev/null 2>&1; then
+        local cmd=positron
+    else
+        local cmd=vim
+    fi
+
+    touch $filename
+    $cmd $filename
+}
+
 # ffmpeg -i input.mov -vf "fps=20,scale=1280:-1:flags=lanczos,split[s0][s1],[s0]palettegen[p];[s1][p]paletteuse” -loop 1 output.gif
 
 # BEGIN opam configuration

@@ -35,9 +35,12 @@ Terms.make_toggler = function(cmd, name, opts)
 
         if vim.bo[t.buf].buftype ~= "terminal" then
             local cmd1 = type(cmd) == "function" and cmd() or cmd
-            t.channel = vim.fn.termopen(
+            t.channel = vim.fn.jobstart(
                 cmd1 or vim.o.shell,
-                vim.tbl_extend("force", { detach = 1 }, opts or {})
+                vim.tbl_extend("force", {
+                    detach = 1,
+                    term = true
+                }, opts or {})
             )
             if name then pcall(vim.cmd.file, name) end
         end

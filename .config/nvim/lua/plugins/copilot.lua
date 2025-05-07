@@ -73,8 +73,10 @@ return {
                     }
                 },
                 diff = {
-                    enabled = true,
-                    provider = "mini_diff",
+                    -- I really want to use this, but it just feels like it gets
+                    -- in the way :'(
+                    enabled = false,
+                    provider = "default",
                     opts = { "algorithm:patience" }
                 }
             }

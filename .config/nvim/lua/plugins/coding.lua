@@ -24,8 +24,8 @@ return {
         opts = {}
     },
     {
-        "wurli/split.nvim",
-        -- dir = "~/Repos/split.nvim",
+        -- "wurli/split.nvim",
+        dir = "~/Repos/split.nvim",
         opts = {
             keymap_defaults = {
                 break_placement = function(line_info, opts)

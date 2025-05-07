@@ -57,11 +57,21 @@ return {
                     mapn('<leader>ld', vim.diagnostic.open_float,                                             'LSP: [L]sp [D]iagnostic')
                     mapn('<leader>td', function() vim.diagnostic.enable(not vim.diagnostic.is_enabled()) end, 'LSP: [T]oggle [D]iagnostic')
 
-                    local toggle = function(x) vim.diagnostic.config({ [x] = not vim.diagnostic.config()[x] }) end
+                    mapn('<leader>tt', function()
+                        vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
+                        if vim.diagnostic.config().virtual_text then vim.diagnostic.config({ virtual_lines = false }) end
+                    end, 'LSP: [T]oggle Virtual [T]ext')
 
-                    mapn('<leader>tt', function() toggle("virtual_text") end,                                 'LSP: [T]oggle Virtual [T]ext')
-                    mapn('<leader>tl', function() toggle("virtual_lines") end,                                'LSP: [T]oggle Virtual [L]ines')
-                    mapn('<leader>ts', function() toggle("signs") end,                                        'LSP: [T]oggle [S]igns')
+                    mapn('<leader>tl', function()
+                        vim.diagnostic.config({ virtual_lines = not vim.diagnostic.config().virtual_lines })
+                        if vim.diagnostic.config().virtual_lines then vim.diagnostic.config({ virtual_text = false }) end
+                    end, 'LSP: [T]oggle Virtual [L]ines')
+
+                    mapn(
+                        '<leader>ts',
+                        function() vim.diagnostic.config({ signs = not vim.diagnostic.config().signs }) end,
+                        'LSP: [T]oggle [S]igns'
+                    )
 
                     vim.diagnostic.config({
                         virtual_text = true,
