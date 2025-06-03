@@ -43,6 +43,10 @@ return {
             strategies = {
                 -- Change the default chat adapter
                 chat = {
+                    -- adapter = {
+                    --     name = "copilot",
+                    --     model = "claude-sonnet-4-20250514",
+                    -- },
                     adapter = "copilot",
                     keymaps = {
                         -- I don't think there's a way to remove the insert
@@ -58,6 +62,7 @@ return {
                         schema = {
                             model = {
                                 default = "claude-3.7-sonnet",
+                                -- default = "claude-sonnet-4-20250514",
                             },
                         },
                     })

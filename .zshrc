@@ -143,6 +143,17 @@ scratch() {
     $cmd $filename
 }
 
+h() {
+    local cmd="$1"
+    if [[ -z "$cmd" ]]; then
+        echo "Usage: h <command>"
+        return 1
+    fi
+    curl "https://cheat.sh/$cmd"
+}
+
+
+
 # ffmpeg -i input.mov -vf "fps=20,scale=1280:-1:flags=lanczos,split[s0][s1],[s0]palettegen[p];[s1][p]paletteuse” -loop 1 output.gif
 
 # BEGIN opam configuration

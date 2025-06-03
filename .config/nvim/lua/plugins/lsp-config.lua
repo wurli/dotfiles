@@ -57,13 +57,27 @@ return {
                     mapn('<leader>ld', vim.diagnostic.open_float,                                             'LSP: [L]sp [D]iagnostic')
                     mapn('<leader>td', function() vim.diagnostic.enable(not vim.diagnostic.is_enabled()) end, 'LSP: [T]oggle [D]iagnostic')
 
+                    -- 'On' settings for virual text and virtual lines
+                    local virtual_text_on = { source = "if_many" }
+                    local virtual_lines_on = {
+                        format = function(d)
+                            if d.source then
+                                return ("[%s] %s"):format(d.source, d.message)
+                            else
+                                return d.message
+                            end
+                        end
+                    }
+
+                    -- Virtual text on and virtual lines off
                     mapn('<leader>tt', function()
-                        vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
+                        vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text and virtual_text_on })
                         if vim.diagnostic.config().virtual_text then vim.diagnostic.config({ virtual_lines = false }) end
                     end, 'LSP: [T]oggle Virtual [T]ext')
 
+                    -- Virtual lines on and virtual text off
                     mapn('<leader>tl', function()
-                        vim.diagnostic.config({ virtual_lines = not vim.diagnostic.config().virtual_lines })
+                        vim.diagnostic.config({ virtual_lines = not vim.diagnostic.config().virtual_lines and virtual_lines_on })
                         if vim.diagnostic.config().virtual_lines then vim.diagnostic.config({ virtual_text = false }) end
                     end, 'LSP: [T]oggle Virtual [L]ines')
 
@@ -74,7 +88,7 @@ return {
                     )
 
                     vim.diagnostic.config({
-                        virtual_text = true,
+                        virtual_text = virtual_text_on,
                         virtual_lines = false,
                         signs = true,
                         update_in_insert = true
@@ -162,6 +176,7 @@ return {
                         },
                     },
                 },
+                yamlls = {},
 
                 -- r_language_server = {
                 --     -- Turn off lintr because it's a bit slow and annoying for interactive use
@@ -197,16 +212,30 @@ return {
                             print("skipping r lsp setup")
                             return
                         end
-                        local server = servers[server_name] or {}
-                        server.capabilities = vim.tbl_deep_extend(
+                        local settings = servers[server_name] or {}
+                        settings.capabilities = vim.tbl_deep_extend(
                             'force', {},
                             capabilities,
-                            server.capabilities or {}
+                            settings.capabilities or {}
                         )
-                        require('lspconfig')[server_name].setup(server)
+                        require('lspconfig')[server_name].setup(settings)
                     end,
                 },
             }
+
+            -- -- Temporary VBA lsp setup
+            -- local vba_server_path = "/Users/JACOB.SCOTT1/Repos/VBA-LanguageServer/dist/server/out/server.js"
+            --
+            -- vim.lsp.config.vbapro = {
+            --     cmd = { 'node', vba_server_path, '--stdio' },
+            --     filetypes = { 'vba', 'bas', 'cls', 'frm', 'freebasic' }, -- VBA file types
+            --     -- root_dir = function(filename)
+            --     --     return vim.fs.dirname(vim.fs.find(".git", { path = filename, upward = true })[1] or "")
+            --     -- end,
+            --     settings = {} -- Any specific settings the server might need
+            -- }
+            --
+            -- vim.lsp.enable("vbapro")
         end,
     }
 }
