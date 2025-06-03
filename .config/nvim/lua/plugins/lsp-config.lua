@@ -144,23 +144,47 @@ return {
 
             local servers = {
                 air = {},
-                pyright = {
+                basedpyright = {
                     settings = {
-                        pyright = {
-                            disableOrganizeImports = true
-                        },
                         python = {
+                            venvPath = ".",
+                            venv = ".venv",
+                        },
+                        basedpyright = {
+                            disableOrganizeImports = true,
                             analysis = {
-                                -- -- For some reason these settings don't work here, only in pyrightconfig.json. This
-                                -- -- seems to disagree with the docs here:
-                                -- -- https://github.com/microsoft/pyright/blob/main/docs/import-resolution.md#configuring-your-python-environment
-                                -- venvPath = ".",
-                                -- venv = ".venv",
                                 stubPath = vim.fn.stdpath("config") .. "/misc/python-typings",
-                            }
-                        }
-                    }
+                                -- This doesn't seem to have any effect. Would be nice it did though,
+                                -- as this rule duplicates a diagnostic from Ruff.
+                                diagnosticSeverityOverrides = {
+                                    reportUnusedImport = "none",
+                                },
+                            },
+                        },
+                    },
                 },
+                -- pyright = {
+                --     settings = {
+                --         pyright = {
+                --             disableOrganizeImports = true
+                --         },
+                --         python = {
+                --             analysis = {
+                --                 -- -- For some reason these settings don't work here, only in pyrightconfig.json. This
+                --                 -- -- seems to disagree with the docs here:
+                --                 -- -- https://github.com/microsoft/pyright/blob/main/docs/import-resolution.md#configuring-your-python-environment
+                --                 -- venvPath = ".",
+                --                 -- venv = ".venv",
+                --                 stubPath = vim.fn.stdpath("config") .. "/misc/python-typings",
+                --                 -- Again, this doesn't seem to have any effect. Would be nice it did though,
+                --                 -- as this rule duplicates a diagnostic from Ruff.
+                --                 diagnosticSeverityOverrides = {
+                --                     reportUnusedImport = "none",
+                --                 }
+                --             }
+                --         }
+                --     }
+                -- },
                 ruff = {
                     capabilities = {
                         hoverProvider = false
