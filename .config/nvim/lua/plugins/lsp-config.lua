@@ -23,12 +23,9 @@ return {
         cond = not vim.g.vscode,
         dependencies = {
             -- Automatically install LSPs and related tools to stdpath for Neovim
-            { 'williamboman/mason.nvim' },
-            { dir = "~/Repos/mason-lspconfig.nvim" },
-            -- 'williamboman/mason-lspconfig.nvim',
-            'WhoIsSethDaniel/mason-tool-installer.nvim',
+            { 'mason-org/mason.nvim' },
+            { "mason-org/mason-lspconfig.nvim" },
             { 'j-hui/fidget.nvim', opts = {} },
-            -- { "hrsh7th/cmp-nvim-lsp", "hrsh7th/nvim-cmp" },
         },
         config = function()
             vim.api.nvim_create_autocmd('LspAttach', {
@@ -134,15 +131,9 @@ return {
                 end,
             })
 
-            -- LSP servers and clients are able to communicate to each other what features they support.
-            --  By default, Neovim doesn't support everything that is in the LSP specification.
-            --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
-            --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
-            local capabilities = vim.lsp.protocol.make_client_capabilities()
-            -- capabilities = require("blink.cmp").default_capabilities()
-            -- require('blink.cmp').get_lsp_capabilities()
-
-            local servers = {
+            -- Names are from lspconfig, which are not necessarily the same as
+            -- the Mason package names.
+            local server_configs = {
                 air = {},
                 basedpyright = {
                     settings = {
@@ -153,38 +144,20 @@ return {
                         basedpyright = {
                             disableOrganizeImports = true,
                             analysis = {
-                                stubPath = vim.fn.stdpath("config") .. "/misc/python-typings",
+                                -- stubPath = vim.fn.stdpath("config") .. "/misc/python-typings",
+                                -- Why doesn't this do anything?
+                                -- https://docs.basedpyright.com/latest/configuration/language-server-settings/#discouraged-settings
+                                typeCheckingMode = "standard",
                                 -- This doesn't seem to have any effect. Would be nice it did though,
                                 -- as this rule duplicates a diagnostic from Ruff.
                                 diagnosticSeverityOverrides = {
                                     reportUnusedImport = "none",
+                                    reportUnknownVariableType="none",
                                 },
                             },
                         },
                     },
                 },
-                -- pyright = {
-                --     settings = {
-                --         pyright = {
-                --             disableOrganizeImports = true
-                --         },
-                --         python = {
-                --             analysis = {
-                --                 -- -- For some reason these settings don't work here, only in pyrightconfig.json. This
-                --                 -- -- seems to disagree with the docs here:
-                --                 -- -- https://github.com/microsoft/pyright/blob/main/docs/import-resolution.md#configuring-your-python-environment
-                --                 -- venvPath = ".",
-                --                 -- venv = ".venv",
-                --                 stubPath = vim.fn.stdpath("config") .. "/misc/python-typings",
-                --                 -- Again, this doesn't seem to have any effect. Would be nice it did though,
-                --                 -- as this rule duplicates a diagnostic from Ruff.
-                --                 diagnosticSeverityOverrides = {
-                --                     reportUnusedImport = "none",
-                --                 }
-                --             }
-                --         }
-                --     }
-                -- },
                 ruff = {
                     capabilities = {
                         hoverProvider = false
@@ -201,7 +174,28 @@ return {
                     },
                 },
                 yamlls = {},
-
+                -- pyright = {
+                --     settings = {
+                --         pyright = {
+                --             disableOrganizeImports = true
+                --         },
+                --         python = {
+                --             analysis = {
+                --                 -- For some reason these settings don't work here, only in pyrightconfig.json. This
+                --                 -- seems to disagree with the docs here:
+                --                 -- https://github.com/microsoft/pyright/blob/main/docs/import-resolution.md#configuring-your-python-environment
+                --                 -- venvPath = ".",
+                --                 -- venv = ".venv",
+                --                 stubPath = vim.fn.stdpath("config") .. "/misc/python-typings",
+                --                 -- Again, this doesn't seem to have any effect. Would be nice it did though,
+                --                 -- as this rule duplicates a diagnostic from Ruff.
+                --                 diagnosticSeverityOverrides = {
+                --                     reportUnusedImport = "none",
+                --                 }
+                --             }
+                --         }
+                --     }
+                -- },
                 -- r_language_server = {
                 --     -- Turn off lintr because it's a bit slow and annoying for interactive use
                 --     settings = {
@@ -218,34 +212,17 @@ return {
             }
 
             require('mason').setup()
-
-            -- You can add other tools here that you want Mason to install for
-            -- you, so that they are available from within Neovim.
-            local ensure_installed = vim.tbl_keys(servers or {})
-            vim.list_extend(ensure_installed, {
-                'stylua',
-            })
-            require('mason-tool-installer').setup({
-                ensure_installed = ensure_installed
-            })
-
+            -- Ensures my favourite LPSs are installed and provides some
+            -- commands like `:LspInstall`
             require('mason-lspconfig').setup {
-                handlers = {
-                    function(server_name)
-                        if server_name == "r_language_server" then
-                            print("skipping r lsp setup")
-                            return
-                        end
-                        local settings = servers[server_name] or {}
-                        settings.capabilities = vim.tbl_deep_extend(
-                            'force', {},
-                            capabilities,
-                            settings.capabilities or {}
-                        )
-                        require('lspconfig')[server_name].setup(settings)
-                    end,
-                },
+                ensure_installed = vim.tbl_keys(server_configs or {}),
+                automatic_enable = false,
             }
+
+            for server, config in pairs(server_configs) do
+                vim.lsp.config(server, config)
+                vim.lsp.enable(server)
+            end
 
             -- -- Temporary VBA lsp setup
             -- local vba_server_path = "/Users/JACOB.SCOTT1/Repos/VBA-LanguageServer/dist/server/out/server.js"
@@ -260,6 +237,7 @@ return {
             -- }
             --
             -- vim.lsp.enable("vbapro")
+
         end,
     }
 }
