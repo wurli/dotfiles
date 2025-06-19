@@ -7,10 +7,10 @@ return {
         "NeogitOrg/neogit",
         cond = not vim.g.vscode,
         dependencies = {
-            "nvim-lua/plenary.nvim",         -- required
+            "nvim-lua/plenary.nvim", -- required
             "nvim-telescope/telescope.nvim",
             {
-                "sindrets/diffview.nvim",        -- optional - Diff integration
+                "sindrets/diffview.nvim", -- optional - Diff integration
                 opts = { enhanced_diff_hl = true },
             },
         },
@@ -30,7 +30,7 @@ return {
             })
             vim.keymap.set("n", "<leader>lg", "<cmd>Neogit<cr>")
 
-            -- `NeogitCommitComplete`
+            -- Workaround for https://github.com/NeogitOrg/neogit/issues/1696
             vim.api.nvim_create_autocmd("User", {
                 pattern = "NeogitCommitComplete",
                 callback = function() vim.cmd.tabprevious() end
@@ -102,21 +102,21 @@ return {
                     -- map("v", "<leader>hs", function() gitsigns.stage_hunk {vim.fn.line("."), vim.fn.line("v")} end)
                     -- map("v", "<leader>hr", function() gitsigns.reset_hunk {vim.fn.line("."), vim.fn.line("v")} end)
                     -- map("n", "<leader>hu", gitsigns.undo_stage_hunk)
-                    map("n", "<leader>hp", gitsigns.preview_hunk,                             "Git Preview Hunk")
-                    map("n", "<leader>hb", function() gitsigns.blame_line{ full = true } end, "Git Blame Line")
-                    map("n", "<leader>hB", gitsigns.blame,                                    "Git Blame")
-                    map("n", "<leader>tb", gitsigns.toggle_current_line_blame,                "Git Toggle Blame")
-                    map("n", "<leader>hd", gitsigns.diffthis,                                 "Git Diff Against Index")
-                    map("n", "<leader>hD", function() gitsigns.diffthis("~") end,             "Git Diff Against HEAD")
-                    map("n", "<leader>td", gitsigns.preview_hunk_inline,                      "Git Preview Hunk")
-                    map("n", "<leader>hr", gitsigns.reset_hunk,                               "Git Reset Hunk")
-                    map("n", "<leader>hs", gitsigns.stage_hunk,                               "Git Stage Hunk")
-                    map("n", "<leader>hr", gitsigns.reset_hunk,                               "Git Reset Hunk")
-                    map("n", "<leader>hS", gitsigns.stage_buffer,                             "Git Stage Buffer")
-                    map("n", "<leader>hR", gitsigns.reset_buffer,                             "Git Reset Buffer")
+                    map("n", "<leader>hp", gitsigns.preview_hunk, "Git Preview Hunk")
+                    map("n", "<leader>hb", function() gitsigns.blame_line { full = true } end, "Git Blame Line")
+                    map("n", "<leader>hB", gitsigns.blame, "Git Blame")
+                    map("n", "<leader>tb", gitsigns.toggle_current_line_blame, "Git Toggle Blame")
+                    map("n", "<leader>hd", gitsigns.diffthis, "Git Diff Against Index")
+                    map("n", "<leader>hD", function() gitsigns.diffthis("~") end, "Git Diff Against HEAD")
+                    map("n", "<leader>td", gitsigns.preview_hunk_inline, "Git Preview Hunk")
+                    map("n", "<leader>hr", gitsigns.reset_hunk, "Git Reset Hunk")
+                    map("n", "<leader>hs", gitsigns.stage_hunk, "Git Stage Hunk")
+                    map("n", "<leader>hr", gitsigns.reset_hunk, "Git Reset Hunk")
+                    map("n", "<leader>hS", gitsigns.stage_buffer, "Git Stage Buffer")
+                    map("n", "<leader>hR", gitsigns.reset_buffer, "Git Reset Buffer")
 
                     -- Text object
-                    map({"o", "x"}, "ih", ":<C-U>Gitsigns select_hunk<CR>")
+                    map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
                 end
             }
         end
