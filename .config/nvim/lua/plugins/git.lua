@@ -33,7 +33,7 @@ return {
             -- `NeogitCommitComplete`
             vim.api.nvim_create_autocmd("User", {
                 pattern = "NeogitCommitComplete",
-                callback = vim.cmd.tabprevious
+                callback = function() vim.cmd.tabprevious() end
             })
         end
     },
