@@ -16,6 +16,11 @@ return {
         },
         config = function()
             require("neogit").setup({
+                kind = "floating",
+                floating = {
+                    width = 0.85,
+                    height = 0.85
+                },
                 integrations = {
                     telescope = true
                 },
@@ -24,6 +29,12 @@ return {
                 end
             })
             vim.keymap.set("n", "<leader>lg", "<cmd>Neogit<cr>")
+
+            -- `NeogitCommitComplete`
+            vim.api.nvim_create_autocmd("User", {
+                pattern = "NeogitCommitComplete",
+                callback = vim.cmd.tabprevious
+            })
         end
     },
     -- {
