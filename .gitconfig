@@ -26,29 +26,33 @@ clean = git-lfs clean -- %f
 smudge = git-lfs smudge -- %f
 process = git-lfs filter-process
 required = true
+
 [credential]
-	helper =
-	helper = /usr/local/bin/git-credential-manager
+helper =
+helper = /usr/local/bin/git-credential-manager
+
 [credential "https://dev.azure.com"]
-	useHttpPath = true
+useHttpPath = true
 
 [core]
-    pager = delta
+pager = delta
 
 [interactive]
-    diffFilter = delta --color-only
+diffFilter = delta --color-only
 
 [delta]
-    navigate = true  # use n and N to move between diff sections
-    dark = true      # or light = true, or omit for auto-detection
+navigate = true  # use n and N to move between diff sections
+dark = true      # or light = true, or omit for auto-detection
 
 [merge]
-    conflictstyle = zdiff3
-	ff = false
+conflictstyle = zdiff3
+ff = false
 
 [credential "https://github.com"]
-	helper = 
-	helper = !/opt/homebrew/bin/gh auth git-credential
+helper =
+helper = !/opt/homebrew/bin/gh auth git-credential
+
 [credential "https://gist.github.com"]
-	helper = 
-	helper = !/opt/homebrew/bin/gh auth git-credential
+helper =
+helper = !/opt/homebrew/bin/gh auth git-credential
+
