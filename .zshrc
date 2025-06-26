@@ -1,6 +1,7 @@
 export TERM=xterm-256color
 export COLORTERM=truecolor
 export HISTSIZE=10000 # Default 1000 lines isn't enough
+export EDITOR=nvim
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Shell autocompletions

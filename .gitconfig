@@ -9,6 +9,7 @@ excludesFile = '~/.gitignore'
 
 [alias]
 co = checkout
+a = add
 c = commit
 s = status
 r = rebase
