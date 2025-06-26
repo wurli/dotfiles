@@ -9,11 +9,19 @@ excludesFile = '~/.gitignore'
 
 [alias]
 co = checkout
-ci = commit
-st = status
-rb = rebase
-br = branch
-nl = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+c = commit
+s = status
+r = rebase
+b = branch
+p = pull
+P = push
+l = log \
+    --graph \
+    --abbrev-commit \
+    --decorate \
+    --date=relative \
+    --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' \
+    --all
 
 [push]
 autoSetupRemote = true

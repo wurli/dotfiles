@@ -75,6 +75,7 @@ alias gP="git push"
 alias gl="git nl"
 alias gs="git status"
 alias gd="git diff"
+alias g="git"
 
 function fg() {
     RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
@@ -151,8 +152,6 @@ h() {
     fi
     curl "https://cheat.sh/$cmd"
 }
-
-
 
 # ffmpeg -i input.mov -vf "fps=20,scale=1280:-1:flags=lanczos,split[s0][s1],[s0]palettegen[p];[s1][p]paletteuse” -loop 1 output.gif
 
