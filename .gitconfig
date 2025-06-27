@@ -8,15 +8,16 @@ autocrlf = false
 excludesFile = '~/.gitignore'
 
 [alias]
-co = checkout
 a = add
-c = commit
-s = status
-r = rebase
 b = branch
+c = commit
+co = checkout
 f = fetch
+m = merge
 p = pull
 P = push
+r = rebase
+s = status
 l = log \
     --graph \
     --abbrev-commit \
