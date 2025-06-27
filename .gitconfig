@@ -14,6 +14,7 @@ c = commit
 s = status
 r = rebase
 b = branch
+f = fetch
 p = pull
 P = push
 l = log \
