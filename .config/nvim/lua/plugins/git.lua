@@ -33,7 +33,7 @@ return {
             -- Workaround for https://github.com/NeogitOrg/neogit/issues/1696
             vim.api.nvim_create_autocmd("User", {
                 pattern = "NeogitCommitComplete",
-                callback = function() vim.cmd.tabprevious() end
+                callback = function() vim.schedule(vim.cmd.tabprevious) end
             })
         end
     },
