@@ -51,7 +51,7 @@ return {
                     keymaps = {
                         -- I don't think there's a way to remove the insert
                         -- mode keymap altogether
-                        close = { modes = { i = "<m-q>" } }
+                        close = { modes = { i = "<m-q>", n = "<m-q>" } }
                     }
                 },
                 inline = { adapter = "copilot" },
