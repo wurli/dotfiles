@@ -47,8 +47,6 @@ return {
                     mapn('<leader>ds', require('telescope.builtin').lsp_document_symbols,                     'LSP: [D]ocument [S]ymbols')
                     mapn('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols,            'LSP: [W]orkspace [S]ymbols')
                     mapv("<leader>lf", vim.lsp.buf.format,                                                    'LSP: [L]sp [F]ormat')
-                    mapn('<leader>rn', vim.lsp.buf.rename,                                                    'LSP: [R]e[n]ame')
-                    mapn('<leader>ca', vim.lsp.buf.code_action,                                               'LSP: [C]ode [A]ction')
                     mapn('K',          vim.lsp.buf.hover,                                                     'LSP: Hover Documentation')
                     mapn('gD',         vim.lsp.buf.declaration,                                               'LSP: [G]oto [D]eclaration')
                     mapn('<leader>ld', vim.diagnostic.open_float,                                             'LSP: [L]sp [D]iagnostic')
