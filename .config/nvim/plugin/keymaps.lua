@@ -49,13 +49,10 @@ map("n", "<leader>x",         "<cmd>.lua<CR>",     { desc = "Execute the current
 map("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "Execute the current file" })
 
 -- Reindent on paste; use leader to not indent
-map({ "n", "v" }, "p",         "p`[=`]", { desc = "Reindent on paste" })
-map({ "n", "v" }, "P",         "P`[=`]", { desc = "Reindent on paste" })
-map({ "n", "v" }, "<leader>p", "p",      { desc = "Normal paste"      })
-map({ "n", "v" }, "<leader>P", "P",      { desc = "Normal paste"      })
-
-map("n", "gj", function() vim.fn.append(vim.fn.line("."),     "") end, { desc = "Insert blank line below" })
-map("n", "gk", function() vim.fn.append(vim.fn.line(".") - 1, "") end, { desc = "Insert blank line above" })
+-- map({ "n", "v" }, "p",         "p`[=`]", { desc = "Reindent on paste" })
+-- map({ "n", "v" }, "P",         "P`[=`]", { desc = "Reindent on paste" })
+-- map({ "n", "v" }, "<leader>p", "p",      { desc = "Normal paste"      })
+-- map({ "n", "v" }, "<leader>P", "P",      { desc = "Normal paste"      })
 
 -- Delete without adding to register
 map({"n", "v"}, "<leader>d", [["_d]], { desc = "Delete into empty register" })
