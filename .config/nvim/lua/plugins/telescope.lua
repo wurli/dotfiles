@@ -112,7 +112,8 @@ return {
 
             vim.keymap.set("n", "<leader>fc", function()
                 builtin.find_files({
-                    cwd = vim.fn.stdpath("config")
+                    cwd = vim.fn.stdpath("config"),
+                    prompt_title = "Config Files",
                 })
             end, { desc = "Telescope find config files" })
 
