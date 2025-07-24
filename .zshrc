@@ -136,13 +136,11 @@ scratch() {
     local filename="$directory/${today}_$1.$filetype"
 
     if command -v positron >/dev/null 2>&1; then
-        local cmd=positron
+        touch $filename
+        positron $filename $directory
     else
-        local cmd=vim
+        vim $filename
     fi
-
-    touch $filename
-    $cmd $filename
 }
 
 h() {
