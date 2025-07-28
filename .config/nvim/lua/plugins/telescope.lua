@@ -117,6 +117,11 @@ return {
                 })
             end, { desc = "Telescope find config files" })
 
+            vim.keymap.set("n", "<leader>fl", builtin.git_commits, { desc = "Telescope git commits" })
+            vim.keymap.set("n", "<leader>fL", builtin.git_bcommits, { desc = "Telescope git buffer commits" })
+            vim.keymap.set("n", "<leader>fL", builtin.git_bcommits, { desc = "Telescope git buffer commits" })
+            vim.keymap.set("n", "<leader>ft", builtin.git_branches, { desc = "Telescope git branches" })
+
             vim.keymap.set("n", "<leader>fg", live_multigrep, { desc = "Telescope multigrep" })
             -- vim.keymap.set("n", "<leader>fg", function() builtin.live_grep({
             --     additional_args = {
