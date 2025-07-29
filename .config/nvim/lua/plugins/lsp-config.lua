@@ -39,13 +39,6 @@ return {
                     local mapn = function(...) map("n", ...) end
                     local mapv = function(...) map({ "n", "v" }, ...) end
 
-                    --  To jump back, press <C-t>.
-                    mapn('gd',         require('telescope.builtin').lsp_definitions,                          'LSP: [G]oto [D]efinition')
-                    mapn('gr',         require('telescope.builtin').lsp_references,                           'LSP: [G]oto [R]eferences')
-                    mapn('gI',         require('telescope.builtin').lsp_implementations,                      'LSP: [G]oto [I]mplementation')
-                    mapn('<leader>D',  require('telescope.builtin').lsp_type_definitions,                     'LSP: Type [D]efinition')
-                    mapn('<leader>ds', require('telescope.builtin').lsp_document_symbols,                     'LSP: [D]ocument [S]ymbols')
-                    mapn('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols,            'LSP: [W]orkspace [S]ymbols')
                     mapv("<leader>lf", vim.lsp.buf.format,                                                    'LSP: [L]sp [F]ormat')
                     mapn('K',          vim.lsp.buf.hover,                                                     'LSP: Hover Documentation')
                     mapn('gD',         vim.lsp.buf.declaration,                                               'LSP: [G]oto [D]eclaration')

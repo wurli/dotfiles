@@ -1,6 +1,7 @@
 ---@diagnostic disable-next-line: unused-local
 local cobalt = {
     dir = "~/Repos/cobalt.nvim",
+    -- "wurli/cobalt.nvim",
     config = function()
         require("cobalt").setup({})
         vim.cmd[[colorscheme cobalt]]
@@ -135,35 +136,37 @@ end
 return {
     vim.tbl_extend("keep", cobalt, { cond = not vim.g.vscode }),
 
-    {
-        "lukas-reineke/indent-blankline.nvim",
-        cond = not vim.g.vscode,
-        opts = {
-            indent = {
-                char = "│",
-                tab_char = "│",
-            },
-            scope = { show_start = false, show_end = false },
-            exclude = {
-                filetypes = {
-                    "Trouble",
-                    "alpha",
-                    "dashboard",
-                    "help",
-                    "lazy",
-                    "mason",
-                    "neo-tree",
-                    "notify",
-                    "snacks_notif",
-                    "snacks_terminal",
-                    "snacks_win",
-                    "toggleterm",
-                    "trouble",
-                },
-            },
-        },
-        main = "ibl",
-    },
+    -- {
+    --     -- Note: default hl is |hl-Whitespace|
+    --     -- scope is |hl-LineNr|
+    --     "lukas-reineke/indent-blankline.nvim",
+    --     cond = not vim.g.vscode,
+    --     opts = {
+    --         indent = {
+    --             char = "│",
+    --             tab_char = "│",
+    --         },
+    --         scope = { show_start = false, show_end = false },
+    --         exclude = {
+    --             filetypes = {
+    --                 "Trouble",
+    --                 "alpha",
+    --                 "dashboard",
+    --                 "help",
+    --                 "lazy",
+    --                 "mason",
+    --                 "neo-tree",
+    --                 "notify",
+    --                 "snacks_notif",
+    --                 "snacks_terminal",
+    --                 "snacks_win",
+    --                 "toggleterm",
+    --                 "trouble",
+    --             },
+    --         },
+    --     },
+    --     main = "ibl",
+    -- },
 
     {
         "petertriho/nvim-scrollbar",
