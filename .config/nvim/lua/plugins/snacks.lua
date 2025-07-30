@@ -37,7 +37,6 @@ return {
         -- or leave it empty to use the default settings
         -- refer to the configuration section below
         dashboard = { enabled = false },
-        explorer = { enabled = false },
         input = { enabled = false },
         notifier = { enabled = false },
         quickfile = { enabled = false },
@@ -47,11 +46,26 @@ return {
         words = { enabled = false },
         bigfile = { enabled = true },
         rename = {
-            enabled = true,
+            enabled = not vim.g.vscode,
         },
         indent = {
             enabled = not vim.g.vscode,
             animate = { enabled = false },
+        },
+        explorer = {
+            -- At some point hopefully will get this feeling as nice as nvim-tree.
+            -- Current issues:
+            -- - Can't easily resize the tree window without borking the layout
+            -- - Can't seem to toggle using <C-n> like I do with nvim-tree
+            enabled = false,
+            -- win = {
+            --     list = {
+            --         keys = {
+            --             ["<C-n>"] = "cancel",
+            --             ["<c-n>"] = "cancel",
+            --         }
+            --     }
+            -- }
         },
         picker = {
             enabled = not vim.g.vscode,
@@ -64,7 +78,8 @@ return {
                         ["<C-a>"] = { "toggle_hidden", mode = { "i", "n" } },
                         ["<C-i>"] = { "toggle_ignored", mode = { "i", "n" } },
                     }
-                }
+                },
+
             }
         },
     },
@@ -75,7 +90,7 @@ return {
         -- { "<leader>/",       function() Snacks.picker.grep() end,                                                        desc = "Grep" },
         { "<leader>f:", pick("command_history"),                                                                              desc = "Command History" },
         -- { "<leader>n",       function() Snacks.picker.notifications() end,                                               desc = "Notification History" },
-        -- { "<leader>e",       function() Snacks.explorer() end,                                                           desc = "File Explorer" },
+        -- { "<C-n>",      function() Snacks.explorer() end,                                                                     desc = "File Explorer" },
         -- -- find
         { "<leader>fb", pick("buffers"),                                                                                      desc = "Buffers" },
         { "<leader>fc", pick("files", { cwd = vim.fn.stdpath("config") }),                                                    desc = "Find Config File" },
