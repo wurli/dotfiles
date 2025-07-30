@@ -73,7 +73,7 @@ return {
         -- { "<leader><space>", function() Snacks.picker.smart() end,                                                       desc = "Smart Find Files" },
         { "<leader>fb", pick("buffers"),                                                                                      desc = "Buffers" },
         -- { "<leader>/",       function() Snacks.picker.grep() end,                                                        desc = "Grep" },
-        -- { "<leader>:",       function() Snacks.picker.command_history() end,                                             desc = "Command History" },
+        { "<leader>f:", pick("command_history"),                                                                              desc = "Command History" },
         -- { "<leader>n",       function() Snacks.picker.notifications() end,                                               desc = "Notification History" },
         -- { "<leader>e",       function() Snacks.explorer() end,                                                           desc = "File Explorer" },
         -- -- find
@@ -99,7 +99,7 @@ return {
         -- { "<leader>sw",      function() Snacks.picker.grep_word() end,                                                   desc = "Visual selection or word", mode = { "n", "x" } },
         -- -- search
         { "<leader>fr", pick("registers"),                                                                                    desc = "Registers" },
-        -- { '<leader>s/',      function() Snacks.picker.search_history() end,                                              desc = "Search History" },
+        { "<leader>f/", pick("search_history"),                                                                               desc = "Search History" },
         -- { "<leader>sa",      function() Snacks.picker.autocmds() end,                                                    desc = "Autocmds" },
         -- { "<leader>sb",      function() Snacks.picker.lines() end,                                                       desc = "Buffer Lines" },
         -- { "<leader>sc",      function() Snacks.picker.command_history() end,                                             desc = "Command History" },
@@ -117,7 +117,7 @@ return {
         -- { "<leader>sp",      function() Snacks.picker.lazy() end,                                                        desc = "Search for Plugin Spec" },
         -- { "<leader>sq",      function() Snacks.picker.qflist() end,                                                      desc = "Quickfix List" },
         -- { "<leader>sR",      function() Snacks.picker.resume() end,                                                      desc = "Resume" },
-        -- { "<leader>su",      function() Snacks.picker.undo() end,                                                        desc = "Undo History" },
+        { "<leader>su", pick("undo"),                                                                                         desc = "Undo History" },
         -- { "<leader>uC",      function() Snacks.picker.colorschemes() end,                                                desc = "Colorschemes" },
         -- -- LSP
         { "gd",         pick("lsp_definitions"),                                                                              desc = "Goto Definition" },
@@ -125,7 +125,7 @@ return {
         { "gr",         pick("lsp_references"),                                                                               desc = "References" },
         { "gI",         pick("lsp_implementations"),                                                                          desc = "Goto Implementation" },
         { "gT",         function() Snacks.picker.lsp_type_definitions() end,                                                  desc = "Goto T[y]pe Definition" },
-        -- { "<leader>ss",      function() Snacks.picker.lsp_symbols() end,                                                 desc = "LSP Symbols" },
+        { "<leader>fS", pick("lsp_symbols"),                                                                                  desc = "LSP Symbols" },
         { "<leader>fs", pick("lsp_workspace_symbols"),                                                                        desc = "LSP Workspace Symbols" },
     },
 }
