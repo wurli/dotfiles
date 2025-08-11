@@ -106,7 +106,7 @@ return {
         -- { "<leader>gs",      function() Snacks.picker.git_status() end,                                                  desc = "Git Status" },
         -- { "<leader>gS",      function() Snacks.picker.git_stash() end,                                                   desc = "Git Stash" },
         -- { "<leader>gd",      function() Snacks.picker.git_diff() end,                                                    desc = "Git Diff (Hunks)" },
-        { "<leader>gL", pick("git_log_file"),                                                                                 desc = "Git Log File" },
+        { "<leader>fL", pick("git_log_file"),                                                                                 desc = "Git Log File" },
         -- -- Grep
         -- { "<leader>sb",      function() Snacks.picker.lines() end,                                                       desc = "Buffer Lines" },
         -- { "<leader>sB",      function() Snacks.picker.grep_buffers() end,                                                desc = "Grep Open Buffers" },
@@ -128,11 +128,11 @@ return {
         { "<leader>fk", pick("keymaps"),                                                                                      desc = "Keymaps" },
         -- { "<leader>sl",      function() Snacks.picker.loclist() end,                                                     desc = "Location List" },
         { "<leader>fm", pick("marks"),                                                                                        desc = "Marks" },
-        { "<leader>fM", pick("man"),                                                                                          desc = "Man Pages" },
+        { "<leader>fM", pick("man", { win = { input = { keys = { ["<CR>"] = { "edit_vsplit", mode = { "i", "n" } } } } } }),  desc = "Man Pages" },
         -- { "<leader>sp",      function() Snacks.picker.lazy() end,                                                        desc = "Search for Plugin Spec" },
         -- { "<leader>sq",      function() Snacks.picker.qflist() end,                                                      desc = "Quickfix List" },
         -- { "<leader>sR",      function() Snacks.picker.resume() end,                                                      desc = "Resume" },
-        { "<leader>su", pick("undo"),                                                                                         desc = "Undo History" },
+        { "<leader>fu", pick("undo"),                                                                                         desc = "Undo History" },
         -- { "<leader>uC",      function() Snacks.picker.colorschemes() end,                                                desc = "Colorschemes" },
         -- -- LSP
         { "gd",         pick("lsp_definitions"),                                                                              desc = "Goto Definition" },
