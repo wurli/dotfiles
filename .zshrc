@@ -152,6 +152,26 @@ h() {
     curl "https://cheat.sh/$cmd"
 }
 
+mdb-export-all() {
+    local db_file="$1"
+    local dir="${2:-.}"
+    if [[ -z "$db_file" ]]; then
+        echo "Usage: mdb-export-all <database.accdb> <output_directory>"
+        return 1
+    fi
+
+    local tables=$(mdb-tables "$db_file")
+    for tb in ${=tables}; do
+        echo "Exporting ${tb}.csv"
+
+        mdb-export "$db_file" \
+            "$tb" \
+            --date-format=%Y-%m-%d \
+            --datetime-format=%Y-%m-%d\ %H:%M:%S \
+            > "${dir}/${tb}.csv"
+    done
+}
+
 # ffmpeg -i input.mov -vf "fps=20,scale=1280:-1:flags=lanczos,split[s0][s1],[s0]palettegen[p];[s1][p]paletteuse” -loop 1 output.gif
 
 # BEGIN opam configuration
