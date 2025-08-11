@@ -19,6 +19,8 @@ vim.opt.updatetime  = 500
 vim.opt.fillchars:append "diff:╱"
 vim.opt.formatoptions:remove "o"
 
+vim.opt.jumpoptions:append "stack"
+
 -- Together give 'hybrid' line numbers
 vim.wo.number = true
 vim.wo.relativenumber = true
