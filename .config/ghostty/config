@@ -1,9 +1,10 @@
 theme = MaterialDarker
 macos-option-as-alt = true
-font-family = FiraCode Nerd Font Mono
+font-family = CommitMono Nerd Font
 font-feature = -calt
 font-feature = -liga
 font-feature = -dlig
+cursor-opacity = 0.5
 
 # font-family =
 # font-family-bold =
@@ -301,7 +302,6 @@ font-feature = -dlig
 # palette = 255=#eeeeee
 # cursor-color =
 # cursor-invert-fg-bg = false
-# cursor-opacity = 1
 # cursor-style = block
 # cursor-style-blink =
 # cursor-text =
