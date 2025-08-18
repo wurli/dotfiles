@@ -64,23 +64,23 @@ return {
                     })
                 end
             },
-            -- display = {
-            --     chat = {
-            --         window = {
-            --             opts = {
-            --                 number = false,
-            --                 relativenumber = false
-            --             }
-            --         }
-            --     },
-            --     diff = {
-            --         -- I really want to use this, but it just feels like it gets
-            --         -- in the way :'(
-            --         enabled = false,
-            --         provider = "default",
-            --         opts = { "algorithm:patience" }
-            --     }
-            -- }
+            display = {
+                chat = {
+                    window = {
+                        opts = {
+                            number = false,
+                            relativenumber = false
+                        }
+                    }
+                },
+                diff = {
+                    -- I really want to use this, but it just feels like it gets
+                    -- in the way :'(
+                    enabled = false,
+                    provider = "default",
+                    opts = { "algorithm:patience" }
+                }
+            }
         },
     },
 }
