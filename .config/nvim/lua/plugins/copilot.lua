@@ -43,10 +43,6 @@ return {
             strategies = {
                 -- Change the default chat adapter
                 chat = {
-                    -- adapter = {
-                    --     name = "copilot",
-                    --     model = "claude-sonnet-4-20250514",
-                    -- },
                     adapter = "copilot",
                     keymaps = {
                         -- I don't think there's a way to remove the insert
@@ -61,30 +57,30 @@ return {
                     return require("codecompanion.adapters").extend("copilot", {
                         schema = {
                             model = {
-                                default = "claude-3.7-sonnet",
-                                -- default = "claude-sonnet-4-20250514",
+                                -- default = "claude-3.7-sonnet",
+                                default = "claude-sonnet-4",
                             },
                         },
                     })
                 end
             },
-            display = {
-                chat = {
-                    window = {
-                        opts = {
-                            number = false,
-                            relativenumber = false
-                        }
-                    }
-                },
-                diff = {
-                    -- I really want to use this, but it just feels like it gets
-                    -- in the way :'(
-                    enabled = false,
-                    provider = "default",
-                    opts = { "algorithm:patience" }
-                }
-            }
+            -- display = {
+            --     chat = {
+            --         window = {
+            --             opts = {
+            --                 number = false,
+            --                 relativenumber = false
+            --             }
+            --         }
+            --     },
+            --     diff = {
+            --         -- I really want to use this, but it just feels like it gets
+            --         -- in the way :'(
+            --         enabled = false,
+            --         provider = "default",
+            --         opts = { "algorithm:patience" }
+            --     }
+            -- }
         },
     },
 }
