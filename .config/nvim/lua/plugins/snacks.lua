@@ -93,7 +93,8 @@ return {
         -- { "<C-n>",      function() Snacks.explorer() end,                                                                     desc = "File Explorer" },
         -- -- find
         { "<leader>fb", pick("buffers"),                                                                                      desc = "Buffers" },
-        { "<leader>fc", pick("files", { cwd = vim.fn.stdpath("config") }),                                                    desc = "Find Config File" },
+        { "<leader>fc", pick("files", { cwd = "~/Repos/dotfiles/", hidden = true }),                                                         desc = "Find Config File" },
+        { "<leader>fn", pick("files", { cwd = vim.fn.stdpath("config") }),                                                    desc = "Find Nvim Config File" },
         { "<leader>fp", pick("files", { cwd = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy") }),                             desc = "Find Config File" },
         { "<leader>ff", pick("files"),                                                                                        desc = "Find Files" },
         -- { "<leader>fg",      function() Snacks.picker.git_files() end,                                                   desc = "Find Git Files" },
