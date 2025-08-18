@@ -5,7 +5,13 @@ font-feature = -calt
 font-feature = -liga
 font-feature = -dlig
 cursor-opacity = 0.5
+# keybind = ctrl+u=scroll_page_up
+# keybind = ctrl+d=scroll_page_down
+# macos-titlebar-style = hidden
 
+macos-non-native-fullscreen = true
+
+fullscreen = true
 # font-family =
 # font-family-bold =
 # font-family-italic =
@@ -319,12 +325,10 @@ cursor-opacity = 0.5
 # abnormal-command-exit-runtime = 250
 # scrollback-limit = 10000000
 # link-url = true
-# fullscreen = false
 # title =
 # class =
 # x11-instance-name =
 # working-directory =
-# keybind = super+page_up=scroll_page_up
 # keybind = super+ctrl+equal=equalize_splits
 # keybind = super+physical:four=goto_tab:4
 # keybind = super+shift+down=jump_to_prompt:1
@@ -375,7 +379,6 @@ cursor-opacity = 0.5
 # keybind = ctrl+shift+tab=previous_tab
 # keybind = super+n=new_window
 # keybind = super+alt+left=goto_split:left
-# keybind = super+page_down=scroll_page_down
 # keybind = super+alt+shift+w=close_all_windows
 # keybind = super+alt+up=goto_split:top
 # keybind = super+left_bracket=goto_split:previous
@@ -437,7 +440,6 @@ cursor-opacity = 0.5
 # vt-kam-allowed = false
 # custom-shader =
 # custom-shader-animation = true
-# macos-non-native-fullscreen = false
 # macos-titlebar-style = transparent
 # macos-titlebar-proxy-icon = visible
 # macos-option-as-alt =
