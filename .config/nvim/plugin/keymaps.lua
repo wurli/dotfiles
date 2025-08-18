@@ -98,3 +98,39 @@ map(
     "<M-3>", "#",
     { noremap = true, desc = "Insert #" }
 )
+
+vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
+vim.keymap.set("n", "<M-u>", "<cmd>silent !tmux neww tmux-sessionizer -s 0<CR>")
+vim.keymap.set("n", "<M-i>", "<cmd>silent !tmux neww tmux-sessionizer -s 1<CR>")
+vim.keymap.set("n", "<M-o>", "<cmd>silent !tmux neww tmux-sessionizer -s 2<CR>")
+vim.keymap.set("n", "<M-p>", "<cmd>silent !tmux neww tmux-sessionizer -s 3<CR>")
+
+-- local go_to_next_jumplist_buf = function(dir)
+--     local jumplist = vim.fn.getjumplist()
+--     local jumps = jumplist[1]
+--     local cur_jump_index  = jumplist[2]
+--     local cur_buf = jumps[cur_jump_index].bufnr
+--     local n_jumps = 1
+--     while true do
+--         local jump = jumps[cur_jump_index + dir * n_jumps]
+--         if not jump then return end
+--         if jump.bufnr ~= cur_buf then
+--             local command = dir == -1 and "<c-o>" or "<c-i>"
+--             vim.print(n_jumps)
+--             vim.cmd("normal! " .. n_jumps .. "\\" .. command .. "<cr>")
+--             return
+--         end
+--         n_jumps = n_jumps + 1
+--     end
+-- end
+--
+-- map(
+--     "n", "<leader><c-o>", function() go_to_next_jumplist_buf(-1) end,
+--     { desc = "Go to previous buffer in jumplist" }
+-- )
+--
+-- map(
+--     "n", "<leader><c-i>", function() go_to_next_jumplist_buf(1) end,
+--     { desc = "Go to next buffer in jumplist" }
+-- )
+--

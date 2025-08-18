@@ -1,4 +1,5 @@
 export TERM=xterm-256color
+# export TERM=tmux-256color
 export COLORTERM=truecolor
 export HISTSIZE=10000 # Default 1000 lines isn't enough
 export EDITOR=nvim
@@ -51,16 +52,14 @@ FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 eval "$(starship init zsh)"
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# use zoxide
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-eval "$(zoxide init --cmd cd zsh)"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# use eza
+# Set the terminal background color
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Unfortunately seems very slow
-# alias ls="eza"
+# echo -e "\033]11;#011E3A\007"
+echo -e "\033]11;#001426\007"
+
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Aliases and other customisation
@@ -77,6 +76,17 @@ alias gl="git nl"
 alias gs="git status"
 alias gd="git diff"
 alias g="git"
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Keymaps
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# without this line c-n and c-p don't seem to work in tmux
+bindkey -e
+bindkey -s ^f "tmux-sessionizer\n"
+bindkey -s '\eu' "tmux-sessionizer -s 0\n"
+bindkey -s '\ei' "tmux-sessionizer -s 1\n"
+bindkey -s '\eo' "tmux-sessionizer -s 2\n"
+bindkey -s '\ep' "tmux-sessionizer -s 3\n"
 
 function fg() {
     RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
