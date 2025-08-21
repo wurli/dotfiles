@@ -44,7 +44,7 @@ return {
         scroll = { enabled = false },
         statuscolumn = { enabled = false },
         words = { enabled = false },
-        bigfile = { enabled = true },
+        bigfile = { enabled = false },
         rename = {
             enabled = not vim.g.vscode,
         },
