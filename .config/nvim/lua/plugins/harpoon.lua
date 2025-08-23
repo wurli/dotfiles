@@ -8,13 +8,14 @@ return {
         harpoon:setup()
 
         local cur_file = nil
+        local cwd = vim.fn.getcwd()
 
         vim.keymap.set(
             "n",
             "<leader><leader>h",
             function()
                 if vim.bo.ft ~= "harpoon" then
-                    cur_file = vim.fn.expand("%")
+                    cur_file = vim.fn.expand("%"):gsub("^" .. cwd .. "/", "")
                 end
                 harpoon.ui:toggle_quick_menu(harpoon:list())
             end,
