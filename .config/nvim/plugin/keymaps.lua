@@ -41,8 +41,14 @@ map("t", "<M-l>", "<C-l>",             { desc = "Terminal clear" })
 map("t", "<C-c>", "<C-\\><C-n>",       { desc = "Terminal exit"  })
 map("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Terminal exit left" })
 map("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Terminal exit down" })
-map("t", "<C-k>", "<C-\\C-w>k",      { desc = "Terminal exit up" })
+map("t", "<C-k>", "<C-\\><C-n><C-w>k", { desc = "Terminal exit up" })
 map("t", "<C-l>", "<C-\\><C-n><C-w>l", { desc = "Terminal exit right" })
+
+
+map("n", "<C-h>", "<C-w><C-h>", { desc = "Window navigate left" })
+map("n", "<C-j>", "<C-w><C-j>", { desc = "Window navigate down" })
+map("n", "<C-k>", "<C-w><C-k>", { desc = "Window navigate up" })
+map("n", "<C-l>", "<C-w><C-l>", { desc = "Window navigate right" })
 
 -- Source stuff
 map("n", "<leader>x",         "<cmd>.lua<CR>",     { desc = "Execute the current line" })
@@ -105,32 +111,34 @@ vim.keymap.set("n", "<M-i>", "<cmd>silent !tmux neww tmux-sessionizer -s 1<CR>")
 vim.keymap.set("n", "<M-o>", "<cmd>silent !tmux neww tmux-sessionizer -s 2<CR>")
 vim.keymap.set("n", "<M-p>", "<cmd>silent !tmux neww tmux-sessionizer -s 3<CR>")
 
--- local go_to_next_jumplist_buf = function(dir)
---     local jumplist = vim.fn.getjumplist()
---     local jumps = jumplist[1]
---     local cur_jump_index  = jumplist[2]
---     local cur_buf = jumps[cur_jump_index].bufnr
---     local n_jumps = 1
---     while true do
---         local jump = jumps[cur_jump_index + dir * n_jumps]
---         if not jump then return end
---         if jump.bufnr ~= cur_buf then
---             local command = dir == -1 and "<c-o>" or "<c-i>"
---             vim.print(n_jumps)
---             vim.cmd("normal! " .. n_jumps .. "\\" .. command .. "<cr>")
---             return
---         end
---         n_jumps = n_jumps + 1
---     end
--- end
---
--- map(
---     "n", "<leader><c-o>", function() go_to_next_jumplist_buf(-1) end,
---     { desc = "Go to previous buffer in jumplist" }
--- )
---
--- map(
---     "n", "<leader><c-i>", function() go_to_next_jumplist_buf(1) end,
---     { desc = "Go to next buffer in jumplist" }
--- )
---
+local go_to_next_jumplist_buf = function(dir)
+    local jl = vim.fn.getjumplist()
+    local jumplist, cur_jump_index = unpack(jl)
+
+    local cur_buf = jumplist[cur_jump_index].bufnr
+
+    local n_jumps = 1
+    while true do
+        local jump = jumplist[cur_jump_index + dir * n_jumps]
+        if not jump then return end
+        if jump.bufnr ~= cur_buf then
+            local command = dir == -1 and "<c-o>" or "<c-i>"
+            local cmd = 'execute "normal! ' .. tostring(n_jumps) .. "\\" .. command .. '"'
+            vim.print(cmd)
+            vim.cmd(cmd)
+            return
+        end
+        n_jumps = n_jumps + 1
+    end
+end
+
+map(
+    "n", "<m-n>", function() go_to_next_jumplist_buf(-1) end,
+    { desc = "Go to previous buffer in jumplist" }
+)
+
+map(
+    "n", "<m-p>", function() go_to_next_jumplist_buf(1) end,
+    { desc = "Go to next buffer in jumplist" }
+)
+

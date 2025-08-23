@@ -94,3 +94,16 @@ vim.api.nvim_create_user_command(
     end,
     { desc = "Ruff organize imports" }
 )
+
+vim.api.nvim_create_user_command(
+    "Positron",
+    function()
+        vim.system({
+            "positron",
+            "--goto",
+            vim.fn.expand("%:p") .. ":" .. vim.api.nvim_win_get_cursor(0)[1],
+            vim.fn.getcwd()
+        })
+    end,
+    { desc = "Open current file in Positron" }
+)

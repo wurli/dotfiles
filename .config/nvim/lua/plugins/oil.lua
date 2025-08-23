@@ -21,9 +21,10 @@ return {
                 ["~"] = "actions.tcd",
                 ["gs"] = "actions.change_sort",
                 ["gx"] = "actions.open_external",
-                ["g."] = "actions.toggle_hidden",
+                ["<m-h>"] = "actions.toggle_hidden",
                 ["g\\"] = "actions.toggle_trash",
             },
+            skip_confirm_for_simple_edits = true,
             -- Set to false to disable all of the above keymaps
             use_default_keymaps = true,
         })

@@ -1,6 +1,14 @@
-export TERM=xterm-256color
-# export TERM=tmux-256color
-export COLORTERM=truecolor
+
+# #{buffer:.zshrc}
+#
+# Why isn't fzf completion, e.g. cd **<tab> working in tmux? It works outside of tmux.
+
+if [[ -n "$TMUX" ]]; then
+    export TERM=tmux-256color
+else
+    export TERM=xterm-256color
+fi
+# export COLORTERM=truecolor
 export HISTSIZE=10000 # Default 1000 lines isn't enough
 export EDITOR=nvim
 
@@ -16,19 +24,12 @@ export LS_COLORS="di=34:fi=0:ln=36:pi=33:so=35:bd=94:cd=93:or=31:mi=41:ex=32"
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS} # Colours
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Misc env vars
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# Use Neovim as the pager for man entries
-export MANPAGER='nvim +Man!'
-
-# uv install settings (only needed on work machine)
-export UV_NATIVE_TLS=true
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # fzf key bindings and fuzzy completion
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CTRL-/ to show preview window which is hidden by default
+#
+# Homebrew auto completions
+FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 
 export FZF_DEFAULT_OPTS='
   --preview-window "right:60%:hidden:wrap"
@@ -42,10 +43,19 @@ export FZF_CTRL_T_OPTS='
   --preview "bat --color=always --style=plain,numbers --line-range=:500 {}"
   --bind "ctrl-/:change-preview-window(down|hidden|)"
   '
+
 source <(fzf --zsh)
 
-# Homebrew auto completions
-FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Misc env vars
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Use Neovim as the pager for man entries
+export MANPAGER='nvim +Man!'
+
+# uv install settings (only needed on work machine)
+export UV_NATIVE_TLS=true
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # use starship
@@ -182,17 +192,35 @@ mdb-export-all() {
     done
 }
 
-# ffmpeg -i input.mov -vf "fps=20,scale=1280:-1:flags=lanczos,split[s0][s1],[s0]palettegen[p];[s1][p]paletteuse” -loop 1 output.gif
+# Even after I sign on I get a lingering SSO window which I can't close or interact with.
+# I can close it with the activity monitor, but this is easier.
+sso-kill() {
+    ps aux | grep -i  "appssoagent" | grep -v grep | awk '{print $2}' | xargs kill
+}
 
-# BEGIN opam configuration
-# This is useful if you're using opam as it adds:
-#   - the correct directories to the PATH
-#   - auto-completion for the opam binary
-# This section can be safely removed at any time if needed.
-[[ ! -r '/Users/jacobscott/.opam/opam-init/init.zsh' ]] || source '/Users/jacobscott/.opam/opam-init/init.zsh' > /dev/null 2> /dev/null
-# END opam configuration
+ai() {
+    local branch="$1"
 
-. "$HOME/.local/bin/env"
+    # Check if current directory is a git repository
+    if ! git rev-parse --git-dir &>/dev/null; then
+        echo "Error: Not in a git repository" >&2
+        return 1
+    fi
 
-bindkey -s '^[3' \#
+    if [[ -z "$branch" ]]; then
+        # No branch provided, open current directory in VS Code
+        code .
+    else
+        # Get current directory name
+        local current_dir=$(basename "$PWD")
+        local parent_dir=$(dirname "$PWD")
+        local new_dir="${parent_dir}/${current_dir}-${branch}"
+
+        # Create new branch and worktree
+        git worktree add "$new_dir" -b "$branch"
+
+        # Open new directory in VS Code
+        code "$new_dir"
+    fi
+}
 

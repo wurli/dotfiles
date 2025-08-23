@@ -18,6 +18,7 @@ pl = pull
 p = push
 r = rebase
 s = status
+w = worktree
 l = log \
     --graph \
     --abbrev-commit \

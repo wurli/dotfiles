@@ -20,6 +20,18 @@ return {
                         end
                     end, { buffer = bufnr })
                 end
+
+                vim.keymap.set("n", "<c-p>", function()
+                    local node = api.tree.get_node_under_cursor()
+                    if node.type == "file" then
+                        local ok, line = pcall(function()
+                            return vim.api.nvim_win_get_cursor(vim.fn.bufwinid(vim.fn.bufnr(node.absolute_path)))[1]
+                        end)
+
+                        local path = ok and (node.absolute_path .. ":" .. line) or node.absolute_path
+                        vim.system({ "positron", "--goto", path, vim.fn.getcwd() })
+                    end
+                end, { buffer = bufnr })
             end,
             modified = { enable = true },
             renderer = {
@@ -44,3 +56,5 @@ return {
         vim.keymap.set({ "n", "i" }, "<C-n>", api.tree.toggle)
     end
 }
+
+
