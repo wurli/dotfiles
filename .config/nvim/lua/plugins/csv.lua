@@ -2,10 +2,19 @@ return {
     "hat0uma/csvview.nvim",
     config = function()
         require("csvview").setup({
-            view = {
-                header_lnum = 1
-            },
+            view = { header_lnum = 1 },
             parser = { comments = { "#", "//" } },
+            -- The built-in detection doesn't seem to work that well
+            delimiter = function(buf)
+                local first_line = vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1]
+                vim.print(first_line)
+                for _, delim in ipairs({ ",", ";", "\t", "|" }) do
+                    if first_line:find(delim) then
+                        return delim
+                    end
+                end
+                return ","
+            end,
             keymaps = {
                 -- Text objects for selecting fields
                 textobject_field_inner = { "if", mode = { "o", "x" } },
