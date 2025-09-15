@@ -5,6 +5,7 @@ font-feature = -calt
 font-feature = -liga
 font-feature = -dlig
 cursor-opacity = 0.5
+confirm-close-surface = true
 # keybind = ctrl+u=scroll_page_up
 # keybind = ctrl+d=scroll_page_down
 # macos-titlebar-style = hidden
