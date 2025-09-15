@@ -71,7 +71,7 @@ map("n", "<M-'>", "<C-W>+",  { desc = "Increase split height" })
 
 -- Move line down
 map(
-    { "n", "v" }, "<M-j>", function()
+    "n", "<M-j>", function()
         if vim.opt.diff:get() then
             vim.cmd("normal! ]c]")
         elseif vim.fn.mode() == "v" or vim.fn.mode() == "V" then
@@ -85,7 +85,7 @@ map(
 
 -- Move line up
 map(
-    { "n", "v" }, "<M-k>",
+    "n", "<M-k>",
     function()
         if vim.opt.diff:get() then
             vim.cmd("normal! [c]")
@@ -97,6 +97,9 @@ map(
     end,
     { desc = "Move line up" }
 )
+
+map("v", "<M-j>", ":m '>+1<CR>gv=gv", { desc = "Move selected lines down" })
+map("v", "<M-k>", ":m '<-2<CR>gv=gv", { desc = "Move selected lines up" })
 
 -- Workaround for meta-key limitations in terminal emulators
 map(
