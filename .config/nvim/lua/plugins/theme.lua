@@ -4,7 +4,7 @@ local cobalt = {
     -- "wurli/cobalt.nvim",
     config = function()
         require("cobalt").setup({})
-        vim.cmd[[colorscheme cobalt]]
+        vim.cmd [[colorscheme cobalt]]
     end
 }
 
@@ -58,7 +58,7 @@ local material = {
 -- white instead of grey. Just doesn"t *pop* in the way I want.
 local night_owl = {
     "oxfist/night-owl.nvim",
-    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    lazy = false,    -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
         -- load the colorscheme here
@@ -69,9 +69,9 @@ local night_owl = {
 
 ---@diagnostic disable-next-line: unused-local
 local rose_pine = {
-	"rose-pine/neovim",
-	name = "rose-pine",
-	config = function()
+    "rose-pine/neovim",
+    name = "rose-pine",
+    config = function()
         require("rose-pine").setup({
             palette = {
                 main = {
@@ -110,8 +110,8 @@ local rose_pine = {
                 ["@markup.quote"]  = { fg = "subtle", italic = true }
             }
         })
-		vim.cmd("colorscheme rose-pine")
-	end
+        vim.cmd("colorscheme rose-pine")
+    end
 }
 
 local get_wordcount = function()
@@ -219,7 +219,7 @@ return {
                 RGB      = true,  -- #RGB hex codes
                 RRGGBB   = true,  -- #RRGGBB hex codes like #000000
                 names    = false, -- "Name" codes like "Blue"
-                RRGGBBAA = true, -- #RRGGBBAA hex codes
+                RRGGBBAA = true,  -- #RRGGBBAA hex codes
                 rgb_fn   = false, -- CSS rgb() and rgba() functions
                 hsl_fn   = false, -- CSS hsl() and hsla() functions
                 css      = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
@@ -230,5 +230,9 @@ return {
             })
         end
     },
-}
 
+    {
+        "dimtion/guttermarks.nvim",
+        event = "VeryLazy",
+    }
+}
