@@ -14,12 +14,12 @@ return {
         end
     },
     {
-        'echasnovski/mini.surround',
+        'nvim-mini/mini.surround',
         version = false,
         opts = {}
     },
     {
-        'echasnovski/mini.pairs',
+        'nvim-mini/mini.pairs',
         version = false,
         opts = {}
     },
@@ -59,4 +59,3 @@ return {
         },
     }
 }
-
