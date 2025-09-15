@@ -2,6 +2,49 @@ local pick = function(picker, opts)
     return function() Snacks.picker.pick(picker, opts or {}) end
 end
 
+local pick_files = function(opts)
+    return function()
+        Snacks.picker.files(vim.tbl_deep_extend("force", {
+            actions = {
+                ---@diagnostic disable-next-line: doc-field-no-class
+                ---@field picker snacks.Picker
+                toggle_sort = function(picker)
+                    if picker.opts.sort.fields[1] == "score:desc" then
+                        picker.opts.sort.fields = { "file:asc" }
+                    else
+                        picker.opts.sort.fields = { "score:desc", "#text", "idx" }
+                    end
+                    picker:close()
+                    picker.new(vim.tbl_deep_extend('force', picker.opts, {
+                        pattern = picker:filter().pattern,
+                        search = picker:filter().search,
+                    }))
+                    -- picker:find({ refresh = true })
+                end
+            },
+            win = {
+                input = {
+                    keys = {
+                        ["<c-s>"] = { "toggle_sort", mode = { "i", "n" } }
+                    }
+                }
+            },
+            matcher = { sort_empty = true },
+        }, opts or {}))
+    end
+end
+
+-- return {
+--     "folke/snacks.nvim",
+--     lazy = false,
+--     opts = {
+--         picker = { enabled = true }
+--     },
+--     keys = {
+--         { "<leader>ff", function() Snacks.picker.files({ sort = { fields = { "file" } } }) end, desc = "Find Files" },
+--     }
+-- }
+
 -- Autocommands for Snacks-rename ---------------------------------------------
 vim.api.nvim_create_autocmd("User", {
     pattern = "OilActionsPost",
@@ -93,10 +136,11 @@ return {
         -- { "<C-n>",      function() Snacks.explorer() end,                                                                     desc = "File Explorer" },
         -- -- find
         { "<leader>fb", pick("buffers"),                                                                                      desc = "Buffers" },
-        { "<leader>fc", pick("files", { cwd = "~/Repos/dotfiles/", hidden = true }),                                                         desc = "Find Config File" },
+        { "<leader>fc", pick("files", { cwd = "~/Repos/dotfiles/", hidden = true }),                                          desc = "Find Config File" },
         { "<leader>fn", pick("files", { cwd = vim.fn.stdpath("config") }),                                                    desc = "Find Nvim Config File" },
         { "<leader>fp", pick("files", { cwd = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy") }),                             desc = "Find Config File" },
-        { "<leader>ff", pick("files"),                                                                                        desc = "Find Files" },
+        -- { "<leader>ff", pick("files"),                                                                                        desc = "Find Files" },
+        { "<leader>ff", pick_files(),                                                                                         desc = "Find Files" },
         -- { "<leader>fg",      function() Snacks.picker.git_files() end,                                                   desc = "Find Git Files" },
         -- { "<leader>fp",      function() Snacks.picker.projects() end,                                                    desc = "Projects" },
         -- { "<leader>fr",      function() Snacks.picker.recent() end,                                                      desc = "Recent" },
