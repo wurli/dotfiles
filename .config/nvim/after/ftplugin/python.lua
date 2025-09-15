@@ -31,13 +31,18 @@ local function get_statement_range(pos)
 
     local top_level_nodes = {
         "assert_statement",
+        "class_definition",
         "decorated_definition",
+        "delete_statement",
         "expression_statement",
         "for_statement",
         "function_definition",
+        "global_statement",
         "if_statement",
         "import_from_statement",
         "import_statement",
+        "nonlocal_statement",
+        "try_statement",
         "while_statement",
         "with_statement",
     }
@@ -98,10 +103,18 @@ vim.keymap.set(
 )
 
 vim.keymap.set(
-    { "n", "v", "i" }, "<c-Enter>",
+    { "n", "v" }, "<leader><Enter>",
     function()
         if not term:exists() then return end
         send_to_python(fn.getline("^", "$"))
+    end
+)
+
+vim.keymap.set(
+    { "n", "v" }, "<leader><leader><Enter>",
+    function()
+        if not term:exists() then return end
+        send_to_python(vim.fn.getline("^", "."))
     end
 )
 
