@@ -1,10 +1,25 @@
+
 return {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
     cond = not vim.g.vscode,
-    dependencies = { "nvim-lua/plenary.nvim" },
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+        "j-hui/fidget.nvim",
+    },
     config = function()
         local harpoon = require("harpoon")
+        harpoon:extend({
+            ADD = function(x)
+                local _ = require("fidget").progress.handle.create({
+                    token = "new-harpoon-item",
+                    title = vim.fs.basename(x.item.value),
+                    message = "(Position " .. x.idx .. "): ",
+                    done = true,
+                    lsp_client = { name = "Harpoon" },
+                })
+            end
+        })
         harpoon:setup()
 
         local cur_file = nil
@@ -12,7 +27,7 @@ return {
 
         vim.keymap.set(
             "n",
-            "<leader><leader>h",
+            "<c-x>",
             function()
                 if vim.bo.ft ~= "harpoon" then
                     cur_file = vim.fn.expand("%"):gsub("^" .. cwd .. "/", "")
@@ -47,6 +62,8 @@ return {
         vim.keymap.set("n", "<leader>3", function() harpoon:list():select(3) end)
         vim.keymap.set("n", "<leader>4", function() harpoon:list():select(4) end)
         vim.keymap.set("n", "<leader>5", function() harpoon:list():select(5) end)
+
+        vim.api.nvim_set_hl(0, "harpoonDirectory", { fg = "#8091A0" })
 
         -- Toggle previous & next buffers stored within Harpoon list
         -- vim.keymap.set("n", "<M-p>", function() harpoon:list():prev() end)
