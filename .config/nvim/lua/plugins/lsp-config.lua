@@ -127,29 +127,34 @@ return {
             -- the Mason package names.
             local server_configs = {
                 air = {},
-                basedpyright = {
-                    settings = {
-                        python = {
-                            venvPath = ".",
-                            venv = ".venv",
-                        },
-                        basedpyright = {
-                            disableOrganizeImports = true,
-                            analysis = {
-                                -- stubPath = vim.fn.stdpath("config") .. "/misc/python-typings",
-                                -- Why doesn't this do anything?
-                                -- https://docs.basedpyright.com/latest/configuration/language-server-settings/#discouraged-settings
-                                typeCheckingMode = "standard",
-                                -- This doesn't seem to have any effect. Would be nice it did though,
-                                -- as this rule duplicates a diagnostic from Ruff.
-                                diagnosticSeverityOverrides = {
-                                    reportUnusedImport = "none",
-                                    reportUnknownVariableType="none",
-                                },
-                            },
-                        },
-                    },
+                ty = {
+                    cmd = { "ty", "server" },
+                    filetypes = { "python" },
+                    root_dir = vim.fs.root(0, { ".git/", "pyproject.toml" }),
                 },
+                -- basedpyright = {
+                --     settings = {
+                --         python = {
+                --             venvPath = ".",
+                --             venv = ".venv",
+                --         },
+                --         basedpyright = {
+                --             disableOrganizeImports = true,
+                --             analysis = {
+                --                 -- stubPath = vim.fn.stdpath("config") .. "/misc/python-typings",
+                --                 -- Why doesn't this do anything?
+                --                 -- https://docs.basedpyright.com/latest/configuration/language-server-settings/#discouraged-settings
+                --                 typeCheckingMode = "standard",
+                --                 -- This doesn't seem to have any effect. Would be nice it did though,
+                --                 -- as this rule duplicates a diagnostic from Ruff.
+                --                 diagnosticSeverityOverrides = {
+                --                     reportUnusedImport = "none",
+                --                     reportUnknownVariableType = "none",
+                --                 },
+                --             },
+                --         },
+                --     },
+                -- },
                 ruff = {
                     capabilities = {
                         hoverProvider = false
@@ -166,41 +171,6 @@ return {
                     },
                 },
                 yamlls = {},
-                -- pyright = {
-                --     settings = {
-                --         pyright = {
-                --             disableOrganizeImports = true
-                --         },
-                --         python = {
-                --             analysis = {
-                --                 -- For some reason these settings don't work here, only in pyrightconfig.json. This
-                --                 -- seems to disagree with the docs here:
-                --                 -- https://github.com/microsoft/pyright/blob/main/docs/import-resolution.md#configuring-your-python-environment
-                --                 -- venvPath = ".",
-                --                 -- venv = ".venv",
-                --                 stubPath = vim.fn.stdpath("config") .. "/misc/python-typings",
-                --                 -- Again, this doesn't seem to have any effect. Would be nice it did though,
-                --                 -- as this rule duplicates a diagnostic from Ruff.
-                --                 diagnosticSeverityOverrides = {
-                --                     reportUnusedImport = "none",
-                --                 }
-                --             }
-                --         }
-                --     }
-                -- },
-                -- r_language_server = {
-                --     -- Turn off lintr because it's a bit slow and annoying for interactive use
-                --     settings = {
-                --         r = { lsp = { diagnostics = false, rich_documentation = false } }
-                --     },
-                --     on_attach = function(conf)
-                --         -- Turn off lsp autcomplete (we're using cmp-r instead)
-                --         conf.server_capabilities.completionProvider = false
-                --         conf.server_capabilities.documentFormattingProvider = false
-                --         conf.server_capabilities.documentRangeFormattingProvider = false
-                --         return conf
-                --     end,
-                -- },
             }
 
             require('mason').setup()
@@ -215,22 +185,6 @@ return {
                 vim.lsp.config(server, config)
                 vim.lsp.enable(server)
             end
-
-            -- -- Temporary VBA lsp setup
-            -- local vba_server_path = "/Users/JACOB.SCOTT1/Repos/VBA-LanguageServer/dist/server/out/server.js"
-            --
-            -- vim.lsp.config.vbapro = {
-            --     cmd = { 'node', vba_server_path, '--stdio' },
-            --     filetypes = { 'vba', 'bas', 'cls', 'frm', 'freebasic' }, -- VBA file types
-            --     -- root_dir = function(filename)
-            --     --     return vim.fs.dirname(vim.fs.find(".git", { path = filename, upward = true })[1] or "")
-            --     -- end,
-            --     settings = {} -- Any specific settings the server might need
-            -- }
-            --
-            -- vim.lsp.enable("vbapro")
-
         end,
     }
 }
-
