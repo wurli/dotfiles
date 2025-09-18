@@ -145,3 +145,4 @@ map(
     { desc = "Go to next buffer in jumplist" }
 )
 
+map("n", "<leader>lz", "<cmd>Lazy<CR>", { desc = "Open Lazy" })
