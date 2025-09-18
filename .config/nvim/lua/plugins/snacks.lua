@@ -94,6 +94,9 @@ return {
         indent = {
             enabled = not vim.g.vscode,
             animate = { enabled = false },
+            filter = function(buf)
+                return vim.bo[buf].filetype ~= "markdown"
+            end
         },
         explorer = {
             -- At some point hopefully will get this feeling as nice as nvim-tree.
