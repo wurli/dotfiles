@@ -1,4 +1,3 @@
-theme = MaterialDarker
 macos-option-as-alt = true
 font-family = CommitMono Nerd Font
 font-feature = -calt
@@ -6,13 +5,13 @@ font-feature = -liga
 font-feature = -dlig
 cursor-opacity = 0.5
 confirm-close-surface = true
+macos-non-native-fullscreen = true
+fullscreen = true
+
 # keybind = ctrl+u=scroll_page_up
 # keybind = ctrl+d=scroll_page_down
 # macos-titlebar-style = hidden
-
-macos-non-native-fullscreen = true
-
-fullscreen = true
+# theme = MaterialDarker
 # font-family =
 # font-family-bold =
 # font-family-italic =
