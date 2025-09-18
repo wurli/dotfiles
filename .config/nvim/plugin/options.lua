@@ -15,6 +15,7 @@ vim.opt.splitright  = true
 vim.opt.swapfile    = false
 vim.opt.tabstop     = 4
 vim.opt.updatetime  = 500
+vim.opt.winborder   = "rounded"
 
 vim.opt.fillchars:append "diff:╱"
 vim.opt.formatoptions:remove "o"
