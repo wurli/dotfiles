@@ -1,4 +1,3 @@
-
 return {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
@@ -27,7 +26,7 @@ return {
 
         vim.keymap.set(
             "n",
-            "<c-x>",
+            "<m-m>",
             function()
                 if vim.bo.ft ~= "harpoon" then
                     cur_file = vim.fn.expand("%"):gsub("^" .. cwd .. "/", "")
@@ -70,4 +69,3 @@ return {
         -- vim.keymap.set("n", "<M-n>", function() harpoon:list():next() end)
     end,
 }
-
