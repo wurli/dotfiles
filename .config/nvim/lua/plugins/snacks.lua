@@ -95,24 +95,24 @@ return {
             enabled = not vim.g.vscode,
             animate = { enabled = false },
             filter = function(buf)
-                return vim.bo[buf].filetype ~= "markdown"
+                local disable_filetypes = {
+                    "NvimTree",
+                    "Trouble",
+                    "help",
+                    "lazy",
+                    "mason",
+                    "markdown",
+                    "notify",
+                    "oil",
+                    "terminal",
+                }
+                for _, ft in ipairs(disable_filetypes) do
+                    if vim.bo[buf].filetype == ft then return false end
+                end
+                return true
             end
         },
-        explorer = {
-            -- At some point hopefully will get this feeling as nice as nvim-tree.
-            -- Current issues:
-            -- - Can't easily resize the tree window without borking the layout
-            -- - Can't seem to toggle using <C-n> like I do with nvim-tree
-            enabled = false,
-            -- win = {
-            --     list = {
-            --         keys = {
-            --             ["<C-n>"] = "cancel",
-            --             ["<c-n>"] = "cancel",
-            --         }
-            --     }
-            -- }
-        },
+        explorer = { enabled = false },
         picker = {
             enabled = not vim.g.vscode,
             win = {
