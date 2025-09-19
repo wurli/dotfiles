@@ -9,6 +9,7 @@ vim.opt.ignorecase  = true
 vim.opt.smartcase   = true
 vim.opt.scrolloff   = 7
 vim.opt.shiftwidth  = 4
+vim.opt.signcolumn  = "yes"
 vim.opt.smartindent = true
 vim.opt.softtabstop = 4
 vim.opt.splitright  = true
