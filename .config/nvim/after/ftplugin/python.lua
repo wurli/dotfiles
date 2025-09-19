@@ -5,8 +5,46 @@ end
 local term = require("utils.term").terminals.Python
 local fn = vim.fn
 
+-- The ty language server records python documentation as plan text. Usually,
+-- however, the documentation is written in reStructuredText (rst) format.
+-- It's not really possible to hook into the built-in vim.lsp.buf.hover() to
+-- update the hover contents, but it's possible to use some heuristics to figure
+-- out if a new window is a float, then update 'text' code blocks to 'rst'.
+--
+-- This is (hopefully) a temporary workaround while ty is still in alpha.
+vim.api.nvim_create_autocmd("BufWinEnter", {
+    group = vim.api.nvim_create_augroup("python-float-ns", { clear = true }),
+    callback = function(e)
+        local win = vim.fn.bufwinid(e.buf)
+
+        if not vim.api.nvim_win_is_valid(win) then
+            return
+        end
+
+        local is_floating_window = vim.api.nvim_win_get_config(win).relative ~= ''
+        if not is_floating_window then
+            return
+        end
+
+        local lines = vim.api.nvim_buf_get_lines(e.buf, 0, -1, false)
+        local needs_update = false
+
+        for lnum, line in ipairs(lines) do
+            if line:match("```%s*text") then
+                needs_update = true
+                lines[lnum] = line:gsub("```%s*text", "``` rst")
+                break
+            end
+        end
+
+        if needs_update then
+            vim.api.nvim_buf_set_lines(e.buf, 0, -1, false, lines)
+        end
+    end,
+})
+
 local function get_statement_range(pos)
-    local row, col =  fn.line(".") - 1, fn.col(".") - 1
+    local row, col = fn.line(".") - 1, fn.col(".") - 1
     local ok, node = pcall(vim.treesitter.get_node, { pos = { row, col } })
     if not ok or not node then return end
 
