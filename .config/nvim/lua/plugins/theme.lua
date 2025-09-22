@@ -1,7 +1,7 @@
 ---@diagnostic disable-next-line: unused-local
 local cobalt = {
-    dir = "~/Repos/cobalt.nvim",
-    -- "wurli/cobalt.nvim",
+    "wurli/cobalt.nvim",
+    -- dir = "~/Repos/cobalt.nvim/",
     config = function()
         require("cobalt").setup({})
         vim.cmd [[colorscheme cobalt]]

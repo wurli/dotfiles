@@ -1,32 +1,43 @@
 vim.keymap.set("n", "<leader><leader>c", "<cmd>CodeCompanionChat Toggle<cr>", { desc = "Code companion chat" })
-vim.keymap.set("n", "<leader>fa",        "<cmd>CodeCompanionActions<cr>",     { desc = "Code completion actions" })
-vim.cmd[[cnoreabbrev CC CodeCompanion]]
-vim.cmd[[cnoreabbrev CB CodeCompanion #buffer]]
-vim.cmd[[cnoreabbrev CE Copilot enable]]
-vim.cmd[[cnoreabbrev CD Copilot disable]]
-
-vim.g.copilot_filetypes = {
-    markdown = false,
-}
+vim.keymap.set("n", "<leader>fa", "<cmd>CodeCompanionActions<cr>", { desc = "Code completion actions" })
+vim.cmd [[cnoreabbrev CC CodeCompanion]]
+vim.cmd [[cnoreabbrev CB CodeCompanion #buffer]]
+vim.cmd [[cnoreabbrev CE Copilot enable]]
+vim.cmd [[cnoreabbrev CD Copilot disable]]
 
 return {
     {
-        "github/copilot.vim",
+        "zbirenbaum/copilot.lua",
         cmd = "Copilot",
-        event = "BufWinEnter",
+        event = "InsertEnter",
         cond = not vim.g.vscode,
-        config = function()
-            vim.keymap.set("i", "<m-e>",     "<Plug>(copilot-dismiss)",     { desc = "Copilot dismiss" })
-            vim.keymap.set("i", "<m-n>",     "<Plug>(copilot-next)",        { desc = "Copilot next" })
-            vim.keymap.set("i", "<m-p>",     "<Plug>(copilot-previous)",    { desc = "Copilot previous" })
-            vim.keymap.set("i", "<m-i>",     "<Plug>(copilot-accept-word)", { desc = "Copilot accept word" })
-            vim.keymap.set("i", "<m-space>", "<Plug>(copilot-suggest)",     { desc = "Copilot suggest" })
-            vim.keymap.set("i", "<m-y>", 'copilot#Accept("\\<CR>")', {
-                desc = "Copilot accept",
-                expr = true,
-                replace_keycodes = false,
-            })
-        end,
+        dependencies = { "copilotlsp-nvim/copilot-lsp" },
+        config = {
+            filetypes = {
+                markdown = false,
+            },
+            suggestion = {
+                enabled = true,
+                auto_trigger = false,
+                keymap = {
+                    accept = "<m-y>",
+                    accept_word = "<m-i>",
+                    accept_line = false,
+                    next = "<m-]>",
+                    prev = "<m-[>",
+                    dismiss = "<c-]>",
+                }
+            },
+            nes = {
+                enabled = false,
+                auto_trigger = false,
+                keymap = {
+                    accept_and_goto = "<m-y>",
+                    accept = false,
+                    dismiss = "<c-]>",
+                }
+            },
+        },
     },
     {
         "olimorris/codecompanion.nvim",
@@ -84,4 +95,3 @@ return {
         },
     },
 }
-
