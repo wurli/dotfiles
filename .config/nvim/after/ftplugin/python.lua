@@ -2,6 +2,8 @@ if vim.g.vscode then
     return
 end
 
+vim.opt_local.signcolumn = "yes"
+
 local term = require("utils.term").terminals.Python
 local fn = vim.fn
 
