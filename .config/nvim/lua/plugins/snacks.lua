@@ -170,7 +170,7 @@ return {
         -- { "<leader>sd",      function() Snacks.picker.diagnostics() end,                                                 desc = "Diagnostics" },
         -- { "<leader>sD",      function() Snacks.picker.diagnostics_buffer() end,                                          desc = "Buffer Diagnostics" },
         { "<leader>fh", pick("help", { win = { input = { keys = { ["<CR>"] = { "edit_vsplit", mode = { "i", "n" } } } } } }), desc = "Help Pages" },
-        -- { "<leader>sH",      function() Snacks.picker.highlights() end,                                                  desc = "Highlights" },
+        { "<leader>fH",      function() Snacks.picker.highlights() end,                                                  desc = "Highlights" },
         -- { "<leader>si",      function() Snacks.picker.icons() end,                                                       desc = "Icons" },
         -- { "<leader>sj",      function() Snacks.picker.jumps() end,                                                       desc = "Jumps" },
         { "<leader>fk", pick("keymaps"),                                                                                      desc = "Keymaps" },
