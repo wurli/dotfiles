@@ -1,3 +1,7 @@
+local action = function(x)
+    return function() require("diffview.actions")[x]() end
+end
+
 return {
     {
         "tpope/vim-fugitive",
@@ -11,7 +15,21 @@ return {
             "nvim-telescope/telescope.nvim",
             {
                 "sindrets/diffview.nvim", -- optional - Diff integration
-                opts = { enhanced_diff_hl = true },
+                opts = {
+                    enhanced_diff_hl = true,
+                    keymaps = {
+                        view = {
+                            { "n", "<c-n>", action("toggle_files"),      { desc = "Toggle the file panel." } },
+                            { "n", "q",     "<cmd>tabclose<cr>",         { desc = "Close the diff view" } },
+                        },
+                        file_panel = {
+                            { "n", "<c-n>", action("toggle_files"),      { desc = "Toggle the file panel." } },
+                            { "n", "<c-j>", action("select_next_entry"), { desc = "Open the diff for the next file" } },
+                            { "n", "<c-k>", action("select_prev_entry"), { desc = "Open the diff for the previous file" } },
+                            { "n", "q",     "<cmd>tabclose<cr>",         { desc = "Close the diff view" } },
+                        }
+                    }
+                },
             },
         },
         config = function()
