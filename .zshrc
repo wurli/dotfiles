@@ -16,6 +16,7 @@ export EDITOR=nvim
 # Adjust path
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 path+=("$HOME/.local/bin/")
+# path=($HOME/.local/bin/ $path)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Shell autocompletions
@@ -61,6 +62,8 @@ export MANPAGER='nvim +Man!'
 # uv install settings (only needed on work machine)
 export UV_NATIVE_TLS=true
 
+# GitHub Copilot CLI
+export COPILOT_MODEL="claude-sonnet-4.5"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # use starship
@@ -82,6 +85,7 @@ echo -e "\033]11;#001426\007"
 alias lg="lazygit"
 alias vim="nvim"
 alias ff="fzf"
+alias pip="uv pip"
 alias co="git checkout"
 alias ga="git add"
 alias gc="git commit"
