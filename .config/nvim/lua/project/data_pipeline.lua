@@ -1,5 +1,5 @@
 vim.keymap.set(
-    "n",
+    { "n", "v" },
     "<leader>gd",
     function()
         local url = vim.ui._get_urls()[1]
