@@ -10,13 +10,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
     end
 })
 
-local trim = function()
-    local lines = vim.api.nvim_buf_get_lines(0, 1, -1, true)
-    for lnum, line in ipairs(lines) do
-        lines[lnum] = line:gsub("%s+$", "")
-    end
-    vim.api.nvim_buf_set_lines(0, 1, -1, true, lines)
-end
+local trim = [[%s/\s\+$//e]]
 
 vim.api.nvim_create_user_command("Trim", trim, {
     desc = "Trim trailing whitespace from lines"
@@ -24,17 +18,18 @@ vim.api.nvim_create_user_command("Trim", trim, {
 
 vim.api.nvim_create_autocmd("BufWritePre", {
     group = vim.api.nvim_create_augroup("trim-on-save", { clear = true }),
-    callback = trim
+    command = trim
 })
 
-vim.api.nvim_create_autocmd("BufWinEnter", {
-    group = vim.api.nvim_create_augroup("diff-line-nums", { clear = true }),
-    callback = function()
-        local wins = vim.api.nvim_tabpage_list_wins(0)
-        for _, w in ipairs(wins) do
-            if vim.wo[w].diff then
-                vim.wo[w].relativenumber = false
-            end
-        end
-    end
-})
+
+-- vim.api.nvim_create_autocmd("BufWinEnter", {
+--     group = vim.api.nvim_create_augroup("diff-line-nums", { clear = true }),
+--     callback = function()
+--         local wins = vim.api.nvim_tabpage_list_wins(0)
+--         for _, w in ipairs(wins) do
+--             if vim.wo[w].diff then
+--                 vim.wo[w].relativenumber = false
+--             end
+--         end
+--     end
+-- })
