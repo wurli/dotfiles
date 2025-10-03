@@ -34,17 +34,6 @@ local pick_files = function(opts)
     end
 end
 
--- return {
---     "folke/snacks.nvim",
---     lazy = false,
---     opts = {
---         picker = { enabled = true }
---     },
---     keys = {
---         { "<leader>ff", function() Snacks.picker.files({ sort = { fields = { "file" } } }) end, desc = "Find Files" },
---     }
--- }
-
 -- Autocommands for Snacks-rename ---------------------------------------------
 vim.api.nvim_create_autocmd("User", {
     pattern = "OilActionsPost",
@@ -88,6 +77,8 @@ return {
         statuscolumn = { enabled = false },
         words = { enabled = false },
         bigfile = { enabled = false },
+        explorer = { enabled = false },
+        image = { enabled = not vim.g.vscode },
         rename = {
             enabled = not vim.g.vscode,
         },
@@ -112,7 +103,6 @@ return {
                 return true
             end
         },
-        explorer = { enabled = false },
         picker = {
             enabled = not vim.g.vscode,
             win = {
