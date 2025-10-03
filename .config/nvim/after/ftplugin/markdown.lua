@@ -1,5 +1,4 @@
-vim.opt_local.textwidth = 80
-vim.opt_local.formatoptions:remove("l")
+vim.opt_local.breakindentopt:append "shift:4"
 
 local ls = require("luasnip")
 
