@@ -119,9 +119,31 @@ return {
                             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
                         end, '[T]oggle Inlay [H]ints')
                     end
-
                 end,
             })
+
+            if vim.lsp.inline_completion then
+                vim.lsp.inline_completion.enable()
+                vim.keymap.set(
+                    "i",
+                    "<m-y>",
+                    vim.lsp.inline_completion.get,
+                    { desc = "LSP: Accept Inline Suggestion" }
+                )
+                vim.keymap.set(
+                    "i",
+                    "<m-]>",
+                    function() vim.lsp.inline_completion.select({ count = 1 }) end,
+                    { desc = "LSP: Next Inline Suggestion" }
+                )
+                vim.keymap.set(
+                    "i",
+                    "<m-]>",
+                    function() vim.lsp.inline_completion.select({ count = -1 }) end,
+                    { desc = "LSP: Previous Inline Suggestion" }
+                )
+            end
+
 
             -- Names are from lspconfig, which are not necessarily the same as
             -- the Mason package names.
