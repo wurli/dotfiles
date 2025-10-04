@@ -20,6 +20,8 @@ return {
                     keymaps = {
                         view = {
                             { "n", "<c-n>", action("toggle_files"),      { desc = "Toggle the file panel." } },
+                            { "n", "<c-j>", action("select_next_entry"), { desc = "Open the diff for the next file" } },
+                            { "n", "<c-k>", action("select_prev_entry"), { desc = "Open the diff for the previous file" } },
                             { "n", "q",     "<cmd>tabclose<cr>",         { desc = "Close the diff view" } },
                         },
                         file_panel = {
