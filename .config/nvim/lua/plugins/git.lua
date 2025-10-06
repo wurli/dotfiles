@@ -1,3 +1,9 @@
+-- Workaround for https://github.com/NeogitOrg/neogit/issues/1696
+vim.api.nvim_create_autocmd("User", {
+    pattern = "NeogitCommitComplete",
+    callback = function() vim.schedule(vim.cmd.tabprevious) end
+})
+
 local action = function(x)
     return function() require("diffview.actions")[x]() end
 end
@@ -8,7 +14,9 @@ return {
         cond = not vim.g.vscode,
     },
     {
-        "NeogitOrg/neogit",
+        -- "NeogitOrg/neogit",
+        "wurli/neogit",
+        branch = "float-highlights",
         cond = not vim.g.vscode,
         dependencies = {
             "nvim-lua/plenary.nvim", -- required
@@ -34,28 +42,23 @@ return {
                 },
             },
         },
-        config = function()
-            require("neogit").setup({
-                kind = "floating",
-                floating = {
-                    width = 0.85,
-                    height = 0.85
-                },
-                integrations = {
-                    telescope = true
-                },
-                telescope_sorter = function()
-                    return require("telescope.sorters").get_fzy_sorter()
-                end
-            })
-            vim.keymap.set("n", "<leader>lg", "<cmd>Neogit<cr>")
-
-            -- Workaround for https://github.com/NeogitOrg/neogit/issues/1696
-            vim.api.nvim_create_autocmd("User", {
-                pattern = "NeogitCommitComplete",
-                callback = function() vim.schedule(vim.cmd.tabprevious) end
-            })
-        end
+        opts = {
+            kind = "floating",
+            floating = {
+                width = 0.85,
+                height = 0.85
+            },
+            integrations = {
+                snacks = true,
+                telescope = false,
+            },
+            telescope_sorter = function()
+                return require("telescope.sorters").get_fzy_sorter()
+            end
+        },
+        keys = {
+            { "<leader>lg", "<cmd>Neogit<cr>", desc = "Neogit" },
+        },
     },
     -- {
     --     -- Not strictly necessary but does make things nicer overall
