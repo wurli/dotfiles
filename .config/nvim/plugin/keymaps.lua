@@ -2,6 +2,9 @@ local map = vim.keymap.set
 
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 
+-- Ctrl-Z is my tmux leader and I never use :suspend
+map({ "n", "v" }, "<c-z>", "<Nop>", { noremap = true, silent = true })
+
 map({ "n", "t" }, "<M-l>", vim.cmd.tabn, { desc = "Next tabpage" })
 map({ "n", "t" }, "<M-h>", vim.cmd.tabp, { desc = "Previous tabpage" })
 

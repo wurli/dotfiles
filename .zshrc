@@ -37,6 +37,9 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS} # Colours
 # Homebrew auto completions
 FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 
+# Set emacs keybindings BEFORE fzf so fzf's Tab completion isn't overridden
+bindkey -e
+
 export FZF_DEFAULT_OPTS='
   --preview-window "right:60%:hidden:wrap"
   --bind "ctrl-/:toggle-preview,ctrl-h:preview-up,ctrl-l:preview-down"
@@ -99,8 +102,7 @@ alias g="git"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Keymaps
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# without this line c-n and c-p don't seem to work in tmux
-bindkey -e
+# Custom key bindings (bindkey -e is now set before fzf sourcing)
 bindkey -s ^f "tmux-sessionizer\n"
 bindkey -s '\eu' "tmux-sessionizer -s 0\n"
 bindkey -s '\ei' "tmux-sessionizer -s 1\n"
