@@ -105,6 +105,11 @@ return {
         },
         picker = {
             enabled = not vim.g.vscode,
+            actions = {
+                open_in_app = function(_, item)
+                    vim.system({ "open", item.file })
+                end
+            },
             win = {
                 input = {
                     keys = {
@@ -113,9 +118,9 @@ return {
                         ["<C-m>"] = { "toggle_maximise", mode = { "i", "n" } },
                         ["<C-a>"] = { "toggle_hidden", mode = { "i", "n" } },
                         ["<C-i>"] = { "toggle_ignored", mode = { "i", "n" } },
+                        ["<C-o>"] = { "open_in_app", mode = { "i", "n" } },
                     }
                 },
-
             }
         },
     },
@@ -160,7 +165,7 @@ return {
         -- { "<leader>sd",      function() Snacks.picker.diagnostics() end,                                                 desc = "Diagnostics" },
         -- { "<leader>sD",      function() Snacks.picker.diagnostics_buffer() end,                                          desc = "Buffer Diagnostics" },
         { "<leader>fh", pick("help", { win = { input = { keys = { ["<CR>"] = { "edit_vsplit", mode = { "i", "n" } } } } } }), desc = "Help Pages" },
-        { "<leader>fH",      function() Snacks.picker.highlights() end,                                                  desc = "Highlights" },
+        { "<leader>fH", function() Snacks.picker.highlights() end,                                                            desc = "Highlights" },
         -- { "<leader>si",      function() Snacks.picker.icons() end,                                                       desc = "Icons" },
         -- { "<leader>sj",      function() Snacks.picker.jumps() end,                                                       desc = "Jumps" },
         { "<leader>fk", pick("keymaps"),                                                                                      desc = "Keymaps" },
