@@ -102,7 +102,6 @@ alias g="git"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Keymaps
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Custom key bindings (bindkey -e is now set before fzf sourcing)
 bindkey -s ^f "tmux-sessionizer\n"
 bindkey -s '\eu' "tmux-sessionizer -s 0\n"
 bindkey -s '\ei' "tmux-sessionizer -s 1\n"
