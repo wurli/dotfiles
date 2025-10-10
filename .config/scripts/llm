@@ -3,8 +3,6 @@
 # Note: this file is called via a keybinding in tmux.conf, e.g:
 #   bind-key -r i run-shell "tmux neww ~/.local/bin/llm"
 
-# Optional: set DEBUG=1 to enable logging to /tmp/llm-debug-*.log
-# log_file="/tmp/llm-debug-$(date +%s).log"
 set -e
 
 # Check if we're in a git repository
@@ -102,4 +100,10 @@ escaped_task=$(printf '%q' "$task_description")
 # Create new tmux session and start copilot with the prompt
 # Run copilot directly as the initial command in the session
 tmux new-session -d -s "$session_name" -c "$worktree_path" \
-    "$SHELL -c \"copilot --allow-all-tools --prompt \\\"$escaped_task\\\"\"; exec $SHELL"
+    "copilot --allow-all-tools --prompt $escaped_task | tee _copilot_reasoning.txt;
+    git add _copilot_reasoning.txt;
+    git commit -m 'docs: add copilot reasoning';
+    git add .
+    git commit -m 'chore: add any changes copilot forgot to commit'
+    git worktree remove $worktree_path;"
+
