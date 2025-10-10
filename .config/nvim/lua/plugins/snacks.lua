@@ -96,6 +96,7 @@ return {
                     "notify",
                     "oil",
                     "terminal",
+                    "fidget"
                 }
                 for _, ft in ipairs(disable_filetypes) do
                     if vim.bo[buf].filetype == ft then return false end
