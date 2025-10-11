@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 
-# Note: this file is called via a keybinding in tmux.conf, e.g:
-#   bind-key -r i run-shell "tmux neww ~/.local/bin/llm"
+# Note: this script is usually via a keybinding, e.g. in tmux.conf like:
+#
+# ```
+# bind-key -r i run-shell "tmux neww ~/.local/bin/llm"
+# ```
 
 set -e
 
+# -----------------------------------------------------------------------------
+#   Sanity checks
+# -----------------------------------------------------------------------------
 # Check if we're in a git repository
 if ! git rev-parse --git-dir > /dev/null 2>&1; then
     echo "Error: Not in a git repository"
@@ -12,11 +18,15 @@ if ! git rev-parse --git-dir > /dev/null 2>&1; then
     exit 1
 fi
 
-# Get the current project name and repository root
+# -----------------------------------------------------------------------------
+#    Get the current repo dir
+# -----------------------------------------------------------------------------
 repo_root=$(git rev-parse --show-toplevel)
 current_project=$(basename "$repo_root")
 
-# Read the task description from the user
+# -----------------------------------------------------------------------------
+#    Ask the user for a prompt
+# -----------------------------------------------------------------------------
 echo "> Enter a prompt for Copilot:"
 echo ""
 read -r task_description
@@ -27,6 +37,9 @@ if [[ -z "$task_description" ]]; then
     exit 1
 fi
 
+# -----------------------------------------------------------------------------
+#    Ask the user for a branch name
+# -----------------------------------------------------------------------------
 if [[ -n "$1" ]]; then
     branch_name="$1"
 else
@@ -39,17 +52,19 @@ else
 fi
 
 
+# -----------------------------------------------------------------------------
+#    Return the user to the original window
+# -----------------------------------------------------------------------------
 # Now we've prompted for everything we need, drop the user back into the
 # original window so we don't disrupt the flow
 if [[ -n "$TMUX" ]]; then
     tmux last-window
-else
-    tmux detach
 fi
 
-# Determine branch name
+# -----------------------------------------------------------------------------
+#    Generate a branch name if none supplied
+# -----------------------------------------------------------------------------
 if [[ -z "$branch_name" ]]; then
-    # Use gh copilot to suggest a branch name based on the task description
     branch_name=$(
         copilot --prompt \
             "generate a concise but descriptive git branch name (just the name, no command) for the following task.
@@ -61,7 +76,8 @@ if [[ -z "$branch_name" ]]; then
                 sed 's/[^a-z0-9-]/-/g'
             )
 
-        # Simple fallback: create a branch name from the first few words of the task description
+        # Simple fallback: create a branch name from the first few words of the
+        # task description
         if [[ -z "$branch_name" ]]; then
             branch_name=$(
                 echo "$task_description" |
@@ -75,12 +91,18 @@ fi
 
 branch_name_full=copilot/$branch_name
 
-# Create the branch in the current repository
+# -----------------------------------------------------------------------------
+#    Create the branch
+# -----------------------------------------------------------------------------
 git branch "$branch_name_full" 2>/dev/null || {
     exit 1
 }
 
-# Determine parent directory and worktree path
+echo ""
+
+# -----------------------------------------------------------------------------
+#    Create a worktree for the agent to apply changes to
+# -----------------------------------------------------------------------------
 parent_dir=$(dirname "$repo_root")
 worktree_name="${current_project}-${branch_name}"
 worktree_path="${parent_dir}/${worktree_name}"
@@ -92,9 +114,11 @@ if ! git worktree add "$worktree_path" "$branch_name_full"; then
     exit 1
 fi
 
-# Create tmux session name, replacing dots with underscores, similar to tmux-sessionizer
-session_name=$(echo "$worktree_name" | tr . _)
+echo ""
 
+# -----------------------------------------------------------------------------
+#    Fill out the prompt a bit
+# -----------------------------------------------------------------------------
 task_description="$task_description
 
 Make sure you commit all your changes using conventional commit messages. Don't push the branch."
@@ -102,13 +126,35 @@ Make sure you commit all your changes using conventional commit messages. Don't 
 # Escape the task description for safe shell usage
 escaped_task=$(printf '%q' "$task_description")
 
-# Create new tmux session and start copilot with the prompt
-# Run copilot directly as the initial command in the session
-tmux new-session -d -s "$session_name" -c "$worktree_path" \
-    "copilot --allow-all-tools --prompt $escaped_task | tee _copilot_reasoning.txt;
-    git add _copilot_reasoning.txt;
-    git commit -m 'docs: add copilot reasoning';
-    git add .
-    git commit -m 'chore: add any changes copilot forgot to commit'
-    git worktree remove $worktree_path;"
+# -----------------------------------------------------------------------------
+#    Enter the worktree and start the agent
+# -----------------------------------------------------------------------------
+cd "$worktree_path"
 
+# We add the prompt and reasoning to a markdown file. This will appear in the
+# diff when the user reviews the changes, and also in the commit history.
+quoted_task="> ${task_description//$'\n'/$'\n'> }"
+
+echo "## Prompt"           | tee -a _copilot_reasoning.md
+echo ""                    | tee -a _copilot_reasoning.md
+echo "$quoted_task"        | tee -a _copilot_reasoning.md
+echo ""                    | tee -a _copilot_reasoning.md
+echo "## Result"           | tee -a _copilot_reasoning.md
+echo ""                    | tee -a _copilot_reasoning.md
+copilot --allow-all-tools --prompt "$escaped_task" | tee -a _copilot_reasoning.md
+
+git add _copilot_reasoning.md
+git commit -m 'docs: add copilot reasoning'
+
+git add .
+git commit -m 'chore: add any changes copilot forgot to commit' || true
+
+# -----------------------------------------------------------------------------
+#    Delete the worktree and finish
+# -----------------------------------------------------------------------------
+# Finally, delete the worktree. IMO removing worktrees manually is always a
+# pain, so it's best to remove it automatically. From here the user can look at
+# differences from the branch directly, or even create another worktree if they
+# want to.
+cd "$repo_root"
+git worktree remove "$worktree_path"
