@@ -70,6 +70,7 @@ fi
 # Now we've prompted for everything we need, drop the user back into the
 # original window so we don't disrupt the flow
 if [[ -n "$TMUX" ]]; then
+    tmux_window=$(tmux display-message -p '#I')
     tmux last-window
 fi
 
@@ -99,6 +100,11 @@ if [[ -z "$branch_name" ]]; then
                     sed 's/-$//'
                 )
         fi
+fi
+
+if [[ -n "$tmux_window" ]]; then
+    # Not really necessary, but nice for the user to see what's going on
+    tmux rename-window -t "$tmux_window" "$branch_name"
 fi
 
 branch_name_full=copilot/$branch_name
