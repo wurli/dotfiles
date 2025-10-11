@@ -153,12 +153,12 @@ cd "$worktree_path"
 # diff when the user reviews the changes, and also in the commit history.
 quoted_task="> ${task_description//$'\n'/$'\n'> }"
 
-echo "## Prompt"           | tee -a _copilot_reasoning.md
-echo ""                    | tee -a _copilot_reasoning.md
-echo "$quoted_task"        | tee -a _copilot_reasoning.md
-echo ""                    | tee -a _copilot_reasoning.md
-echo "## Result"           | tee -a _copilot_reasoning.md
-echo ""                    | tee -a _copilot_reasoning.md
+echo "## Prompt"    | tee -a _copilot_reasoning.md
+echo ""             | tee -a _copilot_reasoning.md
+echo "$quoted_task" | tee -a _copilot_reasoning.md
+echo ""             | tee -a _copilot_reasoning.md
+echo "## Result"    | tee -a _copilot_reasoning.md
+echo ""             | tee -a _copilot_reasoning.md
 copilot --allow-all-tools --prompt "$escaped_task" | tee -a _copilot_reasoning.md
 
 git add _copilot_reasoning.md
