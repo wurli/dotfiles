@@ -6,6 +6,18 @@
 # bind-key -r i run-shell "tmux neww ~/.local/bin/agent"
 # ```
 
+# TODO (definitely):
+# - [ ] Implement logging
+# - [ ] Document usage, e.g. using -h
+# - [ ] Add a flag --auto-name to skip the prompt for branch name
+# - [ ] Add more robust cleanup. E.g. if the agent (or something else) fails
+#       after we've created a branch/worktree, we should clean up afterwards.
+#
+#
+# TODO (maybe):
+# - [ ] Figure out a good way to support more CLI agent tools
+# - [ ] Maybe allow passing args to the agent?
+
 # Exist on error
 set -e
 
@@ -78,6 +90,9 @@ fi
 #    Generate a branch name if none supplied
 # -----------------------------------------------------------------------------
 if [[ -z "$branch_name" ]]; then
+    echo "Generating branch name..."
+    echo ""
+
     branch_name=$(
         copilot --prompt \
             "generate a concise but descriptive git branch name (just the name, no command) for the following task.
@@ -115,8 +130,6 @@ branch_name_full=copilot/$branch_name
 git branch "$branch_name_full" 2>/dev/null || {
     exit 1
 }
-
-echo ""
 
 # -----------------------------------------------------------------------------
 #    Create a worktree for the agent to apply changes to
