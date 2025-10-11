@@ -3,9 +3,10 @@
 # Note: this script is usually via a keybinding, e.g. in tmux.conf like:
 #
 # ```
-# bind-key -r i run-shell "tmux neww ~/.local/bin/llm"
+# bind-key -r i run-shell "tmux neww ~/.local/bin/agent"
 # ```
 
+# Exist on error
 set -e
 
 # -----------------------------------------------------------------------------
