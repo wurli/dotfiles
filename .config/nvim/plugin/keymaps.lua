@@ -2,6 +2,16 @@ local map = vim.keymap.set
 
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 
+map("n", "<leader>ct", function()
+    local cur_colorschema = vim.trim(vim.fn.execute("colorscheme"))
+
+    if cur_colorschema == "cobalt" then
+        vim.cmd.colorscheme("tokyonight-day")
+    elseif cur_colorschema == "tokyonight-day" then
+        vim.cmd.colorscheme("cobalt")
+    end
+end, { desc = "Toggle light/dark colorscheme" })
+
 -- Ctrl-Z is my tmux leader and I never use :suspend
 map({ "n", "v" }, "<c-z>", "<Nop>", { noremap = true, silent = true })
 
