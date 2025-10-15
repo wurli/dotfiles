@@ -43,6 +43,7 @@ return {
                     mapv("<leader>lf", vim.lsp.buf.format,                                                    'LSP: [L]sp [F]ormat')
                     mapn('K',          vim.lsp.buf.hover,                                                     'LSP: Hover Documentation')
                     mapn('gD',         vim.lsp.buf.declaration,                                               'LSP: [G]oto [D]eclaration')
+                    -- mapn('gi',         vim.lsp.buf.implementation,                                            'LSP: [G]oto [I]mplementation')
                     mapn('<leader>ld', vim.diagnostic.open_float,                                             'LSP: [L]sp [D]iagnostic')
                     mapn('<leader>td', function() vim.diagnostic.enable(not vim.diagnostic.is_enabled()) end, 'LSP: [T]oggle [D]iagnostic')
 
