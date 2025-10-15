@@ -4,6 +4,7 @@ font-feature = -calt
 font-feature = -liga
 font-feature = -dlig
 cursor-opacity = 0.5
+cursor-color = "#808080"
 confirm-close-surface = true
 macos-non-native-fullscreen = true
 fullscreen = true
@@ -306,7 +307,6 @@ fullscreen = true
 # palette = 253=#dadada
 # palette = 254=#e4e4e4
 # palette = 255=#eeeeee
-# cursor-color =
 # cursor-invert-fg-bg = false
 # cursor-style = block
 # cursor-style-blink =
