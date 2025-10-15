@@ -1,13 +1,3 @@
----@diagnostic disable-next-line: unused-local
-local cobalt = {
-    "wurli/cobalt.nvim",
-    -- dir = "~/Repos/cobalt.nvim/",
-    config = function()
-        require("cobalt").setup({})
-        vim.cmd [[colorscheme cobalt]]
-    end
-}
-
 local nightfox = {
     "EdenEast/nightfox.nvim",
     config = function()
@@ -134,7 +124,9 @@ local get_charcount = function()
 end
 
 return {
-    vim.tbl_extend("keep", cobalt, { cond = not vim.g.vscode }),
+    { "wurli/cobalt.nvim",     cond = not vim.g.vscode },
+    -- { dir = "~/Repos/cobalt.nvim",     cond = not vim.g.vscode },
+    { "folke/tokyonight.nvim", cond = not vim.g.vscode },
 
     -- {
     --     -- Note: default hl is |hl-Whitespace|
@@ -180,10 +172,7 @@ return {
         lazy = false,
         config = function()
             require("lualine").setup({
-                options = {
-                    theme = "cobalt",
-                    section_separators = "",
-                },
+                options = { section_separators = "" },
                 sections = {
                     lualine_a = { "mode" },
                     lualine_b = { "branch", "diff", "diagnostics" },
