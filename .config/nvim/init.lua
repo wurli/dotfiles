@@ -30,3 +30,5 @@ for _, path in ipairs(vim.api.nvim_get_runtime_file("lua/snippets/*.lua", true))
     loadfile(path)()
 end
 
+vim.cmd.colorscheme("cobalt")
+
