@@ -149,12 +149,8 @@ gif() {
 
 scratch() {
     local name="$1"
-    if [[ -z "$name" ]]; then
-        echo "Usage: scratch <name> [<type>] [<directory>]"
-        return 1
-    fi
-
     local scratch_type="${2:-r}"
+
     if [[ "$scratch_type" == "r" ]]; then
         local filetype="R"
     else
@@ -162,14 +158,19 @@ scratch() {
     fi
 
     local directory="$HOME/${3:-Repos/$scratch_type-scratch}"
-    local today="$(date +%Y-%m-%d)"
-    local filename="$directory/${today}_$1.$filetype"
+
+    if [[ -z "$name" ]]; then
+        local filename="$directory/$(ls -R $directory | fzf --prompt 'Select scratch file> ')"
+    else
+        local today="$(date +%Y-%m-%d)"
+        local filename="$directory/${today}_$name.$filetype"
+    fi
 
     if command -v positron >/dev/null 2>&1; then
         touch $filename
         positron $filename $directory
     else
-        vim $filename
+        nvim $filename
     fi
 }
 
