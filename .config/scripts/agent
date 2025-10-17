@@ -6,17 +6,20 @@
 # bind-key -r i run-shell "tmux neww ~/.local/bin/agent"
 # ```
 
-# TODO (definitely):
-# - [ ] Implement logging
-# - [ ] Document usage, e.g. using -h
-# - [ ] Add a flag --auto-name to skip the prompt for branch name
+# TODO
+# - [ ] Add the ability to specify the cli tool to use. We should let the user
+#       pass additional args to the tool
+# - [ ] Add a debug mode, runnable using `-d` or `--debug`. In debug mode we
+#       should *not* use an AI. instead we should simulate it by just creating
+#       a dummy file `test.txt` with some text in it.
+# - [ ] Implement logging. Logs shoudn't be sent to stdout. The log file should
+#       be configurable using an env var.
+# - [ ] Add a flag --auto-name (alias -a) to skip the prompt for branch name
+# - [ ] If the branch selected by the user already exists, open it in a new
+#       worktree and continue adding new commits.
 # - [ ] Add more robust cleanup. E.g. if the agent (or something else) fails
 #       after we've created a branch/worktree, we should clean up afterwards.
-#
-#
-# TODO (maybe):
-# - [ ] Figure out a good way to support more CLI agent tools
-# - [ ] Maybe allow passing args to the agent?
+# - [ ] Document usage, e.g. using -h/--help
 
 # Exist on error
 set -e
@@ -30,16 +33,31 @@ if ! command -v git &>/dev/null; then
     exit 1
 fi
 
+if ! command -v copilot &>/dev/null; then
+    echo "Error: The copilot CLI is not installed."
+    sleep 2
+    exit 1
+fi
+
 if ! git rev-parse --git-dir > /dev/null 2>&1; then
     echo "Error: Not in a git repository"
     sleep 2
     exit 1
 fi
 
-if ! command -v copilot &>/dev/null; then
-    echo "Error: The copilot CLI is not installed."
-    sleep 2
-    exit 1
+# -----------------------------------------------------------------------------
+#    Check for uncommitted changes
+# -----------------------------------------------------------------------------
+if ! git diff-index --quiet HEAD --; then
+    echo "> WARNING: You have uncommitted changes:"
+    git status --short
+    echo "> Do you wish to continue? Copilot will only work on committed files. (y/n)"
+    read -r response
+    if [[ "$response" != "y" && "$response" != "Y" ]]; then
+        echo "Aborting..."
+        sleep 1
+        exit 1y
+    fi
 fi
 
 # -----------------------------------------------------------------------------
@@ -152,7 +170,18 @@ echo ""
 # -----------------------------------------------------------------------------
 task_description="$task_description
 
-Make sure you commit all your changes using conventional commit messages. Don't push the branch."
+As you work, summarise your reasoning in a human-readable file, _COPILOT_SUMMARY.md.
+
+IMPORTANT RULES:
+*   Do not modify files outside of this worktree.
+*   Do not modify the global state, e.g. by installing new software. Only
+    modify files in the current worktree.
+*   Do not modify .gitignore or _AGENT_CLI_OUTPUT.md.
+*   Write clear, concise commit messages using conventional commit format.
+*   Don't push your changes to the remote.
+*   Don't switch to another branch. If you need to see anything from another
+    branch, use git show or git diff.
+"
 
 # Escape the task description for safe shell usage
 escaped_task=$(printf '%q' "$task_description")
@@ -166,15 +195,15 @@ cd "$worktree_path"
 # diff when the user reviews the changes, and also in the commit history.
 quoted_task="> ${task_description//$'\n'/$'\n'> }"
 
-echo "## Prompt"    | tee -a _copilot_reasoning.md
-echo ""             | tee -a _copilot_reasoning.md
-echo "$quoted_task" | tee -a _copilot_reasoning.md
-echo ""             | tee -a _copilot_reasoning.md
-echo "## Result"    | tee -a _copilot_reasoning.md
-echo ""             | tee -a _copilot_reasoning.md
-copilot --allow-all-tools --prompt "$escaped_task" | tee -a _copilot_reasoning.md
+echo "## Prompt"    | tee -a _AGENT_CLI_OUTPUT.md
+echo ""             | tee -a _AGENT_CLI_OUTPUT.md
+echo "$quoted_task" | tee -a _AGENT_CLI_OUTPUT.md
+echo ""             | tee -a _AGENT_CLI_OUTPUT.md
+echo "## Result"    | tee -a _AGENT_CLI_OUTPUT.md
+echo ""             | tee -a _AGENT_CLI_OUTPUT.md
+copilot --allow-all-tools --prompt "$escaped_task" | tee -a _AGENT_CLI_OUTPUT.md
 
-git add _copilot_reasoning.md
+git add _AGENT_CLI_OUTPUT.md
 git commit -m 'docs: add copilot reasoning'
 
 git add .
