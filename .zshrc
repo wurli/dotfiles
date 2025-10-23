@@ -121,6 +121,9 @@ function fg() {
     --bind 'enter:become(nvim {1} +{2})'
 }
 
+function venv() {
+    uv venv "$@" && source ".venv/bin/activate"
+}
 
 # Transform a video into a gif with nice settings.
 # This is pretty much impossible to remember if you're not intimately familiar
@@ -129,7 +132,7 @@ gif() {
     local input="$1"
     local output="$2"
     local width="${3:-1080}"
-    local speed="${4:-1}"
+    local speed="${4:-1}"    # E.g. 0.5 = half speed
 
     if [[ -z "$input" || -z "$output" ]]; then
         echo "Usage: gif <input.mov> <output.gif> [<width>] [<speed>]"
