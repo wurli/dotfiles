@@ -2,7 +2,11 @@ local map = vim.keymap.set
 
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 
-map("n", "<leader>ct", function()
+map("n", "<leader>yf", function()
+    vim.fn.setreg("+", vim.fn.expand("%"))
+end, { desc = "Yank the current file path" })
+
+map("n", "<leader>tc", function()
     local cur_colorschema = vim.trim(vim.fn.execute("colorscheme"))
 
     if cur_colorschema == "cobalt" then
