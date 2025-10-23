@@ -18,9 +18,25 @@ local make_python_cmd = function()
     return prefix .. "ipython --no-autoindent"
 end
 
+local make_python_opts = function()
+    local opts = { env = {} }
+    if vim.uv.fs_stat("pyproject.toml") then
+        local lines = vim.fn.readfile("pyproject.toml")
+        for _, l in ipairs(lines) do
+            local pythonpath = l:match([====[src%s*=%s*%["([^"]*)"%]]====])
+            if pythonpath then
+                opts.env.PYTHONPATH = pythonpath
+                vim.cmd.echo[["Setting Ipython $PYTHONPATH using pyproject.toml"]]
+                break
+            end
+        end
+    end
+    return opts
+end
+
 vim.keymap.set(
     "n", "<leader><leader>p",
-    term.make_toggler(make_python_cmd, "Python"),
+    term.make_toggler(make_python_cmd, "Python", make_python_opts),
     { desc = "Start IPython" }
 )
 
