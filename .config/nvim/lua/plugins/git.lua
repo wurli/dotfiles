@@ -14,9 +14,9 @@ return {
         cond = not vim.g.vscode,
     },
     {
-        -- "NeogitOrg/neogit",
-        "wurli/neogit",
-        branch = "float-highlights",
+        "NeogitOrg/neogit",
+        -- "wurli/neogit",
+        -- branch = "float-highlights",
         cond = not vim.g.vscode,
         dependencies = {
             "nvim-lua/plenary.nvim", -- required

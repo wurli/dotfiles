@@ -33,11 +33,11 @@ map("i", "<C-c>", "<Esc>")
 
 -- I like to spam Ctrl-C to remove highlights
 map("n", "<C-c>", function()
-    vim.cmd[[nohls]]
+    vim.cmd [[nohls]]
     return "<C-c>"
 end, { expr = true })
 map("n", "<Esc>", function()
-    vim.cmd[[nohls]]
+    vim.cmd [[nohls]]
     return "<Esc>"
 end, { expr = true })
 
@@ -53,9 +53,9 @@ vim.api.nvim_create_autocmd("CmdwinEnter", {
 map("i", "<C-l>", "<Del>")
 
 -- Terminal mode keymaps
-map("t", "<M-c>", "<C-c>",             { desc = "Terminal cancel" })
-map("t", "<M-l>", "<C-l>",             { desc = "Terminal clear" })
-map("t", "<C-c>", "<C-\\><C-n>",       { desc = "Terminal exit"  })
+map("t", "<M-c>", "<C-c>", { desc = "Terminal cancel" })
+map("t", "<M-l>", "<C-l>", { desc = "Terminal clear" })
+map("t", "<C-c>", "<C-\\><C-n>", { desc = "Terminal exit" })
 map("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Terminal exit left" })
 map("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Terminal exit down" })
 map("t", "<C-k>", "<C-\\><C-n><C-w>k", { desc = "Terminal exit up" })
@@ -68,7 +68,7 @@ map("n", "<C-k>", "<C-w><C-k>", { desc = "Window navigate up" })
 map("n", "<C-l>", "<C-w><C-l>", { desc = "Window navigate right" })
 
 -- Source stuff
-map("n", "<leader>x",         "<cmd>.lua<CR>",     { desc = "Execute the current line" })
+map("n", "<leader>x", "<cmd>.lua<CR>", { desc = "Execute the current line" })
 map("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "Execute the current file" })
 
 -- Reindent on paste; use leader to not indent
@@ -78,13 +78,13 @@ map("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "Execute the current
 -- map({ "n", "v" }, "<leader>P", "P",      { desc = "Normal paste"      })
 
 -- Delete without adding to register
-map({"n", "v"}, "<leader>d", [["_d]], { desc = "Delete into empty register" })
+map({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete into empty register" })
 
 -- These mappings control the size of splits (height/width)
 map("n", "<M-,>", "<c-w>5<", { desc = "Descrease split width" })
-map("n", "<M-.>", "<c-w>5>", { desc = "Increase split width"  })
-map("n", "<M-;>", "<C-W>-",  { desc = "Decrease split height" })
-map("n", "<M-'>", "<C-W>+",  { desc = "Increase split height" })
+map("n", "<M-.>", "<c-w>5>", { desc = "Increase split width" })
+map("n", "<M-;>", "<C-W>-", { desc = "Decrease split height" })
+map("n", "<M-'>", "<C-W>+", { desc = "Increase split height" })
 
 -- Move line down
 map(
@@ -163,3 +163,25 @@ map(
 )
 
 map("n", "<leader>lz", "<cmd>Lazy<CR>", { desc = "Open Lazy" })
+
+
+_G.cycle_case = function()
+    local left, right = vim.fn.getpos("'["), vim.fn.getpos("']")
+
+    -- Don't toggle case over multiple lines
+    if left[2] ~= right[2] then
+        return
+    end
+
+    local line = vim.fn.getline(left[2])
+    local str = string.sub(line, left[3], right[3])
+    local new_str = require("utils.case").cycle_case(str)
+
+    -- Replace the text in the buffer
+    vim.api.nvim_buf_set_text(0, left[2] - 1, left[3] - 1, left[2] - 1, right[3], { new_str })
+end
+
+map({ "n", "v" }, "gl", function()
+    vim.o.operatorfunc = "v:lua.cycle_case"
+    return "g@"
+end, { expr = true, desc = "Cycle the case of a word" })

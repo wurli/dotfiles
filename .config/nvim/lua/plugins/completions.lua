@@ -1,3 +1,4 @@
+local n = 0
 return {
     {
         "saghen/blink.compat",
@@ -34,9 +35,9 @@ return {
             appearance = { nerd_font_variant = "mono" },
             sources = {
                 default = {
+                    "snippets",
                     "lsp",
                     "path",
-                    "snippets",
                     "buffer",
                     -- "cmp_r"
                 },
@@ -59,6 +60,23 @@ return {
                 --     }
                 -- }
             },
+            fuzzy = {
+                -- Always prioritise snippets if available
+                -- sorts = {
+                --     function(a, b)
+                --         if a.source_id == "snippets" and b.source_id ~= "snippets" then
+                --             -- prioritise a
+                --             return true
+                --         elseif a.source_id ~= "snippets" and b.source_id == "snippets" then
+                --             -- prioritise b
+                --             return false
+                --         else
+                --             -- fallback to default
+                --             return nil
+                --         end
+                --     end
+                -- }
+            }
         },
         -- allows extending the providers array elsewhere in your config
         -- without having to redefine it

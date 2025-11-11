@@ -8,24 +8,23 @@ vim.keymap.set(
 )
 
 return {
-    -- "wurli/ark.nvim",
-    dependencies = { "blink.cmp" },
-    dir = "~/Repos/ark.nvim",
-    cond = not vim.g.vscode,
-    config = function()
-        require("ark").setup({
-            lsp_capabilities = require("blink.cmp").get_lsp_capabilities(),
-        })
-
-        vim.api.nvim_create_autocmd("BufEnter", {
-            pattern = "*.R",
-            callback = function()
-                vim.keymap.set(
-                    { "n", "v" }, "<Enter>",
-                    require("ark").execute_current,
-                    { buffer = 0, desc = "Send code to the R console" }
-                )
-            end
-        })
-    end
+    -- -- "wurli/ark.nvim",
+    -- dependencies = { "blink.cmp" },
+    -- dir = "~/Repos/ark.nvim",
+    -- cond = not vim.g.vscode,
+    -- config = function()
+    --     require("ark").setup({
+    --         lsp_capabilities = require("blink.cmp").get_lsp_capabilities(),
+    --     })
+    --     vim.api.nvim_create_autocmd("BufEnter", {
+    --         pattern = "*.R",
+    --         callback = function()
+    --             vim.keymap.set(
+    --                 { "n", "v" }, "<Enter>",
+    --                 require("ark").execute_current,
+    --                 { buffer = 0, desc = "Send code to the R console" }
+    --             )
+    --         end
+    --     })
+    -- end
 }

@@ -8,6 +8,7 @@ cursor-color = "#808080"
 confirm-close-surface = true
 macos-non-native-fullscreen = true
 fullscreen = true
+font-size = 16
 
 # keybind = ctrl+u=scroll_page_up
 # keybind = ctrl+d=scroll_page_down
@@ -23,7 +24,6 @@ fullscreen = true
 # font-style-bold-italic = default
 # font-synthetic-style = bold,italic,bold-italic
 # font-feature =
-# font-size = 13
 # font-variation =
 # font-variation-bold =
 # font-variation-italic =

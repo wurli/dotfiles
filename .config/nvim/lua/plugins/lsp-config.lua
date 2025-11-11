@@ -40,7 +40,7 @@ return {
                     local mapn = function(...) map("n", ...) end
                     local mapv = function(...) map({ "n", "v" }, ...) end
 
-                    mapv("<leader>lf", vim.lsp.buf.format,                                                    'LSP: [L]sp [F]ormat')
+                    -- mapv("<leader>lf", vim.lsp.buf.format,                                                    'LSP: [L]sp [F]ormat')
                     mapn('K',          vim.lsp.buf.hover,                                                     'LSP: Hover Documentation')
                     mapn('gD',         vim.lsp.buf.declaration,                                               'LSP: [G]oto [D]eclaration')
                     -- mapn('gi',         vim.lsp.buf.implementation,                                            'LSP: [G]oto [I]mplementation')

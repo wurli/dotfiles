@@ -26,11 +26,17 @@ local make_python_opts = function()
             local pythonpath = l:match([====[src%s*=%s*%["([^"]*)"%]]====])
             if pythonpath then
                 opts.env.PYTHONPATH = pythonpath
-                vim.cmd.echo[["Setting Ipython $PYTHONPATH using pyproject.toml"]]
+                vim.cmd.echo(('"Settng Ipython $PYTHONPATH to %s usng pyproject.toml"'):format(pythonpath))
                 break
             end
         end
     end
+
+    -- Seems to cause issues if env is empty
+    if vim.tbl_isempty(opts.env) then
+        opts.env = nil
+    end
+
     return opts
 end
 
@@ -65,4 +71,3 @@ vim.keymap.set(
 --     end,
 --     { desc = "Open jobs pane" }
 -- )
-

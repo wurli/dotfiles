@@ -101,34 +101,32 @@ vim.cmd [[cnoreabbrev CD Copilot disable]]
 --     },
 -- }
 
--- Hack to delete the autocommand which sidekick uses to automatically
--- enter insert mode when opening the CLI. Unfortunately folke doesn't
--- (currently) want to make this configurable:
--- https://github.com/folke/sidekick.nvim/issues/35
-vim.api.nvim_create_autocmd("User", {
-    pattern = "LazyLoad",
-    callback = function(e)
-        if e.data == "sidekick.nvim" then
-            local all_augroups = vim.split(vim.fn.execute("augroup", "silent"), "  ")
-            local augroups = vim.iter(all_augroups)
-                :filter(function(s) return s:find("sidekick_cli_") end)
-                :totable()
-
-            vim.schedule(function()
-                for _, g in ipairs(augroups) do
-                    local autocmds = vim.api.nvim_get_autocmds({
-                        event = "BufEnter",
-                        group = g,
-                    })
-
-                    for _, cmd in ipairs(autocmds) do
-                        vim.api.nvim_del_autocmd(cmd.id)
-                    end
-                end
-            end)
-        end
-    end
-})
+-- -- Hack to delete the autocommand which sidekick uses to automatically enter
+-- -- insert mode when opening the CLI. Unfortunately folke doesn't (currently)
+-- -- want to make this configurable:
+-- -- https://github.com/folke/sidekick.nvim/issues/35
+-- vim.api.nvim_create_autocmd("User", {
+--     pattern = "LazyLoad",
+--     callback = function(e)
+--         if e.data == "sidekick.nvim" then
+--             local all_augroups = vim.split(vim.fn.execute("augroup", "silent"), "  ")
+--             local augroups = vim.iter(all_augroups)
+--                 :filter(function(s) return s:find("sidekick") end)
+--                 :totable()
+--             vim.schedule(function()
+--                 for _, g in ipairs(augroups) do
+--                     local autocmds = vim.api.nvim_get_autocmds({
+--                         event = { "BufEnter", "WinEnter" },
+--                         group = g,
+--                     })
+--                     for _, cmd in ipairs(autocmds) do
+--                         vim.api.nvim_del_autocmd(cmd.id)
+--                     end
+--                 end
+--             end)
+--         end
+--     end
+-- })
 
 
 return {
@@ -168,7 +166,8 @@ return {
         opts = {
             cli = {
                 mux = {
-                    backend = "tmux",
+                    -- backend = "tmux",
+                    backend = nil,
                     enabled = false,
                 },
             },
@@ -185,28 +184,20 @@ return {
                 expr = true,
                 desc = "Goto/Apply Next Edit Suggestion",
             },
-            -- This mapping doesn't work, probs cause of tmux :(
-            -- {
-            --     "<c-.>",
-            --     function()
-            --         require("sidekick.cli").focus()
-            --     end,
-            --     mode = { "n", "x", "i", "t" },
-            --     desc = "Sidekick Switch Focus",
-            -- },
             {
                 "<leader><leader>c",
                 function()
-                    require("sidekick.cli").toggle({ name = "copilot", focus = false })
+                    require("sidekick.cli").toggle({
+                        name = "copilot",
+                        focus = false,
+                    })
                 end,
                 desc = "Sidekick Toggle CLI",
                 mode = { "n", "v" },
             },
             {
                 "<leader>cp",
-                function()
-                    require("sidekick.cli").select_prompt()
-                end,
+                function() require("sidekick.cli").prompt() end,
                 desc = "Sidekick Ask Prompt",
                 mode = { "n", "v" },
             },
