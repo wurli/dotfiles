@@ -153,7 +153,7 @@ return {
                 ty = {
                     cmd = { "ty", "server" },
                     filetypes = { "python" },
-                    root_dir = vim.fs.root(0, { ".git/", "pyproject.toml" }),
+                    root_dir = vim.fs.root(0, { "pyproject.toml", ".git/" }),
                     settings = {
                         ty = {
                             experimental = {

@@ -86,6 +86,9 @@ return {
             enabled = not vim.g.vscode,
             animate = { enabled = false },
             filter = function(buf)
+                if vim.b[buf].jet then
+                    return false
+                end
                 local disable_filetypes = {
                     "NvimTree",
                     "Trouble",
@@ -96,7 +99,7 @@ return {
                     "notify",
                     "oil",
                     "terminal",
-                    "fidget"
+                    "fidget",
                 }
                 for _, ft in ipairs(disable_filetypes) do
                     if vim.bo[buf].filetype == ft then return false end

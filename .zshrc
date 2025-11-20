@@ -11,6 +11,7 @@ fi
 # export COLORTERM=truecolor
 export HISTSIZE=10000 # Default 1000 lines isn't enough
 export EDITOR=nvim
+export JUPYTER_PATH=$HOME/Repos/jet
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Adjust path
@@ -133,6 +134,7 @@ gif() {
     local output="$2"
     local width="${3:-1080}"
     local speed="${4:-1}"    # E.g. 0.5 = half speed
+    local fps="${5:-20}"
 
     if [[ -z "$input" || -z "$output" ]]; then
         echo "Usage: gif <input.mov> <output.gif> [<width>] [<speed>]"
@@ -141,7 +143,7 @@ gif() {
 
     ffmpeg -i "$input" \
         -vf "setpts=${speed}*PTS, \
-        fps=20, \
+        fps=${fps}, \
         scale=${width}:-1:flags=lanczos, \
         split[s0][s1], \
         [s0]palettegen[p]; \
