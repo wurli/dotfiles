@@ -1,7 +1,7 @@
 return {
     dir = "~/Repos/jet",
-    dependencies = {
-        dir = "~/Repos/jet.ark",
-    },
+    -- dependencies = {
+    --     dir = "~/Repos/jet.ark",
+    -- },
     config = true
 }
