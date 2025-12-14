@@ -1,6 +1,7 @@
 return {
 	"stevearc/conform.nvim",
 	lazy = false,
+	enabled = true,
 	opts = {
 		formatters_by_ft = {
 			lua = { "stylua" },
@@ -16,7 +17,9 @@ return {
 	keys = {
 		{
 			"<leader>lf",
-			function() require("conform").format() end,
+			function()
+				require("conform").format()
+			end,
 			{ "n", "v" },
 			desc = "Format File",
 		},
