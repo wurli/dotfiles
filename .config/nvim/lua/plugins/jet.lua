@@ -2,7 +2,7 @@ local map = vim.keymap.set
 
 return {
 	dir = "~/Repos/jet",
-	lazy = false,
+	cmd = "Jet",
 	dependencies = {
 		dir = "~/Repos/jet.ark/",
 		config = function()

@@ -13,7 +13,8 @@
 -- end
 
 -- A new tab with `q` to close is nicest in most cases
-vim.keymap.set("n", "<leader>lg", "<cmd>Git<cr><c-w>T<cr>", { desc = "Fugitive open" })
+-- vim.keymap.set("n", "<leader>lg", "<cmd>Git<cr><c-w>T<cr>", { desc = "Fugitive open" })
+vim.keymap.set("n", "<leader>lg", "<cmd>Git<cr><c-w>L<cr>", { desc = "Fugitive open" })
 
 -- Git diff against HEAD with Snacks/CodeDiff
 vim.keymap.set("n", "<leader>fd", function()
