@@ -1,5 +1,7 @@
 local pick = function(picker, opts)
-	return function() Snacks.picker.pick(picker, opts or {}) end
+	return function()
+		Snacks.picker.pick(picker, opts or {})
+	end
 end
 
 local pick_files = function(opts)
@@ -87,7 +89,9 @@ return {
 			enabled = not vim.g.vscode,
 			animate = { enabled = false },
 			filter = function(buf)
-				if vim.b[buf].jet then return false end
+				if vim.b[buf].jet then
+					return false
+				end
 				local disable_filetypes = {
 					"NvimTree",
 					"Trouble",
@@ -101,7 +105,9 @@ return {
 					"fidget",
 				}
 				for _, ft in ipairs(disable_filetypes) do
-					if vim.bo[buf].filetype == ft then return false end
+					if vim.bo[buf].filetype == ft then
+						return false
+					end
 				end
 				return true
 			end,
@@ -109,7 +115,9 @@ return {
 		picker = {
 			enabled = not vim.g.vscode,
 			actions = {
-				open_in_app = function(_, item) vim.system({ "open", item.file }) end,
+				open_in_app = function(_, item)
+					vim.system({ "open", item.file })
+				end,
 			},
 			win = {
 				input = {
@@ -154,7 +162,16 @@ return {
 		},
 		{
 			"<leader>fn",
-			pick("files", { cwd = vim.fn.stdpath("config") }),
+			pick("grep", {
+				dirs = vim.iter(vim.fn.readdir(vim.fn.expand("~/Repos/")))
+					:filter(function(file)
+						return file:find("notes") or file:find("%.wiki$")
+					end)
+					:map(function(file)
+						return vim.fn.expand("~/Repos/" .. file)
+					end)
+					:totable(),
+			}),
 			desc = "Find Nvim Config File",
 		},
 		{
@@ -224,7 +241,9 @@ return {
 		},
 		{
 			"<leader>fH",
-			function() Snacks.picker.highlights() end,
+			function()
+				Snacks.picker.highlights()
+			end,
 			desc = "Highlights",
 		},
 		-- { "<leader>si",      function() Snacks.picker.icons() end,                                                       desc = "Icons" },
