@@ -95,14 +95,15 @@ return {
 				local disable_filetypes = {
 					"NvimTree",
 					"Trouble",
+					"aerial",
+					"fidget",
 					"help",
 					"lazy",
-					"mason",
 					"markdown",
+					"mason",
 					"notify",
 					"oil",
 					"terminal",
-					"fidget",
 				}
 				for _, ft in ipairs(disable_filetypes) do
 					if vim.bo[buf].filetype == ft then
@@ -150,6 +151,7 @@ return {
 		-- { "<leader>n",       function() Snacks.picker.notifications() end,                                               desc = "Notification History" },
 		-- { "<C-n>",      function() Snacks.explorer() end,                                                                     desc = "File Explorer" },
 		-- -- find
+		--
 		{
 			"<leader>fb",
 			pick("buffers"),
@@ -163,6 +165,7 @@ return {
 		{
 			"<leader>fn",
 			pick("grep", {
+				title = "Grep Notes",
 				dirs = vim.iter(vim.fn.readdir(vim.fn.expand("~/Repos/")))
 					:filter(function(file)
 						return file:find("notes") or file:find("%.wiki$")
@@ -171,6 +174,16 @@ return {
 						return vim.fn.expand("~/Repos/" .. file)
 					end)
 					:totable(),
+			}),
+			desc = "Find Nvim Config File",
+		},
+
+		{
+			"<leader>fB",
+			pick("grep", {
+				title = "Grep Bible",
+				dirs = { vim.fn.expand("~/Repos/bible-notes/bible") },
+				sort = { fields = { "file:asc" } },
 			}),
 			desc = "Find Nvim Config File",
 		},

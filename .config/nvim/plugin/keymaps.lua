@@ -122,37 +122,6 @@ vim.keymap.set("n", "<M-i>", "<cmd>silent !tmux neww tmux-sessionizer -s 1<CR>")
 vim.keymap.set("n", "<M-o>", "<cmd>silent !tmux neww tmux-sessionizer -s 2<CR>")
 vim.keymap.set("n", "<M-p>", "<cmd>silent !tmux neww tmux-sessionizer -s 3<CR>")
 
-local go_to_next_jumplist_buf = function(dir)
-	local jl = vim.fn.getjumplist()
-	local jumplist, cur_jump_index = unpack(jl)
-
-	local cur_buf = jumplist[cur_jump_index].bufnr
-
-	local n_jumps = 1
-	while true do
-		local jump = jumplist[cur_jump_index + dir * n_jumps]
-		if not jump then
-			return
-		end
-		if jump.bufnr ~= cur_buf then
-			local command = dir == -1 and "<c-o>" or "<c-i>"
-			local cmd = 'execute "normal! ' .. tostring(n_jumps) .. "\\" .. command .. '"'
-			vim.print(cmd)
-			vim.cmd(cmd)
-			return
-		end
-		n_jumps = n_jumps + 1
-	end
-end
-
-map("n", "<m-n>", function()
-	go_to_next_jumplist_buf(-1)
-end, { desc = "Go to previous buffer in jumplist" })
-
-map("n", "<m-p>", function()
-	go_to_next_jumplist_buf(1)
-end, { desc = "Go to next buffer in jumplist" })
-
 map("n", "<leader>lz", "<cmd>Lazy<CR>", { desc = "Open Lazy" })
 
 _G.cycle_case = function()

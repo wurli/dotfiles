@@ -67,7 +67,7 @@ export MANPAGER='nvim +Man!'
 export UV_NATIVE_TLS=true
 
 # GitHub Copilot CLI
-export COPILOT_MODEL="claude-sonnet-4.5"
+# export COPILOT_MODEL="claude-sonnet-4.5"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # use starship

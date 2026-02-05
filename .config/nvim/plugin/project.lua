@@ -6,12 +6,11 @@ vim.api.nvim_create_autocmd("VimEnter", {
 		-- If the current working dir matches any of these patterns, require
 		-- the corresponding lua module
 		for pattern, module in pairs({
-			["bible"] = "bible_notes",
-			["notes"] = "notes",
+			["bible%-notes"] = "bible_notes",
 			["data_pipeline$"] = "data_pipeline",
+			["notes"] = "notes",
 		}) do
 			if cwd_name:match(pattern) then
-				print("project." .. module)
 				require("project." .. module)
 			end
 		end
