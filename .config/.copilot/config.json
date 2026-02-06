@@ -1,0 +1,11 @@
+{
+  "banner": "never",
+  "render_markdown": true,
+  "screen_reader": false,
+  "theme": "auto",
+  "trusted_folders": [
+    "/Users/JACOB.SCOTT1/Repos/vpms-test",
+    "/Users/JACOB.SCOTT1/Repos/vpms-cs-analysis",
+    "/Users/JACOB.SCOTT1/Repos/CLPAdmin/PricingModels/AUS"
+  ]
+}

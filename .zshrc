@@ -1,7 +1,8 @@
 
-# #{buffer:.zshrc}
-#
-# Why isn't fzf completion, e.g. cd **<tab> working in tmux? It works outside of tmux.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+export XDG_CONFIG_HOME="$HOME/.config"
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 if [[ -n "$TMUX" ]]; then
     export TERM=tmux-256color
