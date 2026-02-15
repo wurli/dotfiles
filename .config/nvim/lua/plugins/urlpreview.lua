@@ -1,8 +1,9 @@
 return {
-    "wurli/urlpreview.nvim",
-    opts = {
-        auto_preview = true,
-        keymap = "<leader>K",
-        hl_group_title = false,
-    }
+	"wurli/urlpreview.nvim",
+	event = "VeryLazy",
+	opts = {
+		auto_preview = true,
+		keymap = "<leader>K",
+		hl_group_title = false,
+	},
 }

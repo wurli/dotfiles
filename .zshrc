@@ -17,8 +17,8 @@ export JUPYTER_PATH=$HOME/Repos/jet
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Adjust path
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-path+=("$HOME/.local/bin/")
-# path=($HOME/.local/bin/ $path)
+# path+=("$HOME/.local/bin/")
+path=($HOME/.local/bin/ $path)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Shell autocompletions

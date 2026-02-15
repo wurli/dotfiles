@@ -23,7 +23,24 @@ vim.opt.rtp:prepend(lazypath)
 -- Set up plugins -------------------------------------------------------------
 require("lazy").setup({
 	spec = { import = "plugins" },
+	ui = { border = "rounded" },
 	change_detection = { enabled = false },
+	rocks = {
+		enabled = false,
+	},
+	performance = {
+		rtp = {
+			disabled_plugins = {
+				"gzip",
+				"netrwPlugin",
+				"rplugin",
+				"tarPlugin",
+				"tohtml",
+				"tutor",
+				"zipPlugin",
+			},
+		},
+	},
 })
 
 -- Load snippets --------------------------------------------------------------
@@ -31,8 +48,6 @@ if not vim.g.vscode then
 	for _, path in ipairs(vim.api.nvim_get_runtime_file("lua/snippets/*.lua", true)) do
 		loadfile(path)()
 	end
-
-	vim.cmd.colorscheme("cobalt")
 end
 
 -- function Colorise()
@@ -49,28 +64,3 @@ end
 --     )
 -- end
 -- Colorise()
-
--- Carpo = require("carpo.rust")
--- -- -- vim.print(Carpo.discover_kernels())
--- vim.print(Carpo.start_kernel("/Users/JACOB.SCOTT1/Library/Jupyter/kernels/ark/kernel.json"))
--- -- vim.print(Carpo.start_kernel("/Users/JACOB.SCOTT1/Library/Jupyter/kernels/python3/kernel.json"))
--- -- CarpoCallback = Carpo.execute_code("readline('test')")
--- CarpoCallback = Carpo.execute_code("1 + 1")
--- -- CarpoCallback = Carpo.execute_code("options(cli.num_colors = 256); options(crayon.enabled = TRUE)")
--- vim.print(CarpoCallback())
--- -- -- vim.print(Carpo.execute_code("x = 5"))
--- -- -- vim.print(Carpo.execute_code("x"))
--- -- vim.print(Carpo.execute_code("cat('hi\n');1 + 1;cat('there\n')"))
--- -- vim.print(Carpo.execute_code("cat('hi\n');cat('there\n');1 + 1"))
-
--- vim.print(Carpo.execute_code("10 +"))
--- -- vim.print()
---
---
--- -- -- vim.print(Carpo.start_kernel("/Users/JACOB.SCOTT1/Library/Jupyter/kernels/ark_test/kernel.json"))
---
-
-vim.api.nvim_create_autocmd("User", {
-	pattern = "FugitiveCommit",
-	command = "tabclose",
-})

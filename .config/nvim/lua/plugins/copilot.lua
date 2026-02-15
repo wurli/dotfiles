@@ -1,9 +1,9 @@
 vim.keymap.set("n", "<leader><leader>c", "<cmd>CodeCompanionChat Toggle<cr>", { desc = "Code companion chat" })
 vim.keymap.set("n", "<leader>fa", "<cmd>CodeCompanionActions<cr>", { desc = "Code completion actions" })
-vim.cmd [[cnoreabbrev CC CodeCompanion]]
-vim.cmd [[cnoreabbrev CB CodeCompanion #buffer]]
-vim.cmd [[cnoreabbrev CE Copilot enable]]
-vim.cmd [[cnoreabbrev CD Copilot disable]]
+vim.cmd([[cnoreabbrev CC CodeCompanion]])
+vim.cmd([[cnoreabbrev CB CodeCompanion #buffer]])
+vim.cmd([[cnoreabbrev CE Copilot enable]])
+vim.cmd([[cnoreabbrev CD Copilot disable]])
 
 -- return {
 --     {
@@ -128,79 +128,78 @@ vim.cmd [[cnoreabbrev CD Copilot disable]]
 --     end
 -- })
 
-
 return {
-    {
-        "zbirenbaum/copilot.lua",
-        cmd = "Copilot",
-        event = "InsertEnter",
-        cond = not vim.g.vscode or not vim.lsp.inline_completion,
-        dependencies = { "copilotlsp-nvim/copilot-lsp" },
-        config = {
-            filetypes = {
-                markdown = false,
-            },
-            suggestion = {
-                enabled = true,
-                -- Autotrigger off is nice... But the manual trigger just takes
-                -- so long to execute :(
-                auto_trigger = true,
-                keymap = {
-                    accept = "<m-y>",
-                    accept_word = "<m-i>",
-                    accept_line = false,
-                    next = "<m-]>",
-                    prev = "<m-[>",
-                    dismiss = "<c-]>",
-                }
-            },
-            nes = { enabled = false },
-        },
-        keys = {
-            { "<leader>ct", "<cmd>Copilot toggle<cr>", desc = "Copilot toggle" }
-        }
-    },
-    {
-        "folke/sidekick.nvim",
-        cond = not vim.g.vscode,
-        opts = {
-            cli = {
-                mux = {
-                    -- backend = "tmux",
-                    backend = nil,
-                    enabled = false,
-                },
-            },
-        },
-        keys = {
-            {
-                "<tab>",
-                function()
-                    -- if there is a next edit, jump to it, otherwise apply it if any
-                    if not require("sidekick").nes_jump_or_apply() then
-                        return "<Tab>" -- fallback to normal tab
-                    end
-                end,
-                expr = true,
-                desc = "Goto/Apply Next Edit Suggestion",
-            },
-            {
-                "<leader><leader>c",
-                function()
-                    require("sidekick.cli").toggle({
-                        name = "copilot",
-                        focus = false,
-                    })
-                end,
-                desc = "Sidekick Toggle CLI",
-                mode = { "n", "v" },
-            },
-            {
-                "<leader>cp",
-                function() require("sidekick.cli").prompt() end,
-                desc = "Sidekick Ask Prompt",
-                mode = { "n", "v" },
-            },
-        },
-    }
+	{
+		"zbirenbaum/copilot.lua",
+		cmd = "Copilot",
+		event = "InsertEnter",
+		cond = not vim.g.vscode or not vim.lsp.inline_completion,
+		dependencies = { "copilotlsp-nvim/copilot-lsp" },
+		config = {
+			filetypes = {
+				markdown = false,
+			},
+			suggestion = {
+				enabled = true,
+				-- Autotrigger off is nice... But the manual trigger just takes
+				-- so long to execute :(
+				auto_trigger = true,
+				keymap = {
+					accept = "<m-y>",
+					accept_word = "<m-i>",
+					accept_line = false,
+					next = "<m-]>",
+					prev = "<m-[>",
+					dismiss = "<c-]>",
+				},
+			},
+			nes = { enabled = false },
+		},
+		keys = {
+			{ "<leader>ct", "<cmd>Copilot toggle<cr>", desc = "Copilot toggle" },
+		},
+	},
+	-- {
+	--     "folke/sidekick.nvim",
+	--     cond = not vim.g.vscode,
+	--     opts = {
+	--         cli = {
+	--             mux = {
+	--                 -- backend = "tmux",
+	--                 backend = nil,
+	--                 enabled = false,
+	--             },
+	--         },
+	--     },
+	--     keys = {
+	--         {
+	--             "<tab>",
+	--             function()
+	--                 -- if there is a next edit, jump to it, otherwise apply it if any
+	--                 if not require("sidekick").nes_jump_or_apply() then
+	--                     return "<Tab>" -- fallback to normal tab
+	--                 end
+	--             end,
+	--             expr = true,
+	--             desc = "Goto/Apply Next Edit Suggestion",
+	--         },
+	--         {
+	--             "<leader><leader>c",
+	--             function()
+	--                 require("sidekick.cli").toggle({
+	--                     name = "copilot",
+	--                     focus = false,
+	--                 })
+	--             end,
+	--             desc = "Sidekick Toggle CLI",
+	--             mode = { "n", "v" },
+	--         },
+	--         {
+	--             "<leader>cp",
+	--             function() require("sidekick.cli").prompt() end,
+	--             desc = "Sidekick Ask Prompt",
+	--             mode = { "n", "v" },
+	--         },
+	--     },
+	-- }
 }

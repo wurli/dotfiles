@@ -44,10 +44,16 @@ vim.keymap.set("n", "<leader>fd", function()
 	})
 end)
 
+vim.api.nvim_create_autocmd("User", {
+	pattern = "FugitiveCommit",
+	command = "tabclose",
+})
+
 return {
 	{
 		"tpope/vim-fugitive",
 		cond = not vim.g.vscode,
+		command = "Git",
 	},
 	{
 		"esmuellert/codediff.nvim",
@@ -92,6 +98,7 @@ return {
 	{
 		"lewis6991/gitsigns.nvim",
 		cond = not vim.g.vscode,
+		event = "VeryLazy",
 		config = function()
 			require("gitsigns").setup({
 				diff_opts = {

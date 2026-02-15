@@ -107,3 +107,13 @@ vim.api.nvim_create_user_command("Note", function(opts)
 	local n = tonumber(opts.fargs[1]) or 0
 	open_daily_note(n == 0, vim.fn.localtime() + n * 24 * 60 * 60)
 end, { nargs = "?", desc = "Open daily note. Pass -1 for yesterday's note" })
+
+vim.api.nvim_create_user_command("ToggleColours", function()
+	local cur_colorschema = vim.trim(vim.fn.execute("colorscheme"))
+
+	if cur_colorschema == "cobalt" then
+		vim.cmd.colorscheme("tokyonight-day")
+	elseif cur_colorschema == "tokyonight-day" then
+		vim.cmd.colorscheme("cobalt")
+	end
+end, { desc = "Toggle light/dark colorscheme" })

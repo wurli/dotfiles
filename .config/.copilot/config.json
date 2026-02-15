@@ -6,6 +6,15 @@
   "trusted_folders": [
     "/Users/JACOB.SCOTT1/Repos/vpms-test",
     "/Users/JACOB.SCOTT1/Repos/vpms-cs-analysis",
-    "/Users/JACOB.SCOTT1/Repos/CLPAdmin/PricingModels/AUS"
+    "/Users/JACOB.SCOTT1/Repos/CLPAdmin/PricingModels/AUS",
+    "/Users/JACOB.SCOTT1/Repos/dotfiles",
+    "/Users/JACOB.SCOTT1/Repos/CLPAdmin",
+    "/Users/JACOB.SCOTT1/Library/CloudStorage/OneDrive-ZurichInsurance/Documents - Integrated Benefits/10_Data/Spain"
+  ],
+  "model": "claude-opus-4.6",
+  "beep": false,
+  "reasoning_effort": "high",
+  "allowed_urls": [
+    "http://127.0.0.1:8001"
   ]
 }

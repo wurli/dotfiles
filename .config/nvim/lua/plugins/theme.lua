@@ -124,9 +124,19 @@ local get_charcount = function()
 end
 
 return {
-	{ "wurli/cobalt.nvim", cond = not vim.g.vscode },
+	{
+		"wurli/cobalt.nvim",
+		cond = not vim.g.vscode,
+		config = function()
+			vim.cmd.colorscheme("cobalt")
+		end,
+	},
 	-- { dir = "~/Repos/cobalt.nvim",     cond = not vim.g.vscode },
-	{ "folke/tokyonight.nvim", cond = not vim.g.vscode },
+	{
+		"folke/tokyonight.nvim",
+		cond = not vim.g.vscode,
+		cmd = "ToggleColours",
+	},
 
 	-- {
 	--     -- Note: default hl is |hl-Whitespace|

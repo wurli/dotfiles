@@ -6,18 +6,15 @@ vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 map("n", "<c-w><c-f>", [[:vsplit<cr>gF]], { desc = "Open file under cursor" })
 
 map("n", "<leader>yf", function()
-	vim.fn.setreg("+", vim.fn.expand("%"))
-end, { desc = "Yank the current file path" })
+	local file = vim.fn.expand("%")
+	local cwd = vim.fn.getcwd() .. "/"
 
-map("n", "<leader>tc", function()
-	local cur_colorschema = vim.trim(vim.fn.execute("colorscheme"))
-
-	if cur_colorschema == "cobalt" then
-		vim.cmd.colorscheme("tokyonight-day")
-	elseif cur_colorschema == "tokyonight-day" then
-		vim.cmd.colorscheme("cobalt")
+	if file:find(cwd, 1, true) == 1 then
+		file = file:sub(#cwd + 1)
 	end
-end, { desc = "Toggle light/dark colorscheme" })
+
+	vim.fn.setreg("+", file)
+end, { desc = "Yank the current file path" })
 
 -- Ctrl-Z is my tmux leader and I never use :suspend
 map({ "n", "v" }, "<c-z>", "<Nop>", { noremap = true, silent = true })

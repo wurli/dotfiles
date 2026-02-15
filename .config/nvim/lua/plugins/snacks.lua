@@ -163,19 +163,35 @@ return {
 			desc = "Find Config File",
 		},
 		{
-			"<leader>fn",
+			"<leader>fw",
 			pick("grep", {
-				title = "Grep Notes",
+				title = "Grep Work Docs",
 				dirs = vim.iter(vim.fn.readdir(vim.fn.expand("~/Repos/")))
 					:filter(function(file)
-						return file:find("notes") or file:find("%.wiki$")
+						return file:find("10_Data%-md") or file:find("%.wiki$")
 					end)
 					:map(function(file)
 						return vim.fn.expand("~/Repos/" .. file)
 					end)
 					:totable(),
 			}),
-			desc = "Find Nvim Config File",
+			desc = "Find work documents",
+		},
+
+		{
+			"<leader>fn",
+			pick("grep", {
+				title = "Grep Notes",
+				dirs = vim.iter(vim.fn.readdir(vim.fn.expand("~/Repos/")))
+					:filter(function(file)
+						return file:find("notes")
+					end)
+					:map(function(file)
+						return vim.fn.expand("~/Repos/" .. file)
+					end)
+					:totable(),
+			}),
+			desc = "Find Notes",
 		},
 
 		{
