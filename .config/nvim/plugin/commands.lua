@@ -117,3 +117,22 @@ vim.api.nvim_create_user_command("ToggleColours", function()
 		vim.cmd.colorscheme("cobalt")
 	end
 end, { desc = "Toggle light/dark colorscheme" })
+
+vim.api.nvim_create_user_command("TenData", function()
+	local tendata_real_dir = vim.fn.expand("~/10_Data")
+	local tendata_proxy_dir = vim.fn.expand("~/Repos/10_Data-md/parsed")
+
+	local cur_file = vim.fn.expand("%:p")
+
+	if not vim.startswith(cur_file, tendata_proxy_dir) then
+		print("Current file is not in 10_Data-md")
+		return
+	end
+
+	local short_path = cur_file:sub(#tendata_proxy_dir + 1, -4)
+
+	local original_file = tendata_real_dir .. short_path
+
+	vim.notify("Opening " .. original_file)
+	vim.ui.open(original_file)
+end, { desc = "Open original version of 10_Data file" })
