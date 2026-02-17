@@ -90,7 +90,8 @@ echo -e "\033]11;#001426\007"
 alias lg="lazygit"
 alias vim="nvim"
 alias ff="fzf"
-alias pip="uv pip"
+alias edge="open -a Microsoft\ Edge $1"
+
 alias co="git checkout"
 alias ga="git add"
 alias gc="git commit"
@@ -100,6 +101,7 @@ alias gl="git nl"
 alias gs="git status"
 alias gd="git diff"
 alias g="git"
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Keymaps
