@@ -39,9 +39,9 @@ return {
 					local mapn = function(...)
 						map("n", ...)
 					end
-					local mapv = function(...)
-						map({ "n", "v" }, ...)
-					end
+					-- local mapv = function(...)
+					-- 	map({ "n", "v" }, ...)
+					-- end
 
 					-- mapv("<leader>lf", vim.lsp.buf.format,                                                    'LSP: [L]sp [F]ormat')
 					mapn("K", vim.lsp.buf.hover, "LSP: Hover Documentation")
@@ -204,6 +204,8 @@ return {
 						},
 					},
 				},
+				ts_ls = {},
+				html = {},
 				yamlls = {},
 			}
 
