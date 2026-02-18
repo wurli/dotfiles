@@ -120,7 +120,7 @@ end, { desc = "Toggle light/dark colorscheme" })
 
 vim.api.nvim_create_user_command("TenData", function()
 	local tendata_real_dir = vim.fn.expand("~/10_Data")
-	local tendata_proxy_dir = vim.fn.expand("~/Repos/10_Data-md/parsed")
+	local tendata_proxy_dir = vim.fn.expand("~/10_Data/Plaintext/parsed")
 
 	local cur_file = vim.fn.expand("%:p")
 

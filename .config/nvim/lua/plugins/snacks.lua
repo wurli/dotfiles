@@ -166,14 +166,11 @@ return {
 			"<leader>fw",
 			pick("grep", {
 				title = "Grep Work Docs",
-				dirs = vim.iter(vim.fn.readdir(vim.fn.expand("~/Repos/")))
-					:filter(function(file)
-						return file:find("10_Data%-md") or file:find("%.wiki$") or file:find("work%-notes")
-					end)
-					:map(function(file)
-						return vim.fn.expand("~/Repos/" .. file)
-					end)
-					:totable(),
+				dirs = {
+					vim.fn.expand("~/10_Data/Plaintext/parsed"),
+					vim.fn.expand("~/Repos/Zurich-Integrated-Benefits-Analytics.wiki"),
+					vim.fn.expand("~/Repos/work-notes"),
+				},
 			}),
 			desc = "Find work documents",
 		},
