@@ -67,9 +67,6 @@ export MANPAGER='nvim +Man!'
 # uv install settings (only needed on work machine)
 export UV_NATIVE_TLS=true
 
-# GitHub Copilot CLI
-# export COPILOT_MODEL="claude-sonnet-4.5"
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # use starship
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -243,3 +240,4 @@ ai() {
     fi
 }
 
+source ~/.zprofile
