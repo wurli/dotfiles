@@ -3,7 +3,7 @@ local term = require("utils.term")
 -------------------
 -- Regular shell --
 -------------------
-vim.keymap.set("n", "<leader><leader>t", term.make_toggler(nil, "Terminal"), { desc = "Open terminal" })
+vim.keymap.set("n", "<leader><leader>t", term.make_toggler(nil, "terminal"), { desc = "Open terminal" })
 
 -------------
 -- IPython --
@@ -39,49 +39,14 @@ end
 vim.keymap.set(
 	"n",
 	"<leader><leader>p",
-	term.make_toggler(make_python_cmd, "Python", make_python_opts),
+	term.make_toggler(make_python_cmd, "python", make_python_opts),
 	{ desc = "Start IPython" }
 )
 
 -----------------
--- Copilot CLI --
+-- Claude Code --
 -----------------
-local allowed_cmds = {
-	"find",
-	"grep",
-	"rg",
-	"fd",
-	"awk",
-	"sed",
-	"ls",
-	"cat",
-	"echo",
-	"head",
-	"tail",
-	"wc",
-	"cut",
-	"sort",
-	"uniq",
-	"xargs",
-	"tr",
-	"jq",
-	"fzf",
-	"bat",
-	"htop",
-	"top",
-	"du",
-	"df",
-	"ps",
-	"ping",
-}
-
-local copilot_cmd = { "copilot" }
-for _, cmd in ipairs(allowed_cmds) do
-	table.insert(copilot_cmd, "--allow-tool")
-	table.insert(copilot_cmd, "shell(" .. cmd .. ")")
-end
-
-vim.keymap.set("n", "<leader><leader>c", term.make_toggler(copilot_cmd, "Copilot"), { desc = "Start GitHub Copilot" })
+vim.keymap.set("n", "<leader><leader>c", term.make_toggler("claude"), { desc = "Start Claude Code" })
 
 -- -------
 -- -- R --
