@@ -4,7 +4,7 @@ end
 
 vim.opt_local.signcolumn = "yes"
 
-local term = require("utils.term").terminals.Python
+local term = require("utils.term").terminals.python
 local fn = vim.fn
 
 -- --- NOTE -------------------------

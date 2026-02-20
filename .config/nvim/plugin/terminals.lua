@@ -22,7 +22,7 @@ local make_python_opts = function()
 			local pythonpath = l:match([====[src%s*=%s*%["([^"]*)"%]]====])
 			if pythonpath then
 				opts.env.PYTHONPATH = pythonpath
-				vim.cmd.echo(('"Settng Ipython $PYTHONPATH to %s usng pyproject.toml"'):format(pythonpath))
+				vim.cmd.echo(('"Settng IPython $PYTHONPATH to %s using pyproject.toml"'):format(pythonpath))
 				break
 			end
 		end

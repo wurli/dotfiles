@@ -1,9 +1,9 @@
-local Terms = { terminals = {} }
+local terms = { terminals = {} }
 
 ---@param cmd? string|string[]|fun(): string|string[]
----@param name? string May be `nil` if `cmd` is a string.
+---@param name? string May be `nil` if `cmd` is a string
 ---@param opts? table|fun(): table Addition options passeed to `jobstart()`
-Terms.make_toggler = function(cmd, name, opts)
+terms.make_toggler = function(cmd, name, opts)
 	if name == nil then
 		if type(cmd) == "string" then
 			name = cmd
@@ -12,9 +12,9 @@ Terms.make_toggler = function(cmd, name, opts)
 		end
 	end
 
-	---@param args string[]?
+	---@param args string[]? Additional args passed to the shell command on startup
 	local toggle = function(args)
-		for open_term, info in pairs(Terms.terminals or {}) do
+		for open_term, info in pairs(terms.terminals or {}) do
 			if vim.api.nvim_win_is_valid(info.win) and vim.api.nvim_win_get_buf(info.win) == info.buf then
 				vim.api.nvim_win_hide(info.win)
 				if open_term == name then
@@ -24,7 +24,7 @@ Terms.make_toggler = function(cmd, name, opts)
 		end
 
 		local initial_win = vim.api.nvim_get_current_win()
-		local t = Terms.terminals[name]
+		local t = terms.terminals[name]
 
 		t.buf = vim.api.nvim_buf_is_valid(t.buf) and t.buf or vim.api.nvim_create_buf(false, true)
 		local ok, win = pcall(vim.api.nvim_open_win, t.buf, true, { split = "right" })
@@ -59,7 +59,7 @@ Terms.make_toggler = function(cmd, name, opts)
 		vim.fn.win_gotoid(initial_win)
 	end
 
-	Terms.terminals[name] = {
+	terms.terminals[name] = {
 		buf = -1,
 		win = -1,
 		channel = -1,
@@ -82,7 +82,7 @@ end
 
 local terms_from_prefix = function(prefix)
 	local matched_terms = {}
-	for _, term_name in ipairs(vim.tbl_keys(Terms.terminals or {})) do
+	for _, term_name in ipairs(vim.tbl_keys(terms.terminals or {})) do
 		if vim.startswith(term_name, prefix) then
 			table.insert(matched_terms, term_name)
 		end
@@ -91,15 +91,15 @@ local terms_from_prefix = function(prefix)
 end
 
 vim.api.nvim_create_user_command("T", function(ctx)
-	local selected_term = terms_from_prefix(ctx.fargs[1])
-	if #selected_term > 1 then
-		print(("Multiple terminals found with prefix '%s': %s"):format(ctx.fargs[1], table.concat(selected_term, ", ")))
+	local term_name = terms_from_prefix(ctx.fargs[1])
+	if #term_name > 1 then
+		print(("Multiple terminals found with prefix '%s': %s"):format(ctx.fargs[1], table.concat(term_name, ", ")))
 		return
-	elseif #selected_term == 0 then
+	elseif #term_name == 0 then
 		print(("No terminal found with name '%s'"):format(ctx.fargs[1]))
 		return
 	end
-	local term = Terms.terminals[selected_term[1]]
+	local term = terms.terminals[term_name[1]]
 	term.toggle(vim.list_slice(ctx.fargs, 2))
 end, {
 	nargs = "+",
@@ -112,4 +112,4 @@ end, {
 	desc = "Toggle a terminal by name. Usage: :T <name> [args...]",
 })
 
-return Terms
+return terms
