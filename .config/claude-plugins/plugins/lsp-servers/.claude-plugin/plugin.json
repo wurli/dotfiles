@@ -1,0 +1,5 @@
+{
+	"name": "lsp-servers",
+	"description": "Adds support for various language servers",
+	"version": "1.0.0"
+}

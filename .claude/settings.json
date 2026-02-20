@@ -1,0 +1,33 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/auto-format.sh",
+            "timeout": 2,
+            "statusMessage": "Running formatters"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "lsp-servers@my-plugins": true
+  },
+  "effortLevel": "low",
+  "permissions": {
+    "allow": [
+      "Bash(uv*)",
+      "Bash(rg*)",
+      "Bash(git log*)",
+      "Bash(git status*)",
+      "Bash(git grep*)",
+      "Read(.venv/*)",
+      "Read(~/10_Data/Plaintext/*)",
+    ]
+  }
+}

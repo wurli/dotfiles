@@ -1,0 +1,13 @@
+{
+  "name": "my-plugins",
+  "owner": {
+    "name": "Jacob"
+  },
+  "plugins": [
+    {
+      "name": "lsp-servers",
+      "source": "./plugins/lsp-servers",
+      "description": "Adds support for various language servers"
+    }
+  ]
+}
