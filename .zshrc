@@ -67,6 +67,9 @@ export MANPAGER='nvim +Man!'
 # uv install settings (only needed on work machine)
 export UV_NATIVE_TLS=true
 
+# For Claude Code
+export ENABLE_LSP_TOOL=1
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # use starship
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -241,3 +244,7 @@ ai() {
 }
 
 source ~/.zprofile
+
+
+# Load Angular CLI autocompletion.
+source <(ng completion script)
