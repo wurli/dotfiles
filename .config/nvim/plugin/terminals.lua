@@ -8,10 +8,17 @@ vim.keymap.set("n", "<leader><leader>t", term.make_toggler(nil, "terminal"), { d
 -------------
 -- IPython --
 -------------
+local has_ipython = function()
+	local cmd = { "uv", "pip", "show", "ipython" }
+	local res = vim.system(cmd, { text = true }):wait()
+	return res.code == 0
+end
+
 local make_python_cmd = function()
 	local venv = vim.fs.find("activate", { path = ".venv/bin" })[1]
-	local prefix = venv and "source " .. venv .. " && " or ""
-	return prefix .. "ipython --no-autoindent"
+	local source_venv_cmd = venv and "source " .. venv .. " && " or ""
+	local run_python_cmd = has_ipython() and "ipython --no-autoindent" or "python3"
+	return source_venv_cmd .. run_python_cmd
 end
 
 local make_python_opts = function()
@@ -22,7 +29,7 @@ local make_python_opts = function()
 			local pythonpath = l:match([====[src%s*=%s*%["([^"]*)"%]]====])
 			if pythonpath then
 				opts.env.PYTHONPATH = pythonpath
-				vim.cmd.echo(('"Settng IPython $PYTHONPATH to %s using pyproject.toml"'):format(pythonpath))
+				vim.cmd.echo(('"Settng $PYTHONPATH to %s using pyproject.toml"'):format(pythonpath))
 				break
 			end
 		end
