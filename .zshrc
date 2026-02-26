@@ -10,6 +10,7 @@ else
     export TERM=xterm-256color
 fi
 # export COLORTERM=truecolor
+export CLICOLOR=1
 export HISTSIZE=10000 # Default 1000 lines isn't enough
 export EDITOR=nvim
 export JUPYTER_PATH=$HOME/Repos/jet
