@@ -1,4 +1,18 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(uv*)",
+      "Bash(rg*)",
+      "Bash(sed*)",
+      "Bash(awk*)",
+      "Bash(pdftotext*)",
+      "Bash(git log*)",
+      "Bash(git status*)",
+      "Bash(git grep*)",
+      "Read(.venv/*)",
+      "Read(~/10_Data/Plaintext/*)"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
@@ -19,15 +33,5 @@
     "lsp-servers@my-plugins": true
   },
   "effortLevel": "low",
-  "permissions": {
-    "allow": [
-      "Bash(uv*)",
-      "Bash(rg*)",
-      "Bash(git log*)",
-      "Bash(git status*)",
-      "Bash(git grep*)",
-      "Read(.venv/*)",
-      "Read(~/10_Data/Plaintext/*)",
-    ]
-  }
+  "skipDangerousModePermissionPrompt": true
 }
