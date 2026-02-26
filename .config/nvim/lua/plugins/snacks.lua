@@ -4,6 +4,34 @@ local pick = function(picker, opts)
 	end
 end
 
+---@param a snacks.picker.Item
+---@param b snacks.picker.Item
+local sort_mtime = function(a, b)
+	local a_path = vim.fs.joinpath(a.cwd or "", a.file)
+	local b_path = vim.fs.joinpath(b.cwd or "", b.file)
+	local a_mtime = vim.fn.getftime(a_path)
+	local b_mtime = vim.fn.getftime(b_path)
+	if a_mtime == b_mtime then
+		return a.file < b.file
+	else
+		return a_mtime > b_mtime
+	end
+end
+
+local format_files_mtime = function(item, picker)
+	local out = Snacks.picker.format.file(item, picker)
+	local mtime = vim.fn.getftime(vim.fs.joinpath(item.cwd, item.file))
+	table.insert(out, 1, { os.date("%y-%m-%d %H:%M ", mtime), "Comment" })
+	return out
+end
+
+local format_text_mtime = function(item, picker)
+	local out = Snacks.picker.format.file(item, picker)
+	local mtime = vim.fn.getftime(item.file)
+	table.insert(out, 1, { os.date("%y-%m-%d ", mtime), "Comment" })
+	return out
+end
+
 local pick_files = function(opts)
 	return function()
 		Snacks.picker.files(vim.tbl_deep_extend("force", {
@@ -21,7 +49,6 @@ local pick_files = function(opts)
 						pattern = picker:filter().pattern,
 						search = picker:filter().search,
 					}))
-					-- picker:find({ refresh = true })
 				end,
 			},
 			win = {
@@ -31,7 +58,6 @@ local pick_files = function(opts)
 					},
 				},
 			},
-			matcher = { sort_empty = true },
 		}, opts or {}))
 	end
 end
@@ -92,23 +118,15 @@ return {
 				if vim.b[buf].jet then
 					return false
 				end
-				local disable_filetypes = {
-					"NvimTree",
-					"Trouble",
-					"aerial",
-					"fidget",
-					"help",
-					"lazy",
-					"markdown",
-					"mason",
-					"notify",
-					"oil",
-					"terminal",
-				}
-				for _, ft in ipairs(disable_filetypes) do
-					if vim.bo[buf].filetype == ft then
-						return false
-					end
+				if vim.bo[buf].buftype ~= "" then
+					return false
+				end
+				if vim.tbl_contains({ "markdown" }, vim.bo[buf].filetype) then
+					return false
+				end
+				-- E.g. picker windows
+				if vim.startswith(vim.bo[buf].filetype, "snacks") then
+					return false
 				end
 				return true
 			end,
@@ -120,6 +138,9 @@ return {
 					vim.system({ "open", item.file })
 				end,
 			},
+			-- For some reason the `sort` arg doesn't work unless you also
+			-- specify this
+			matcher = { sort_empty = true },
 			win = {
 				input = {
 					keys = {
@@ -137,26 +158,14 @@ return {
 	keys = {
 		-- Top Pickers & Explorer
 		-- { "<leader><space>", function() Snacks.picker.smart() end,                                                       desc = "Smart Find Files" },
-		{
-			"<leader>fb",
-			pick("buffers"),
-			desc = "Buffers",
-		},
+		{ "<leader>fb", pick("buffers"), desc = "Buffers" },
 		-- { "<leader>/",       function() Snacks.picker.grep() end,                                                        desc = "Grep" },
-		{
-			"<leader>f:",
-			pick("command_history"),
-			desc = "Command History",
-		},
+		{ "<leader>f:", pick("command_history"), desc = "Command History" },
 		-- { "<leader>n",       function() Snacks.picker.notifications() end,                                               desc = "Notification History" },
 		-- { "<C-n>",      function() Snacks.explorer() end,                                                                     desc = "File Explorer" },
 		-- -- find
 		--
-		{
-			"<leader>fb",
-			pick("buffers"),
-			desc = "Buffers",
-		},
+		{ "<leader>fb", pick("buffers"), desc = "Buffers" },
 		{
 			"<leader>fc",
 			pick("files", { cwd = "~/Repos/dotfiles/", hidden = true }),
@@ -187,6 +196,9 @@ return {
 						return vim.fn.expand("~/Repos/" .. file)
 					end)
 					:totable(),
+				sort = sort_mtime,
+				format = format_text_mtime,
+				-- sort = { fields = { "file:asc" } },
 			}),
 			desc = "Find Notes",
 		},
@@ -206,54 +218,31 @@ return {
 			desc = "Find Config File",
 		},
 		-- { "<leader>ff", pick("files"),                                                                                        desc = "Find Files" },
-		{
-			"<leader>ff",
-			pick_files(),
-			desc = "Find Files",
-		},
+		{ "<leader>ff", pick_files(), desc = "Find Files" },
 		-- { "<leader>fg",      function() Snacks.picker.git_files() end,                                                   desc = "Find Git Files" },
 		-- { "<leader>fp",      function() Snacks.picker.projects() end,                                                    desc = "Projects" },
 		-- { "<leader>fr",      function() Snacks.picker.recent() end,                                                      desc = "Recent" },
 		-- -- git
+		{ "<leader>ft", pick("git_branches"), desc = "Git Branches" },
 		{
-			"<leader>ft",
-			pick("git_branches"),
-			desc = "Git Branches",
+			"<leader>fT",
+			pick_files({ sort = sort_mtime, format = format_files_mtime, cwd = "/tmp", title = "Find Temp Files" }),
+			desc = "Temp files",
 		},
-		{
-			"<leader>fl",
-			pick("git_log"),
-			desc = "Git Log",
-		},
+		{ "<leader>fl", pick("git_log"), desc = "Git Log" },
 		-- { "<leader>gL",      function() Snacks.picker.git_log_line() end,                                                desc = "Git Log Line" },
 		-- { "<leader>gs",      function() Snacks.picker.git_status() end,                                                  desc = "Git Status" },
 		-- { "<leader>gS",      function() Snacks.picker.git_stash() end,                                                   desc = "Git Stash" },
 		-- { "<leader>gd",      function() Snacks.picker.git_diff() end,                                                    desc = "Git Diff (Hunks)" },
-		{
-			"<leader>fL",
-			pick("git_log_file"),
-			desc = "Git Log File",
-		},
+		{ "<leader>fL", pick("git_log_file"), desc = "Git Log File" },
 		-- -- Grep
 		-- { "<leader>sb",      function() Snacks.picker.lines() end,                                                       desc = "Buffer Lines" },
 		-- { "<leader>sB",      function() Snacks.picker.grep_buffers() end,                                                desc = "Grep Open Buffers" },
-		{
-			"<leader>fg",
-			pick("grep"),
-			desc = "Grep",
-		},
+		{ "<leader>fg", pick("grep"), desc = "Grep" },
 		-- { "<leader>sw",      function() Snacks.picker.grep_word() end,                                                   desc = "Visual selection or word", mode = { "n", "x" } },
 		-- -- search
-		{
-			"<leader>fr",
-			pick("registers"),
-			desc = "Registers",
-		},
-		{
-			"<leader>f/",
-			pick("search_history"),
-			desc = "Search History",
-		},
+		{ "<leader>fr", pick("registers"), desc = "Registers" },
+		{ "<leader>f/", pick("search_history"), desc = "Search History" },
 		-- { "<leader>sa",      function() Snacks.picker.autocmds() end,                                                    desc = "Autocmds" },
 		-- { "<leader>sb",      function() Snacks.picker.lines() end,                                                       desc = "Buffer Lines" },
 		-- { "<leader>sc",      function() Snacks.picker.command_history() end,                                             desc = "Command History" },
@@ -274,17 +263,9 @@ return {
 		},
 		-- { "<leader>si",      function() Snacks.picker.icons() end,                                                       desc = "Icons" },
 		-- { "<leader>sj",      function() Snacks.picker.jumps() end,                                                       desc = "Jumps" },
-		{
-			"<leader>fk",
-			pick("keymaps"),
-			desc = "Keymaps",
-		},
+		{ "<leader>fk", pick("keymaps"), desc = "Keymaps" },
 		-- { "<leader>sl",      function() Snacks.picker.loclist() end,                                                     desc = "Location List" },
-		{
-			"<leader>fm",
-			pick("marks"),
-			desc = "Marks",
-		},
+		{ "<leader>fm", pick("marks"), desc = "Marks" },
 		{
 			"<leader>fM",
 			pick("man", { win = { input = { keys = { ["<CR>"] = { "edit_vsplit", mode = { "i", "n" } } } } } }),
@@ -293,43 +274,15 @@ return {
 		-- { "<leader>sp",      function() Snacks.picker.lazy() end,                                                        desc = "Search for Plugin Spec" },
 		-- { "<leader>sq",      function() Snacks.picker.qflist() end,                                                      desc = "Quickfix List" },
 		-- { "<leader>sR",      function() Snacks.picker.resume() end,                                                      desc = "Resume" },
-		{
-			"<leader>fu",
-			pick("undo"),
-			desc = "Undo History",
-		},
+		{ "<leader>fu", pick("undo"), desc = "Undo History" },
 		-- { "<leader>uC",      function() Snacks.picker.colorschemes() end,                                                desc = "Colorschemes" },
 		-- -- LSP
-		{
-			"<leader>gd",
-			pick("lsp_definitions"),
-			desc = "Goto Definition",
-		},
+		{ "<leader>gd", pick("lsp_definitions"), desc = "Goto Definition" },
 		-- { "gD",              function() Snacks.picker.lsp_declarations() end,                                            desc = "Goto Declaration" },
-		{
-			"<leader>gr",
-			pick("lsp_references"),
-			desc = "References",
-		},
-		{
-			"<leader>gi",
-			pick("lsp_implementations"),
-			desc = "Goto [I]mplementation",
-		},
-		{
-			"<leader>gt",
-			pick("lsp_type_definitions"),
-			desc = "Goto T[y]pe Definition",
-		},
-		{
-			"<leader>fS",
-			pick("lsp_symbols"),
-			desc = "LSP Symbols",
-		},
-		{
-			"<leader>fs",
-			pick("lsp_workspace_symbols"),
-			desc = "LSP Workspace Symbols",
-		},
+		{ "<leader>gr", pick("lsp_references"), desc = "References" },
+		{ "<leader>gi", pick("lsp_implementations"), desc = "Goto [I]mplementation" },
+		{ "<leader>gt", pick("lsp_type_definitions"), desc = "Goto T[y]pe Definition" },
+		{ "<leader>fS", pick("lsp_symbols"), desc = "LSP Symbols" },
+		{ "<leader>fs", pick("lsp_workspace_symbols"), desc = "LSP Workspace Symbols" },
 	},
 }
