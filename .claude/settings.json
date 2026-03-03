@@ -1,4 +1,7 @@
 {
+  "env": {
+    "ENABLE_LSP_TOOL": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(uv*)",
@@ -13,6 +16,7 @@
       "Read(~/10_Data/Plaintext/*)"
     ]
   },
+  "model": "opus",
   "hooks": {
     "PostToolUse": [
       {
@@ -32,6 +36,6 @@
     "rust-analyzer-lsp@claude-plugins-official": true,
     "lsp-servers@my-plugins": true
   },
-  "effortLevel": "low",
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "effortLevel": "low"
 }

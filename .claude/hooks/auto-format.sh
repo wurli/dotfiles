@@ -10,7 +10,7 @@ if [[ "$FILE_PATH" =~ \.py$ ]]; then
 	  ruff format "$FILE_PATH" 2>/dev/null
 	  exit 0
 	else
-	  echo "ruff is not installed. Skipping formatting." >&2
+	  echo "ruff command not found. Skipping formatting." >&2
 	  exit 0
 	fi
 fi
@@ -21,7 +21,18 @@ if [[ "$FILE_PATH" =~ \.[rR]$ ]]; then
 	  air format "$FILE_PATH" 2>/dev/null
 	  exit 0
 	else
-	  echo "air is not installed. Skipping formatting." >&2
+	  echo "air command not found. Skipping formatting." >&2
+	  exit 0
+	fi
+fi
+
+# Stylua (Lua)
+if [[ "$FILE_PATH" =~ \.lua$ ]]; then
+	if command -v stylua &> /dev/null; then
+	  stylua "$FILE_PATH" 2>/dev/null
+	  exit 0
+	else
+	  echo "stylua command not found. Skipping formatting." >&2
 	  exit 0
 	fi
 fi
