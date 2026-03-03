@@ -58,7 +58,8 @@ dark = true      # or light = true, or omit for auto-detection
 
 [merge]
 conflictstyle = zdiff3
-	tool = vscode-diff
+tool = vscode-diff
+ff = no-ff
 
 [credential "https://github.com"]
 helper =
