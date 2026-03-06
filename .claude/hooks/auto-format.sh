@@ -7,6 +7,7 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 # Ruff (Python)
 if [[ "$FILE_PATH" =~ \.py$ ]]; then
 	if command -v ruff &> /dev/null; then
+	  ruff check --fix --unsafe-fixes "$FILE_PATH" 2>/dev/null
 	  ruff format "$FILE_PATH" 2>/dev/null
 	  exit 0
 	else
