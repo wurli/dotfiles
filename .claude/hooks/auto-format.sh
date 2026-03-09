@@ -1,8 +1,6 @@
 #!/bin/bash
 
-INPUT=$(cat)
-
-FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+FILE_PATH="$CLAUDE_TOOL_INPUT_file_path"
 
 # Ruff (Python)
 if [[ "$FILE_PATH" =~ \.py$ ]]; then
