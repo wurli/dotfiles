@@ -7,7 +7,7 @@ cursor-opacity = 0.5
 cursor-color = "#808080"
 confirm-close-surface = true
 macos-non-native-fullscreen = padded-notch
-fullscreen = true
+fullscreen = non-native
 font-size = 16
 
 # keybind = ctrl+u=scroll_page_up
