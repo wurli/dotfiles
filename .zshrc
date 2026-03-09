@@ -103,6 +103,7 @@ alias gs="git status"
 alias gd="git diff"
 alias g="git"
 
+alias note="nvim -c Note"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Keymaps
@@ -126,9 +127,6 @@ function fg() {
     --bind 'enter:become(nvim {1} +{2})'
 }
 
-function venv() {
-    uv venv "$@" && source ".venv/bin/activate"
-}
 
 # Transform a video into a gif with nice settings.
 # This is pretty much impossible to remember if you're not intimately familiar
