@@ -75,11 +75,19 @@ vim.api.nvim_create_user_command("Positron", function()
 	})
 end, { desc = "Open current file in Positron" })
 
-local open_daily_note = function(create, now)
-	local is_notes = vim.fn.getcwd():find("notes") ~= nil
-	local is_work = vim.fn.getenv("USER") == "JACOB.SCOTT1"
-	local default_dir = vim.fn.expand("~/Repos/") .. (is_work and "work-notes" or "personal-notes")
-	local notes_dir = is_notes and vim.fn.getcwd() or default_dir
+---@param create? boolean
+---@param now? integer
+---@param dir? "work-notes" | "personal-notes"
+local open_daily_note = function(create, now, dir)
+	local selected_dir = dir and vim.fn.expand("~/Repos/") .. dir
+	local cur_notes_dir = (vim.fn.getcwd():find("notes") ~= nil) and vim.fn.getcwd()
+	local is_work_pc = vim.fn.getenv("USER") == "JACOB.SCOTT1"
+	local default_dir = vim.fn.expand("~/Repos/") .. (is_work_pc and "work-notes" or "personal-notes")
+	-- Priority:
+	--     1. Passed dir
+	--     2. Current dir if it contains "notes"
+	--     3. Default: work dir if on work PC, personal dir otherwise
+	local notes_dir = selected_dir or cur_notes_dir or default_dir
 
 	local time = now or vim.fn.localtime()
 	-- Date included in 2 formats for easier fuzzy finding
