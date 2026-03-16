@@ -52,9 +52,7 @@ local get_yaml_task = function()
 	deps = vim.tbl_keys(deps)
 	table.sort(deps)
 
-	local yaml = {}
-
-	table.insert(yaml, "- task_key: " .. basename)
+	local yaml = { "- task_key: " .. basename }
 
 	if #deps > 0 then
 		table.insert(yaml, "  depends_on:")
