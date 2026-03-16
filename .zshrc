@@ -127,6 +127,17 @@ function fg() {
     --bind 'enter:become(nvim {1} +{2})'
 }
 
+retag() {
+	local tag="$1"
+	echo "Removing tag $tag from remote"
+	git push origin --delete "$tag"
+	echo "Removing tag $tag locally"
+	git tag -d "$tag"
+	echo "Recreating tag $tag locally"
+	git tag "$tag"
+	echo "Pushing tag $tag to remote"
+	git push origin "$tag"
+}
 
 # Transform a video into a gif with nice settings.
 # This is pretty much impossible to remember if you're not intimately familiar
