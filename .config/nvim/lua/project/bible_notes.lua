@@ -1,4 +1,3 @@
-print("hello")
 vim.keymap.set({ "n", "v" }, "<leader>y", function()
 	vim.o.operatorfunc = "v:lua._G._bible_handle_curr_motion"
 	return "g@"
@@ -10,8 +9,6 @@ end, {
 ---@param mode "line" | "block" | "char"
 _G._bible_handle_curr_motion = function(mode)
 	local cur_file = vim.api.nvim_buf_get_name(0)
-
-	print("yo")
 
 	if not cur_file:match("bible/") then
 		print("not bible")
