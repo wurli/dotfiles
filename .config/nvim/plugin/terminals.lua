@@ -26,7 +26,12 @@ local make_python_opts = function()
 	if vim.uv.fs_stat("pyproject.toml") then
 		local lines = vim.fn.readfile("pyproject.toml")
 		for _, l in ipairs(lines) do
-			local pythonpath = l:match([====[src%s*=%s*%["([^"]*)"%]]====])
+			-- NOTE: This parsing really sucks a lot - e.g. it only pulls out
+			-- one path where there may be multiple (spread over several
+			-- lines). Works well enough for my use, for now.
+			-- Could maybe use something like
+			-- https://github.com/woodruffw/toml2json in the future.
+			local pythonpath = l:match([====[src%s*=%s*%["([^"]*)"]====])
 			if pythonpath then
 				opts.env.PYTHONPATH = pythonpath
 				vim.cmd.echo(('"Settng $PYTHONPATH to %s using pyproject.toml"'):format(pythonpath))
@@ -53,7 +58,12 @@ vim.keymap.set(
 -----------------
 -- Claude Code --
 -----------------
-vim.keymap.set("n", "<leader><leader>c", term.make_toggler("claude"), { desc = "Start Claude Code" })
+vim.keymap.set(
+	"n",
+	"<leader><leader>c",
+	term.make_toggler("claude --allow-dangerously-skip-permissions"),
+	{ desc = "Start Claude Code" }
+)
 
 -- -------
 -- -- R --
