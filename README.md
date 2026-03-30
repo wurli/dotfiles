@@ -13,7 +13,7 @@ ln -s ~/Repos/dotfiles/.config/ .config
 I.e. at work where _actual_ symlinks aren't allowed without admin permissions
 for some reason??
 
-``` bash
+``` zsh
 function symlink ([String] $real, [String] $link) {
     if (Test-Path $real -pathType container) {
         # Create a hardlink for individual files
@@ -23,7 +23,6 @@ function symlink ([String] $real, [String] $link) {
         cmd /c mklink /h $link.Replace("/", "\") $real.Replace("/", "\")
     }
 }
-
 symlink .bashrc $HOME\~\.bashrc
 symlink .gitconfig $HOME\~\.gitconfig
 symlink .lintr $HOME\~\.lintr

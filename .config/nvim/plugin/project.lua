@@ -8,6 +8,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
 		for pattern, module in pairs({
 			["bible%-notes"] = "bible_notes",
 			["data_pipeline$"] = "data_pipeline",
+			["clpw_migration"] = "data_pipeline",
 			["notes"] = "notes",
 		}) do
 			if cwd_name:match(pattern) then

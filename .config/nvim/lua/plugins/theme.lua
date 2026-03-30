@@ -219,6 +219,8 @@ return {
 
 	{
 		-- Colour hex codes like #000000
+		-- TODO: find a replacement; this seems to be abandoned (and now raises
+		-- a warning about tbl_flatten)
 		"norcalli/nvim-colorizer.lua",
 		cond = not vim.g.vscode,
 		config = function()

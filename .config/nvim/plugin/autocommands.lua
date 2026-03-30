@@ -17,3 +17,24 @@ vim.api.nvim_create_autocmd("BufAdd", {
 		print("hi")
 	end,
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = {
+		"bash",
+		"c",
+		"html",
+		"lua",
+		"luadoc",
+		"markdown",
+		"markdown_inline",
+		"python",
+		"r",
+		"rnoweb",
+		"vim",
+		"vimdoc",
+	},
+	callback = function()
+		vim.treesitter.start()
+		vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+	end,
+})

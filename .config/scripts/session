@@ -1,0 +1,52 @@
+#!/bin/zsh
+
+SESSION_DIRS=(
+    $HOME
+    $HOME/Repos
+    $HOME/OneDrive\ -\ Zurich\ Insurance/Documents\ -\ Integrated\ Benefits
+    $HOME/OneDrive\ -\ Zurich\ Insurance/Documents\ -\ Integrated\ Benefits/10_Data
+    $HOME/OneDrive\ -\ Zurich\ Insurance/Documents\ -\ Integrated\ Benefits/10_Data/Spain/Profitability
+)
+
+typeset -A DIRS
+
+for dir in "${SESSION_DIRS[@]}"; do
+  if [[ -d "$dir" ]]; then
+    for subdir in "$dir"/*/; do
+      subdir="${subdir%/}"  # Remove trailing slash
+      DIRS[$subdir]="${subdir:t}"  # :t gives basename
+    done
+  fi
+done
+
+typeset -A RUNNING
+
+while IFS= read -r line; do
+  [[ -z "$line" ]] && continue
+  name="${line#name=}"; name="${name%%	*}"
+  start_dir="${line##*start_dir=}"
+  RUNNING[$start_dir]="$name"
+done < <(zmx list 2>/dev/null)
+
+typeset -A NOT_RUNNING
+for key in "${(k)DIRS[@]}"; do
+  (( ! ${+RUNNING[$key]} )) && NOT_RUNNING[$key]="${DIRS[$key]}"
+done
+
+selected=$(
+  {
+    for key in "${(k)RUNNING[@]}"; do
+      printf '[zmx] %s\t%s\t%s\n' "${RUNNING[$key]}" "$key" "${RUNNING[$key]}"
+    done
+    for key in "${(k)NOT_RUNNING[@]}"; do
+      printf '%s\t%s\t%s\n' "$key" "$key" "${NOT_RUNNING[$key]}"
+    done
+  } | fzf --with-nth=1 --delimiter=$'\t'
+)
+
+[[ -z "$selected" ]] && exit 0
+
+SELECTED_DIR=$(printf '%s' "$selected" | cut -d$'\t' -f2)
+SELECTED_BASENAME=$(printf '%s' "$selected" | cut -d$'\t' -f3)
+
+(cd "$SELECTED_DIR" && zmx attach "$SELECTED_BASENAME")

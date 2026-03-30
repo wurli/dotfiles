@@ -207,6 +207,7 @@ return {
 				ts_ls = {},
 				html = {},
 				yamlls = {},
+				zls = {},
 			}
 
 			require("mason").setup()

@@ -1,10 +1,3 @@
-vim.api.nvim_create_user_command("Dump", function(x)
-	vim.cmd(string.format("put =execute('%s')", x.args))
-end, {
-	nargs = "+",
-	desc = "Dump the output of a command at the cursor position",
-})
-
 vim.api.nvim_create_user_command("LspFormat", function(x)
 	vim.lsp.buf.format({
 		name = x.fargs[1],
@@ -51,20 +44,6 @@ end
 
 vim.api.nvim_create_user_command("FileNext", go_to_relative_file(1), {})
 vim.api.nvim_create_user_command("FilePrev", go_to_relative_file(-1), {})
-
-vim.api.nvim_create_user_command("RuffFixAll", function()
-	vim.lsp.buf.code_action({
-		context = { only = { "source.fixAll.ruff" } },
-		apply = true,
-	})
-end, { desc = "Ruff fix all" })
-
-vim.api.nvim_create_user_command("RuffOrganizeImports", function()
-	vim.lsp.buf.code_action({
-		context = { only = { "source.organizeImports.ruff" } },
-		apply = true,
-	})
-end, { desc = "Ruff organize imports" })
 
 vim.api.nvim_create_user_command("Positron", function()
 	vim.system({
@@ -144,3 +123,7 @@ vim.api.nvim_create_user_command("TenData", function()
 	vim.notify("Opening " .. original_file)
 	vim.ui.open(original_file)
 end, { desc = "Open original version of 10_Data file" })
+
+vim.api.nvim_create_user_command("Reload", function()
+	vim.cmd([[mksession! /tmp/Session.vim | restart source /tmp/Session.vim]])
+end, { desc = "Reload Neovim" })

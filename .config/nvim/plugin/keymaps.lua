@@ -141,3 +141,23 @@ map({ "n", "v" }, "gl", function()
 	vim.o.operatorfunc = "v:lua.cycle_case"
 	return "g@"
 end, { expr = true, desc = "Cycle the case of a word" })
+
+map("n", "<m-f>", function()
+	local buf = vim.api.nvim_create_buf(false, true)
+	local cols = vim.o.columns
+	local lines = vim.o.lines
+	local scale = 0.65
+
+	vim.api.nvim_open_win(buf, true, {
+		relative = "editor",
+		width = math.floor(cols * scale),
+		height = math.floor(lines * scale),
+		col = math.floor(cols * (1 - scale) / 2),
+		row = math.floor(lines * (1 - scale) / 2),
+		style = "minimal",
+	})
+
+	vim.fn.jobstart("$XDG_CONFIG_HOME/scripts/session", {
+		term = true,
+	})
+end)

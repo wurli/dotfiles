@@ -50,17 +50,5 @@ if not vim.g.vscode then
 	end
 end
 
--- function Colorise()
---     local buf = vim.api.nvim_create_buf(false, true)
---     local win = vim.api.nvim_open_win(buf, true, { split = "right" })
---     vim.wo[win].number = false
---     vim.wo[win].relativenumber = false
---     vim.wo[win].statuscolumn = ""
---     vim.wo[win].signcolumn = "no"
---     vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
---     vim.api.nvim_chan_send(
---         vim.api.nvim_open_term(buf, {}),
---         [[[1;31;40mThis is highlighted[0m]]
---     )
--- end
--- Colorise()
+-- experimental improved UI
+require("vim._core.ui2").enable({})
