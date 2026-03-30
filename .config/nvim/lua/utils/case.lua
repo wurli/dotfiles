@@ -101,16 +101,16 @@ local cycle_case = function(str)
 	end
 end
 
-for _, x in ipairs({ "EURConversion", "hi_there", "HiThere", "hiThere", "hi_?!The123re.Jacob" }) do
-	vim.print("Original:   " .. x)
-	vim.print("Case:       " .. get_case(x))
-	local words = to_words(x)
-	vim.print("Words:      " .. vim.inspect(words))
-	vim.print("To Camel:   " .. words_to_camel(words))
-	vim.print("To Snake:   " .. words_to_snake(words))
-	vim.print("To Pascal:  " .. words_to_pascal(words))
-	vim.print("Cycle Case: " .. cycle_case(x))
-	vim.print("-----")
-end
+-- for _, x in ipairs({ "EURConversion", "hi_there", "HiThere", "hiThere", "hi_?!The123re.Jacob" }) do
+-- 	vim.print("Original:   " .. x)
+-- 	vim.print("Case:       " .. get_case(x))
+-- 	local words = to_words(x)
+-- 	vim.print("Words:      " .. vim.inspect(words))
+-- 	vim.print("To Camel:   " .. words_to_camel(words))
+-- 	vim.print("To Snake:   " .. words_to_snake(words))
+-- 	vim.print("To Pascal:  " .. words_to_pascal(words))
+-- 	vim.print("Cycle Case: " .. cycle_case(x))
+-- 	vim.print("-----")
+-- end
 
 return { cycle_case = cycle_case }
