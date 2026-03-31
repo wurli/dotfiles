@@ -34,7 +34,7 @@ local make_python_opts = function()
 			local pythonpath = l:match([====[src%s*=%s*%["([^"]*)"]====])
 			if pythonpath then
 				opts.env.PYTHONPATH = pythonpath
-				vim.cmd.echo(('"Settng $PYTHONPATH to %s using pyproject.toml"'):format(pythonpath))
+				vim.notify(("Setting $PYTHONPATH to `%s` using pyproject.toml"):format(pythonpath))
 				break
 			end
 		end
@@ -65,6 +65,10 @@ vim.keymap.set(
 	{ desc = "Start Claude Code" }
 )
 
+--------------
+-- Opencode --
+--------------
+vim.keymap.set("n", "<leader><leader>a", term.make_toggler("opencode"), { desc = "Start Opencode" })
 -- -------
 -- -- R --
 -- -------
