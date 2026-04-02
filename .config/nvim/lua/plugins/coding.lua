@@ -4,11 +4,11 @@ vim.g.easy_align_delimiters = {
 }
 
 return {
-	{
-		"wurli/contextindent.nvim",
-		config = true,
-		event = "VeryLazy",
-	},
+	-- {
+	-- 	"wurli/contextindent.nvim",
+	-- 	config = true,
+	-- 	event = "VeryLazy",
+	-- },
 	{
 		"junegunn/vim-easy-align",
 		keys = {

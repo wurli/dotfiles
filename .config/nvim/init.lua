@@ -43,12 +43,28 @@ require("lazy").setup({
 	},
 })
 
+-- Built-in plugins -----------------------------------------------------------
+
+-- experimental improved UI
+require("vim._core.ui2").enable({})
+
+-- built-in undotree
+vim.cmd.packadd("nvim.undotree")
+
+vim.keymap.set("n", "<leader>u", ":Undotree<CR>", { desc = "Toggle undotree" })
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "nvim-undotree",
+	callback = function()
+		vim.wo.number = false
+		vim.wo.relativenumber = false
+		vim.keymap.set("n", "q", ":q<CR>", { buffer = true })
+	end,
+})
+
 -- Load snippets --------------------------------------------------------------
 if not vim.g.vscode then
 	for _, path in ipairs(vim.api.nvim_get_runtime_file("lua/snippets/*.lua", true)) do
 		loadfile(path)()
 	end
 end
-
--- experimental improved UI
-require("vim._core.ui2").enable({})
