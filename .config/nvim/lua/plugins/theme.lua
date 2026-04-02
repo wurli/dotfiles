@@ -181,7 +181,7 @@ return {
 
 	{
 		"nvim-lualine/lualine.nvim",
-		cond = not vim.g.vscode,
+		cond = not vim.g.vscode and false,
 		lazy = false,
 		config = function()
 			require("lualine").setup({
