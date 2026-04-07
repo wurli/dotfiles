@@ -253,6 +253,17 @@ ai() {
     fi
 }
 
+db-rerun() {
+	local target="$1"
+	if [[ -z "$target" ]]; then
+		echo "Usage: db-rerun <target> [args...]"
+		return 1
+	fi
+	shift 1 2>/dev/null || shift $#  # Remove processed args
+	databricks bundle deploy -t "$target" -p "$target" "$@" && \
+		databricks bundle run -t "$target" -p "$target" "$@"
+}
+
 source ~/.zprofile
 
 
