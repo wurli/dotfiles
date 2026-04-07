@@ -5,6 +5,10 @@ vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 -- Use a vertical split instead of the default horizontal split for <c-w><c-f>
 map("n", "<c-w><c-f>", [[:vsplit<cr>gF]], { desc = "Open file under cursor" })
 
+map("n", "!", function()
+	vim.fn.feedkeys(":!", "n")
+end, { desc = "Enter command mode" })
+
 map("n", "<leader>yf", function()
 	local file = vim.fn.expand("%")
 	local cwd = vim.fn.getcwd() .. "/"
