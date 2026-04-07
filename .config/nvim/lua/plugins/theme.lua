@@ -1,3 +1,4 @@
+---@diagnostic disable-next-line: unused-local
 local nightfox = {
 	"EdenEast/nightfox.nvim",
 	config = function()
@@ -15,9 +16,9 @@ local nightfox = {
 	end,
 }
 
----@diagnostic disable-next-line: unused-local
 -- This theme is pretty good. But I don"t love the browny-grey background.
 -- I"d prefer to look at a blueish theme which doesn"t feel like mould :)
+---@diagnostic disable-next-line: unused-local
 local material = {
 	"marko-cerovac/material.nvim",
 	config = function()
@@ -42,10 +43,10 @@ local material = {
 	end,
 }
 
----@diagnostic disable-next-line: unused-local
 -- This theme is pretty much ideal... Except that you can"t override specific
 -- colours. If you could, I would absolutely change variables to be bright
 -- white instead of grey. Just doesn"t *pop* in the way I want.
+---@diagnostic disable-next-line: unused-local
 local night_owl = {
 	"oxfist/night-owl.nvim",
 	lazy = false, -- make sure we load this during startup if it is your main colorscheme
