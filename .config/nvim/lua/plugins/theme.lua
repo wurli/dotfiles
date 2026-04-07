@@ -194,22 +194,23 @@ return {
 				},
 				sections = {
 					lualine_a = { "mode" },
-					lualine_b = { "branch" },
-					lualine_c = { "filename" },
-					lualine_x = { "filetype" },
-					lualine_y = { "progress" },
+					lualine_b = { "filename" },
+					lualine_c = { { "filetype", icon_only = true } },
+					lualine_x = {},
+					lualine_y = { "branch" },
 					lualine_z = { "location" },
 				},
 				extensions = {
 					{
 						sections = {
 							lualine_a = { "mode" },
-							lualine_b = { "branch", "diff", "diagnostics" },
-							lualine_c = { { "filename", path = 1 } },
+							lualine_b = { { "filetype", icon_only = true } },
+							lualine_c = { "filename" },
 							lualine_x = { get_wordcount, get_charcount },
-							lualine_y = { "progress" },
+							lualine_y = { "branch" },
 							lualine_z = { "location" },
 						},
+
 						filetypes = { "markdown", "quarto", "txt" },
 					},
 				},
