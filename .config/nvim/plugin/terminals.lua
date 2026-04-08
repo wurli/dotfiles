@@ -3,7 +3,7 @@ local term = require("utils.term")
 -------------------
 -- Regular shell --
 -------------------
-vim.keymap.set("n", "<leader><leader>t", term.make_toggler(nil, "terminal"), { desc = "Open terminal" })
+vim.keymap.set("n", "<leader><leader>t", term.make_toggler(nil, { name = "terminal" }), { desc = "Open terminal" })
 
 -------------
 -- IPython --
@@ -51,7 +51,7 @@ end
 vim.keymap.set(
 	"n",
 	"<leader><leader>p",
-	term.make_toggler(make_python_cmd, "python", make_python_opts),
+	term.make_toggler(make_python_cmd, { name = "python", job_opts = make_python_opts }),
 	{ desc = "Start IPython" }
 )
 
@@ -68,7 +68,23 @@ vim.keymap.set(
 --------------
 -- Opencode --
 --------------
-vim.keymap.set("n", "<leader><leader>a", term.make_toggler("opencode"), { desc = "Start Opencode" })
+vim.keymap.set(
+	"n",
+	"<leader><leader>a",
+	term.make_toggler("opencode", {
+		init = function()
+			local opencode = term.terminals.opencode
+			vim.keymap.set("n", "<c-u>", function()
+				opencode:send_raw(vim.api.nvim_replace_termcodes("<c-u>", true, true, true))
+			end, { buffer = opencode.buf })
+			vim.keymap.set("n", "<c-d>", function()
+				opencode:send_raw(vim.api.nvim_replace_termcodes("<c-d>", true, true, true))
+			end, { buffer = opencode.buf })
+		end,
+	}),
+	{ desc = "Start Opencode" }
+)
+
 -- -------
 -- -- R --
 -- -------

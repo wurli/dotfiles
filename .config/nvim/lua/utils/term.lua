@@ -1,9 +1,25 @@
+-- To anyone reading this code on GitHub, I strongly recommend not using this
+-- for your own purposes. The code is very much a "quick and dirty" solution to
+-- my own needs, and is not intended to be a general-purpose terminal manager.
+--
+-- TODO: at some point rewrite to be a bit more extensible.
+
+---@class Terms
+---@field terminals table<string, CustomTerm>
 local terms = { terminals = {} }
 
+---@class MakeTogglerOpts
+---@field name? string Name of the terminal. Required if `cmd` is not a string.
+---@field job_opts? table | fun() Options passed to `jobstart()`
+---@field init? fun() Optional function called when the terminal is first created
+
 ---@param cmd? string|string[]|fun(): string|string[]
----@param name? string May be `nil` if `cmd` is a string
----@param opts? table|fun(): table Addition options passeed to `jobstart()`
-terms.make_toggler = function(cmd, name, opts)
+---@param opts? MakeTogglerOpts
+terms.make_toggler = function(cmd, opts)
+	opts = opts or {}
+	local name = opts.name
+	local job_opts = opts.job_opts
+
 	if name == nil then
 		if type(cmd) == "string" then
 			name = cmd
@@ -31,6 +47,10 @@ terms.make_toggler = function(cmd, name, opts)
 		t.win = ok and win or vim.api.nvim_get_current_win()
 
 		if vim.bo[t.buf].buftype ~= "terminal" then
+			if opts.init then
+				opts.init()
+			end
+
 			if type(cmd) == "function" then
 				cmd = cmd()
 			end
@@ -42,7 +62,7 @@ terms.make_toggler = function(cmd, name, opts)
 				end
 			end
 
-			local opts1 = type(opts) == "function" and opts() or opts
+			local opts1 = type(job_opts) == "function" and job_opts() or job_opts
 			t.channel = vim.fn.jobstart(
 				cmd1,
 				vim.tbl_extend("force", {
@@ -59,6 +79,7 @@ terms.make_toggler = function(cmd, name, opts)
 		vim.fn.win_gotoid(initial_win)
 	end
 
+	---@class CustomTerm
 	terms.terminals[name] = {
 		buf = -1,
 		win = -1,
@@ -69,7 +90,10 @@ terms.make_toggler = function(cmd, name, opts)
 			vim.api.nvim_buf_call(self.buf, function()
 				vim.fn.cursor(vim.fn.line("$"), 0)
 			end)
-			vim.fn.chansend(self.channel, lines)
+			self:send_raw(lines)
+		end,
+		send_raw = function(self, text)
+			vim.fn.chansend(self.channel, text)
 		end,
 		exists = function(self)
 			return vim.api.nvim_buf_is_valid(self.buf)
