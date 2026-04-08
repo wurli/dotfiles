@@ -30,9 +30,7 @@ return {
 				},
 			},
 			cmdline = {
-				keymap = {
-					preset = "inherit",
-				},
+				keymap = {},
 				completion = {
 					menu = {
 						auto_show = true,
