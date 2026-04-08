@@ -35,6 +35,9 @@ vim.api.nvim_create_autocmd("FileType", {
 	},
 	callback = function()
 		vim.treesitter.start()
-		vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+		local new_ft = vim.fn.expand("<amatch>")
+		if not vim.tbl_contains({ "markdown", "markdown_inline" }, new_ft) then
+			vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+		end
 	end,
 })
