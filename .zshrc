@@ -104,6 +104,7 @@ alias gd="git diff"
 alias g="git"
 
 alias note="nvim -c Note"
+alias db="databricks"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Keymaps
