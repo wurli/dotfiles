@@ -8,7 +8,6 @@ local colors = {
 	purple = "#BAA0E8",
 	transparent_black = "#1E1F29",
 	yellow = "#E8EDA2",
-
 	cyan = "#A7DFEF",
 }
 
@@ -37,7 +36,7 @@ for group, opts in pairs(statusline_groups) do
 end
 
 local status_hl = function(string, group)
-	return string.format("%%#%s#%s", group, string)
+	return "%#" .. group .. "#" .. string
 end
 
 local M = {}
@@ -261,31 +260,21 @@ end
 --- Renders the statusline.
 ---@return string
 function M.render()
-	---@param components string[]
-	---@return string
-	local function concat_components(components)
-		local to_show = vim.iter(components)
-			:filter(function(c)
-				return c and c ~= ""
-			end)
-			:totable()
-		return table.concat(to_show, "  ")
-	end
-
 	return table.concat({
-		concat_components({
-			M.mode_component(),
-			M.file_component(),
-			M.dap_component() or M.lsp_progress_component(),
-		}),
-		"%#StatusLine#%=",
-		concat_components({
-			vim.diagnostic.status(),
-			M.git_component(),
-			-- M.encoding_component(),
-			M.position_component(),
-		}),
-		"",
+		M.mode_component(),
+		"  ",
+		M.file_component(),
+		"  ",
+		M.dap_component() or M.lsp_progress_component(),
+		-- Separates lhs and rhs
+		status_hl("%=", "StatusLine"),
+		vim.diagnostic.status(),
+		"  ",
+		M.git_component(),
+		"  ",
+		-- M.encoding_component(),
+		-- "  ",
+		M.position_component(),
 	})
 end
 
