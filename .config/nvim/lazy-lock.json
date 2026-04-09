@@ -3,7 +3,7 @@
   "aerial.nvim": { "branch": "master", "commit": "645d108a5242ec7b378cbe643eb6d04d4223f034" },
   "blink.cmp": { "branch": "main", "commit": "485c03400608cb6534bbf84da8c1c471fc4808c0" },
   "blink.compat": { "branch": "main", "commit": "2ed6d9a28b07fa6f3bface818470605f8896408c" },
-  "cobalt.nvim": { "branch": "main", "commit": "4641e8040a5d298aa4e19fabe1e8c1415bdd0da8" },
+  "cobalt.nvim": { "branch": "main", "commit": "bcb8fb08ee33af189b95b615c64ba58e983ed198" },
   "codediff.nvim": { "branch": "next", "commit": "96845f95bc5539c8e2a0ab88223c5033f302fcd9" },
   "conform.nvim": { "branch": "master", "commit": "cde4da5c1083d3527776fee69536107d98dae6c9" },
   "copilot-lsp": { "branch": "main", "commit": "a80e0c17e7366614d39506825f49a25d285fead9" },
