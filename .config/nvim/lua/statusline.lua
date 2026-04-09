@@ -8,6 +8,8 @@ local colors = {
 	purple = "#BAA0E8",
 	transparent_black = "#1E1F29",
 	yellow = "#E8EDA2",
+
+	cyan = "#A7DFEF",
 }
 
 -- Groups used for my statusline.
