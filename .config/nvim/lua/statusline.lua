@@ -39,15 +39,13 @@ local status_hl = function(string, group)
 	return "%#" .. group .. "#" .. string
 end
 
-local M = {}
-
 --- Keeps track of the highlight groups I've already created.
 ---@type table<string, boolean>
 local statusline_hls = {}
 
 ---@param hl string
 ---@return string
-function M.get_or_create_hl(hl)
+local get_or_create_hl = function(hl)
 	local hl_name = "Statusline" .. hl
 
 	if not statusline_hls[hl] then
@@ -64,7 +62,7 @@ end
 
 --- Current mode.
 ---@return string
-function M.mode_component()
+local mode_component = function()
 	-- Note that: \19 = ^S and \22 = ^V.
 	-- stylua: ignore start
 	local mode_settings = {
@@ -120,7 +118,7 @@ end
 
 --- Git status (if any).
 ---@return string
-function M.git_component()
+local git_component = function()
 	local head = vim.b.gitsigns_head
 	if not head or head == "" then
 		return ""
@@ -138,12 +136,12 @@ end
 
 --- The current debugging status (if any).
 ---@return string?
-function M.dap_component()
+local dap_component = function()
 	if not package.loaded["dap"] or require("dap").status() == "" then
 		return nil
 	end
 
-	return string.format("%%#%s#%s  %s", M.get_or_create_hl("Special"), icons.misc.bug, require("dap").status())
+	return string.format("%%#%s#%s  %s", get_or_create_hl("Special"), icons.misc.bug, require("dap").status())
 end
 
 ---@type table<string, string?>
@@ -182,7 +180,7 @@ vim.api.nvim_create_autocmd("LspProgress", {
 })
 --- The latest LSP progress message.
 ---@return string
-function M.lsp_progress_component()
+local lsp_progress_component = function()
 	if not progress_status.client or not progress_status.title then
 		return ""
 	end
@@ -201,7 +199,7 @@ end
 
 --- The buffer's filetype.
 ---@return string
-function M.file_component()
+local file_component = function()
 	local devicons = require("nvim-web-devicons")
 
 	-- Special icons for some filetypes.
@@ -237,44 +235,46 @@ function M.file_component()
 			icon, icon_hl = devicons.get_icon_by_filetype(filetype, { default = true })
 		end
 	end
-	icon_hl = M.get_or_create_hl(icon_hl)
+	icon_hl = get_or_create_hl(icon_hl)
 
 	local filename = vim.fs.basename(vim.api.nvim_buf_get_name(0))
 
 	return status_hl(icon, icon_hl) .. " " .. status_hl(filename, "StatuslineTitle")
 end
 
---- File-content encoding for the current buffer.
----@return string
-function M.encoding_component()
-	local encoding = vim.opt.fileencoding:get()
-	return encoding == "" and "" or status_hl(" " .. encoding, "StatuslineModeSeparatorOther")
-end
+-- --- File-content encoding for the current buffer.
+-- ---@return string
+-- local encoding_component = function()
+-- 	local encoding = vim.opt.fileencoding:get()
+-- 	return encoding == "" and "" or status_hl(" " .. encoding, "StatuslineModeSeparatorOther")
+-- end
 
 --- The current line, total line count, and column position.
 ---@return string
-function M.position_component()
+local position_component = function()
 	return status_hl(string.format("%2d:%-2d", vim.fn.line("."), vim.fn.virtcol(".")), "StatuslineTitle")
 end
+
+local M = {}
 
 --- Renders the statusline.
 ---@return string
 function M.render()
 	return table.concat({
-		M.mode_component(),
+		mode_component(),
 		"  ",
-		M.file_component(),
+		file_component(),
 		"  ",
-		M.dap_component() or M.lsp_progress_component(),
+		dap_component() or lsp_progress_component(),
 		-- Separates lhs and rhs
 		status_hl("%=", "StatusLine"),
 		vim.diagnostic.status(),
 		"  ",
-		M.git_component(),
+		git_component(),
 		"  ",
 		-- M.encoding_component(),
 		-- "  ",
-		M.position_component(),
+		position_component(),
 	})
 end
 
