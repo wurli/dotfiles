@@ -1,35 +1,36 @@
 local icons = require("utils.icons")
 
-local colors = {
-	green = "#87E58E",
-	grey = "#A9ABAC",
-	orange = "#FFBFA9",
-	pink = "#E48CC1",
-	purple = "#BAA0E8",
-	transparent_black = "#1E1F29",
-	yellow = "#E8EDA2",
-	cyan = "#A7DFEF",
-}
+local mode_separators = { "", "" }
 
+---param group string
+---@param group string
+---@return vim.api.keyset.get_hl_info
+local get_hl = function(group)
+	return vim.api.nvim_get_hl(0, { name = group, link = false, create = false })
+end
+
+-- stylua: ignore start
 -- Groups used for my statusline.
 ---@type table<string, vim.api.keyset.highlight>
-local statusline_groups = {}
+local statusline_groups = {
+	StatuslineItalic   = { fg = get_hl("Statusline").fg, bg = get_hl("Statusline").bg, italic = true },
+	StatuslineTitle    = { fg = get_hl("Statusline").fg, bg = get_hl("Statusline").bg, bold = true },
+	StatuslineInverted = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
+	StatuslineSpinner  = { fg = get_hl("DiffAdd").fg,    bg = get_hl("Statusline").bg, bold = true },
+}
 for mode, color in pairs({
-	Normal = "purple",
-	Pending = "pink",
-	Visual = "yellow",
-	Insert = "green",
-	Command = "cyan",
-	Other = "orange",
+	Normal  = { fg = get_hl("Todo").fg,       bg = get_hl("Statusline").fg },
+	Pending = { fg = get_hl("Todo").fg,       bg = get_hl("Statusline").fg },
+	Visual  = { fg = get_hl("ToDo").fg,       bg = get_hl("SpecialKey").fg },
+	Insert  = { fg = get_hl("ToDo").fg,       bg = get_hl("diffAdded").fg  },
+	Command = { fg = get_hl("Todo").fg,       bg = get_hl("Number").fg     },
+	Replace = { fg = get_hl("Normal").bg,     bg = get_hl("Constant").fg   },
+	Other   = { fg = get_hl("Statusline").fg, bg = get_hl("Statusline").bg },
 }) do
-	statusline_groups["StatuslineMode" .. mode] = { fg = colors.transparent_black, bg = colors[color] }
-	statusline_groups["StatuslineModeSeparator" .. mode] = { fg = colors[color], bg = colors.transparent_black }
+	statusline_groups["StatuslineMode"          .. mode] = { fg = color.fg, bg = color.bg }
+	statusline_groups["StatuslineModeSeparator" .. mode] = { fg = color.bg, bg = color.fg }
 end
-statusline_groups = vim.tbl_extend("error", statusline_groups, {
-	StatuslineItalic = { fg = colors.grey, bg = colors.transparent_black, italic = true },
-	StatuslineSpinner = { fg = colors.bright_green, bg = colors.transparent_black, bold = true },
-	StatuslineTitle = { fg = colors.bright_white, bg = colors.transparent_black, bold = true },
-})
+-- stylua: ignore end
 
 for group, opts in pairs(statusline_groups) do
 	vim.api.nvim_set_hl(0, group, opts)
@@ -101,12 +102,12 @@ local mode_component = function()
 		["i"]     = { name = "INSERT",     hl = "Insert" },
 		["ic"]    = { name = "INSERT",     hl = "Insert" },
 		["ix"]    = { name = "INSERT",     hl = "Insert" },
-		["R"]     = { name = "REPLACE",    hl = "Normal" },
-		["Rc"]    = { name = "REPLACE",    hl = "Normal" },
-		["Rx"]    = { name = "REPLACE",    hl = "Normal" },
-		["Rv"]    = { name = "V-REPLACE",  hl = "Normal" },
-		["Rvc"]   = { name = "V-REPLACE",  hl = "Normal" },
-		["Rvx"]   = { name = "V-REPLACE",  hl = "Normal" },
+		["R"]     = { name = "REPLACE",    hl = "Replace" },
+		["Rc"]    = { name = "REPLACE",    hl = "Replace" },
+		["Rx"]    = { name = "REPLACE",    hl = "Replace" },
+		["Rv"]    = { name = "V-REPLACE",  hl = "Replace" },
+		["Rvc"]   = { name = "V-REPLACE",  hl = "Replace" },
+		["Rvx"]   = { name = "V-REPLACE",  hl = "Replace" },
 		["c"]     = { name = "COMMAND",    hl = "Command" },
 		["cv"]    = { name = "EX",         hl = "Command" },
 		["ce"]    = { name = "EX",         hl = "Command" },
@@ -123,9 +124,9 @@ local mode_component = function()
 	local hl = settings.hl or "Other"
 
 	return table.concat({
-		sl_hl("", "StatuslineModeSeparator" .. hl),
+		sl_hl(mode_separators[1] or "", "StatuslineModeSeparator" .. hl),
 		sl_hl(mode, "StatuslineMode" .. hl),
-		sl_hl("", "StatuslineModeSeparator" .. hl),
+		sl_hl(mode_separators[2] or "", "StatuslineModeSeparator" .. hl),
 	})
 end
 
@@ -300,7 +301,7 @@ end
 --- The current line, total line count, and column position.
 ---@return string
 local position_component = function()
-	return sl_hl(string.format("%2d:%-2d", vim.fn.line("."), vim.fn.virtcol(".")), "StatuslineTitle")
+	return sl_hl(string.format(" %2d:%-2d ", vim.fn.line("."), vim.fn.virtcol(".")), "StatuslineInverted")
 end
 
 local M = {}
