@@ -34,6 +34,10 @@ for group, opts in pairs(statusline_groups) do
 	vim.api.nvim_set_hl(0, group, opts)
 end
 
+local status_hl = function(string, group)
+	return string.format("%%#%s#%s", group, string)
+end
+
 local M = {}
 
 --- Keeps track of the highlight groups I've already created.
@@ -107,9 +111,9 @@ function M.mode_component()
 	local hl = settings.hl or "Other"
 
 	return table.concat({
-		string.format("%%#StatuslineModeSeparator%s#", hl),
-		string.format("%%#StatuslineMode%s#%s", hl, mode),
-		string.format("%%#StatuslineModeSeparator%s#", hl),
+		status_hl("", "StatuslineModeSeparator" .. hl),
+		status_hl(mode, "StatuslineMode" .. hl),
+		status_hl("", "StatuslineModeSeparator" .. hl),
 	})
 end
 
@@ -188,9 +192,9 @@ function M.lsp_progress_component()
 	end
 
 	return table.concat({
-		"%#StatuslineSpinner#󱥸 ",
-		string.format("%%#StatuslineTitle#%s  ", progress_status.client),
-		string.format("%%#StatuslineItalic#%s...", progress_status.title),
+		status_hl("󱥸 ", "StatuslineSpinner"),
+		status_hl(progress_status.client .. "  ", "StatuslineTitle"),
+		status_hl(progress_status.title .. "...", "StatuslineItalic"),
 	})
 end
 
@@ -236,23 +240,20 @@ function M.file_component()
 
 	local filename = vim.fs.basename(vim.api.nvim_buf_get_name(0))
 
-	return string.format("%%#%s#%s %%#StatuslineTitle#%s", icon_hl, icon, filename)
+	return status_hl(icon, icon_hl) .. " " .. status_hl(filename, "StatuslineTitle")
 end
 
 --- File-content encoding for the current buffer.
 ---@return string
 function M.encoding_component()
 	local encoding = vim.opt.fileencoding:get()
-	return encoding ~= "" and string.format("%%#StatuslineModeSeparatorOther# %s", encoding) or ""
+	return encoding == "" and "" or status_hl(" " .. encoding, "StatuslineModeSeparatorOther")
 end
 
 --- The current line, total line count, and column position.
 ---@return string
 function M.position_component()
-	local line = vim.fn.line(".")
-	local col = vim.fn.virtcol(".")
-
-	return string.format("%%#StatuslineTitle#%d:%d", line, col)
+	return status_hl(string.format("%2d:%-2d", vim.fn.line("."), vim.fn.virtcol(".")), "StatuslineTitle")
 end
 
 --- Renders the statusline.
