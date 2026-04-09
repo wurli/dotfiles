@@ -1,4 +1,4 @@
-local icons = require("icons")
+local icons = require("utils.icons")
 
 local colors = {
 	green = "#87E58E",
