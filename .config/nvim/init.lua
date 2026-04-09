@@ -68,6 +68,3 @@ if not vim.g.vscode then
 		loadfile(path)()
 	end
 end
-
-require("winbar")
-require("statusline")
