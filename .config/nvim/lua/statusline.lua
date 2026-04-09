@@ -9,33 +9,45 @@ local get_hl = function(group)
 	return vim.api.nvim_get_hl(0, { name = group, link = false, create = false })
 end
 
--- stylua: ignore start
--- Groups used for my statusline.
----@type table<string, vim.api.keyset.highlight>
-local statusline_groups = {
-	StatuslineItalic   = { italic = true },
-	StatusLineBold     = { bold = true },
-	StatuslineProgress = { fg = get_hl("LineNr").fg },
-	StatuslineInverted = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
-	StatuslineIcon     = { fg = get_hl("Special").fg },
-}
-for mode, color in pairs({
-	Normal  = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
-	Pending = { fg = get_hl("Statusline").bg, bg = get_hl("Comment").fg },
-	Visual  = { fg = get_hl("Statusline").bg, bg = get_hl("SpecialKey").fg },
-	Insert  = { fg = get_hl("Statusline").bg, bg = get_hl("diffAdded").fg  },
-	Command = { fg = get_hl("Statusline").bg, bg = get_hl("Number").fg     },
-	Replace = { fg = get_hl("Statusline").bg, bg = get_hl("Constant").fg   },
-	Other   = { link = "StatusLine" },
-}) do
-	statusline_groups["StatuslineMode"          .. mode] = { fg = color.fg, bg = color.bg }
-	statusline_groups["StatuslineModeSeparator" .. mode] = { fg = color.bg, bg = color.fg }
-end
--- stylua: ignore end
+local set_hl_groups = function()
+	-- stylua: ignore start
+	-- Groups used for my statusline.
+	---@type table<string, vim.api.keyset.highlight>
+	local statusline_groups = {
+		StatuslineItalic   = { italic = true },
+		StatusLineBold     = { bold = true },
+		StatuslineProgress = { fg = get_hl("LineNr").fg },
+		StatuslineInverted = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
+		StatuslineIcon     = { fg = get_hl("Special").fg },
+	}
+	for mode, color in pairs({
+		Normal  = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
+		Pending = { fg = get_hl("Statusline").bg, bg = get_hl("Comment").fg },
+		Visual  = { fg = get_hl("Statusline").bg, bg = get_hl("SpecialKey").fg },
+		Insert  = { fg = get_hl("Statusline").bg, bg = get_hl("diffAdded").fg  },
+		Command = { fg = get_hl("Statusline").bg, bg = get_hl("Number").fg     },
+		Replace = { fg = get_hl("Statusline").bg, bg = get_hl("Constant").fg   },
+		Other   = { link = "StatusLine" },
+	}) do
+		statusline_groups["StatuslineMode"          .. mode] = { fg = color.fg, bg = color.bg }
+		statusline_groups["StatuslineModeSeparator" .. mode] = { fg = color.bg, bg = color.fg }
+	end
+	-- stylua: ignore end
 
-for group, opts in pairs(statusline_groups) do
-	vim.api.nvim_set_hl(0, group, opts)
+	for group, opts in pairs(statusline_groups) do
+		vim.api.nvim_set_hl(0, group, opts)
+	end
 end
+
+-- Set up highlights on initial load
+set_hl_groups()
+
+-- Re-apply highlights when colorscheme changes
+vim.api.nvim_create_autocmd("ColorScheme", {
+	group = vim.api.nvim_create_augroup("jscott/statusline_colors", { clear = true }),
+	desc = "Re-apply statusline highlights on colorscheme change",
+	callback = set_hl_groups,
+})
 
 ---@param group string
 ---@return string
