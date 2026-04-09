@@ -255,6 +255,15 @@ local file_component = function()
 	return sl_hl(icon, icon_hl) .. " " .. sl_hl(filename, "StatuslineTitle")
 end
 
+---@return string
+local modified_component = function()
+	if vim.bo[sl_bufnr()].modified then
+		return sl_hl("[+]", "StatuslineModified")
+	else
+		return ""
+	end
+end
+
 -- --- File-content encoding for the current buffer.
 -- ---@return string
 -- local encoding_component = function()
@@ -279,6 +288,8 @@ function M.render()
 			mode_component(),
 			"  ",
 			file_component(),
+			" ",
+			modified_component(),
 			"  ",
 			dap_component() or lsp_progress_component(),
 			-- Separates lhs and rhs
