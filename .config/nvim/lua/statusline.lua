@@ -184,10 +184,10 @@ vim.api.nvim_create_autocmd("LspProgress", {
 			progress_status.title = nil
 			-- Wait a bit before clearing the status.
 			vim.defer_fn(function()
-				vim.cmd.redrawstatus()
+				vim.api.nvim__redraw({ statusline = true })
 			end, 3000)
 		else
-			vim.cmd.redrawstatus()
+			vim.api.nvim__redraw({ statusline = true })
 		end
 	end,
 })
@@ -205,7 +205,7 @@ local lsp_progress_component = function()
 	end
 
 	return table.concat({
-		sl_hl("󱥸 ", "StatuslineSpinner"),
+		sl_hl(icons.misc.lsp .. " ", "StatuslineSpinner"),
 		sl_hl(progress_status.client .. "  ", "StatuslineTitle"),
 		sl_hl(progress_status.title .. "...", "StatuslineItalic"),
 	})

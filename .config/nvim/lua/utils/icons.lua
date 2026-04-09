@@ -58,6 +58,7 @@ M.misc = {
 	terminal = "",
 	toolbox = "󰦬",
 	vertical_bar = "│",
+	lsp = "󱑟 ",
 }
 
 return M
