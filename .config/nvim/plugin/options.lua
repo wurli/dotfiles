@@ -23,6 +23,7 @@ vim.opt.smartcase = true
 vim.opt.smartindent = true
 vim.opt.softtabstop = 4
 vim.opt.splitright = true
+vim.opt.statusline = "%!v:lua.require'statusline'.render()"
 vim.opt.swapfile = false
 vim.opt.tabstop = 4
 vim.opt.timeoutlen = 300
@@ -37,3 +38,6 @@ end)
 vim.opt.fillchars:append("diff:╱")
 vim.opt.jumpoptions:append("stack")
 vim.opt.diffopt:append("algorithm:patience")
+
+-- Don't show the command that produced the quickfix list.
+vim.g.qf_disable_statusline = 1

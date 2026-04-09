@@ -36,12 +36,6 @@ end
 
 local M = {}
 
--- Don't show the command that produced the quickfix list.
-vim.g.qf_disable_statusline = 1
-
--- Show the mode in my custom component instead.
-vim.o.showmode = false
-
 --- Keeps track of the highlight groups I've already created.
 ---@type table<string, boolean>
 local statusline_hls = {}
@@ -67,63 +61,51 @@ end
 ---@return string
 function M.mode_component()
 	-- Note that: \19 = ^S and \22 = ^V.
-	local mode_to_str = {
-		["n"] = "NORMAL",
-		["no"] = "OP-PENDING",
-		["nov"] = "OP-PENDING",
-		["noV"] = "OP-PENDING",
-		["no\22"] = "OP-PENDING",
-		["niI"] = "NORMAL",
-		["niR"] = "NORMAL",
-		["niV"] = "NORMAL",
-		["nt"] = "NORMAL",
-		["ntT"] = "NORMAL",
-		["v"] = "VISUAL",
-		["vs"] = "VISUAL",
-		["V"] = "VISUAL",
-		["Vs"] = "VISUAL",
-		["\22"] = "VISUAL",
-		["\22s"] = "VISUAL",
-		["s"] = "SELECT",
-		["S"] = "SELECT",
-		["\19"] = "SELECT",
-		["i"] = "INSERT",
-		["ic"] = "INSERT",
-		["ix"] = "INSERT",
-		["R"] = "REPLACE",
-		["Rc"] = "REPLACE",
-		["Rx"] = "REPLACE",
-		["Rv"] = "VIRT REPLACE",
-		["Rvc"] = "VIRT REPLACE",
-		["Rvx"] = "VIRT REPLACE",
-		["c"] = "COMMAND",
-		["cv"] = "VIM EX",
-		["ce"] = "EX",
-		["r"] = "PROMPT",
-		["rm"] = "MORE",
-		["r?"] = "CONFIRM",
-		["!"] = "SHELL",
-		["t"] = "TERMINAL",
+	-- stylua: ignore start
+	local mode_settings = {
+		["n"]     = { name = "NORMAL",     hl = "Normal" },
+		["no"]    = { name = "OP-PENDING", hl = "Pending" },
+		["nov"]   = { name = "OP-PENDING", hl = "Pending" },
+		["noV"]   = { name = "OP-PENDING", hl = "Pending" },
+		["no\22"] = { name = "OP-PENDING", hl = "Pending" },
+		["niI"]   = { name = "NORMAL",     hl = "Normal" },
+		["niR"]   = { name = "NORMAL",     hl = "Normal" },
+		["niV"]   = { name = "NORMAL",     hl = "Normal" },
+		["nt"]    = { name = "NORMAL",     hl = "Normal" },
+		["ntT"]   = { name = "NORMAL",     hl = "Normal" },
+		["v"]     = { name = "VISUAL",     hl = "Visual" },
+		["vs"]    = { name = "VISUAL",     hl = "Visual" },
+		["V"]     = { name = "V-LINE",     hl = "Visual" },
+		["Vs"]    = { name = "V-LINE",     hl = "Visual" },
+		["\22"]   = { name = "V-BLOCK",    hl = "Visual" },
+		["\22s"]  = { name = "V-BLOCK",    hl = "Visual" },
+		["s"]     = { name = "SELECT",     hl = "Insert" },
+		["S"]     = { name = "S-LINE",     hl = "Normal" },
+		["\19"]   = { name = "S-BLOCK",    hl = "Normal" },
+		["i"]     = { name = "INSERT",     hl = "Insert" },
+		["ic"]    = { name = "INSERT",     hl = "Insert" },
+		["ix"]    = { name = "INSERT",     hl = "Insert" },
+		["R"]     = { name = "REPLACE",    hl = "Normal" },
+		["Rc"]    = { name = "REPLACE",    hl = "Normal" },
+		["Rx"]    = { name = "REPLACE",    hl = "Normal" },
+		["Rv"]    = { name = "V-REPLACE",  hl = "Normal" },
+		["Rvc"]   = { name = "V-REPLACE",  hl = "Normal" },
+		["Rvx"]   = { name = "V-REPLACE",  hl = "Normal" },
+		["c"]     = { name = "COMMAND",    hl = "Command" },
+		["cv"]    = { name = "EX",         hl = "Command" },
+		["ce"]    = { name = "EX",         hl = "Command" },
+		["r"]     = { name = "REPLACE",    hl = "Normal" },
+		["rm"]    = { name = "MORE",       hl = "Normal" },
+		["r?"]    = { name = "CONFIRM",    hl = "Normal" },
+		["!"]     = { name = "SHELL",      hl = "Normal" },
+		["t"]     = { name = "TERMINAL",   hl = "Command" },
 	}
+	-- stylua: ignore end
 
-	-- Get the respective string to display.
-	local mode = mode_to_str[vim.api.nvim_get_mode().mode] or "UNKNOWN"
+	local settings = mode_settings[vim.api.nvim_get_mode().mode] or {}
+	local mode = settings.name or "UNKNOWN"
+	local hl = settings.hl or "Other"
 
-	-- Set the highlight group.
-	local hl = "Other"
-	if mode:find("NORMAL") then
-		hl = "Normal"
-	elseif mode:find("PENDING") then
-		hl = "Pending"
-	elseif mode:find("VISUAL") then
-		hl = "Visual"
-	elseif mode:find("INSERT") or mode:find("SELECT") then
-		hl = "Insert"
-	elseif mode:find("COMMAND") or mode:find("TERMINAL") or mode:find("EX") then
-		hl = "Command"
-	end
-
-	-- Construct the bubble-like component.
 	return table.concat({
 		string.format("%%#StatuslineModeSeparator%s#", hl),
 		string.format("%%#StatuslineMode%s#%s", hl, mode),
@@ -214,7 +196,7 @@ end
 
 --- The buffer's filetype.
 ---@return string
-function M.filetype_component()
+function M.file_component()
 	local devicons = require("nvim-web-devicons")
 
 	-- Special icons for some filetypes.
@@ -252,7 +234,9 @@ function M.filetype_component()
 	end
 	icon_hl = M.get_or_create_hl(icon_hl)
 
-	return string.format("%%#%s#%s %%#StatuslineTitle#%s", icon_hl, icon, filetype)
+	local filename = vim.fs.basename(vim.api.nvim_buf_get_name(0))
+
+	return string.format("%%#%s#%s %%#StatuslineTitle#%s", icon_hl, icon, filename)
 end
 
 --- File-content encoding for the current buffer.
@@ -266,14 +250,9 @@ end
 ---@return string
 function M.position_component()
 	local line = vim.fn.line(".")
-	local line_count = vim.api.nvim_buf_line_count(0)
 	local col = vim.fn.virtcol(".")
 
-	return table.concat({
-		"%#StatuslineItalic#l: ",
-		string.format("%%#StatuslineTitle#%3d", line),
-		string.format("%%#StatuslineItalic#/%d c: %2d", line_count, col),
-	})
+	return string.format("%%#StatuslineTitle#%d:%d", line, col)
 end
 
 --- Renders the statusline.
@@ -282,27 +261,29 @@ function M.render()
 	---@param components string[]
 	---@return string
 	local function concat_components(components)
-		return vim.iter(components):skip(1):fold(components[1], function(acc, component)
-			return #component > 0 and string.format("%s    %s", acc, component) or acc
-		end)
+		local to_show = vim.iter(components)
+			:filter(function(c)
+				return c and c ~= ""
+			end)
+			:totable()
+		return table.concat(to_show, "  ")
 	end
 
 	return table.concat({
 		concat_components({
 			M.mode_component(),
-			M.git_component(),
+			M.file_component(),
 			M.dap_component() or M.lsp_progress_component(),
 		}),
 		"%#StatusLine#%=",
 		concat_components({
 			vim.diagnostic.status(),
-			M.filetype_component(),
-			M.encoding_component(),
+			M.git_component(),
+			-- M.encoding_component(),
 			M.position_component(),
 		}),
-		" ",
+		"",
 	})
 end
-vim.o.statusline = "%!v:lua.require'statusline'.render()"
 
 return M
