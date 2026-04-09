@@ -238,25 +238,21 @@ local file_component = function()
 	end
 
 	local basename = vim.fn.fnamemodify(buf_name, ":t")
-	local display_name = basename == "" and buf_name or basename
+	local disp_name = basename == "" and buf_name or basename
 
 	if buftype == "terminal" then
-		if display_name:match("^zsh ?") then
+		if disp_name:match("^zsh") then
 			icon = icons.misc.terminal
 			icon_hl = "Special"
-		elseif display_name:match("^python ?") then
+		elseif disp_name:match("^python ?") then
 			icon, icon_hl = devicons.get_icon_by_filetype("python", { default = true })
-		elseif
-			display_name:match("^claude ?")
-			or display_name:match("^opencode ?")
-			or display_name:match("^copilot ?")
-		then
+		elseif disp_name:match("^claude") or disp_name:match("^opencode") or disp_name:match("^copilot") then
 			icon = icons.misc.robot
 			icon_hl = "Special"
 		end
 	end
 
-	return sl_hl(icon_hl) .. icon .. " " .. sl_hl("StatusLineBold") .. display_name
+	return sl_hl(icon_hl) .. " " .. icon .. " " .. sl_hl("StatusLineBold") .. disp_name
 end
 
 ---@return string
@@ -290,7 +286,7 @@ function M.render()
 	if sl_winid() == vim.fn.win_getid() then
 		return table.concat({
 			mode_component(),
-			"  ",
+			" ",
 			file_component(),
 			" ",
 			modified_component(),
