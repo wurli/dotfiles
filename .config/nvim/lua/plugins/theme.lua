@@ -105,24 +105,24 @@ local rose_pine = {
 	end,
 }
 
-local get_wordcount = function()
-	local wordcount = vim.fn.wordcount()
-	local mode = vim.fn.mode()
-	if mode == "V" or mode == "v" then
-		return string.format("w: %s/%s", wordcount.visual_words, wordcount.words)
-	else
-		return string.format("w: %s", wordcount.words)
-	end
-end
-local get_charcount = function()
-	local wordcount = vim.fn.wordcount()
-	local mode = vim.fn.mode()
-	if mode == "V" or mode == "v" then
-		return string.format("c: %s/%s", wordcount.visual_chars, wordcount.chars)
-	else
-		return string.format("c: %s", wordcount.chars)
-	end
-end
+-- local get_wordcount = function()
+-- 	local wordcount = vim.fn.wordcount()
+-- 	local mode = vim.fn.mode()
+-- 	if mode == "V" or mode == "v" then
+-- 		return string.format("w: %s/%s", wordcount.visual_words, wordcount.words)
+-- 	else
+-- 		return string.format("w: %s", wordcount.words)
+-- 	end
+-- end
+-- local get_charcount = function()
+-- 	local wordcount = vim.fn.wordcount()
+-- 	local mode = vim.fn.mode()
+-- 	if mode == "V" or mode == "v" then
+-- 		return string.format("c: %s/%s", wordcount.visual_chars, wordcount.chars)
+-- 	else
+-- 		return string.format("c: %s", wordcount.chars)
+-- 	end
+-- end
 
 return {
 	{
@@ -132,44 +132,12 @@ return {
 			vim.cmd.colorscheme("cobalt")
 		end,
 	},
-	-- { dir = "~/Repos/cobalt.nvim",     cond = not vim.g.vscode },
+
 	{
 		"folke/tokyonight.nvim",
 		cond = not vim.g.vscode,
 		cmd = "ToggleColours",
 	},
-
-	-- {
-	--     -- Note: default hl is |hl-Whitespace|
-	--     -- scope is |hl-LineNr|
-	--     "lukas-reineke/indent-blankline.nvim",
-	--     cond = not vim.g.vscode,
-	--     opts = {
-	--         indent = {
-	--             char = "│",
-	--             tab_char = "│",
-	--         },
-	--         scope = { show_start = false, show_end = false },
-	--         exclude = {
-	--             filetypes = {
-	--                 "Trouble",
-	--                 "alpha",
-	--                 "dashboard",
-	--                 "help",
-	--                 "lazy",
-	--                 "mason",
-	--                 "neo-tree",
-	--                 "notify",
-	--                 "snacks_notif",
-	--                 "snacks_terminal",
-	--                 "snacks_win",
-	--                 "toggleterm",
-	--                 "trouble",
-	--             },
-	--         },
-	--     },
-	--     main = "ibl",
-	-- },
 
 	{
 		"petertriho/nvim-scrollbar",
@@ -178,67 +146,6 @@ return {
 			-- Enable in terminal buffers
 			excluded_buftypes = {},
 		},
-	},
-
-	{
-		"nvim-lualine/lualine.nvim",
-		cond = not vim.g.vscode,
-		lazy = false,
-		config = function()
-			require("lualine").setup({
-				options = {
-					section_separators = "",
-					disabled_filetypes = {
-						statusline = { "jet" },
-					},
-				},
-				sections = {
-					lualine_a = { "mode" },
-					lualine_b = { "filename" },
-					lualine_c = { { "filetype", icon_only = true } },
-					lualine_x = {},
-					lualine_y = { "branch" },
-					lualine_z = { "location" },
-				},
-				extensions = {
-					{
-						sections = {
-							lualine_a = { "mode" },
-							lualine_b = { { "filetype", icon_only = true } },
-							lualine_c = { "filename" },
-							lualine_x = { get_wordcount, get_charcount },
-							lualine_y = { "branch" },
-							lualine_z = { "location" },
-						},
-
-						filetypes = { "markdown", "quarto", "txt" },
-					},
-				},
-			})
-		end,
-	},
-
-	{
-		-- Colour hex codes like #000000
-		-- TODO: find a replacement; this seems to be abandoned (and now raises
-		-- a warning about tbl_flatten)
-		"norcalli/nvim-colorizer.lua",
-		cond = not vim.g.vscode,
-		config = function()
-			require("colorizer").setup({ "*" }, {
-				RGB = true, -- #RGB hex codes
-				RRGGBB = true, -- #RRGGBB hex codes like #000000
-				names = false, -- "Name" codes like "Blue"
-				RRGGBBAA = true, -- #RRGGBBAA hex codes
-				rgb_fn = false, -- CSS rgb() and rgba() functions
-				hsl_fn = false, -- CSS hsl() and hsla() functions
-				css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-				css_fn = false, -- Enable all CSS *functions*: rgb_fn, hsl_fn
-
-				-- Available modes: foreground, background
-				mode = "background", -- Set the display mode.
-			})
-		end,
 	},
 
 	{

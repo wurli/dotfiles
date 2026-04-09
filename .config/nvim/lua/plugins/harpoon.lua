@@ -5,19 +5,12 @@ return {
 	event = "VeryLazy",
 	dependencies = {
 		"nvim-lua/plenary.nvim",
-		"j-hui/fidget.nvim",
 	},
 	config = function()
 		local harpoon = require("harpoon")
 		harpoon:extend({
 			ADD = function(x)
-				local _ = require("fidget").progress.handle.create({
-					token = "new-harpoon-item",
-					title = vim.fs.basename(x.item.value),
-					message = "(Position " .. x.idx .. "): ",
-					done = true,
-					lsp_client = { name = "Harpoon" },
-				})
+				vim.notify("Harpoon: added " .. vim.fs.basename(x.item.value) .. " at position " .. x.idx)
 			end,
 		})
 		harpoon:setup()
