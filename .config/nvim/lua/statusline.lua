@@ -191,6 +191,7 @@ vim.api.nvim_create_autocmd("LspProgress", {
 		end
 	end,
 })
+
 --- The latest LSP progress message.
 ---@return string
 local lsp_progress_component = function()
@@ -216,43 +217,68 @@ local file_component = function()
 	local devicons = require("nvim-web-devicons")
 
 	-- Special icons for some filetypes.
-	local special_icons = {
-		DiffviewFileHistory = { icons.misc.git, "Number" },
-		DiffviewFiles = { icons.misc.git, "Number" },
-		["ccc-ui"] = { icons.misc.palette, "Comment" },
-		["dap-view"] = { icons.misc.bug, "Special" },
-		["grug-far"] = { icons.misc.search, "Constant" },
-		fzf = { icons.misc.terminal, "Special" },
-		gitcommit = { icons.misc.git, "Number" },
-		gitrebase = { icons.misc.git, "Number" },
-		lazy = { icons.symbol_kinds.Method, "Special" },
-		lazyterm = { icons.misc.terminal, "Special" },
-		minifiles = { icons.symbol_kinds.Folder, "Directory" },
-		qf = { icons.misc.search, "Conditional" },
+	-- stylua: ignore start
+	local ft_icons = {
+		DiffviewFileHistory = { icon = icons.misc.git,            hl = "Number" },
+		DiffviewFiles       = { icon = icons.misc.git,            hl = "Number" },
+		["ccc-ui"]          = { icon = icons.misc.palette,        hl = "Comment" },
+		["dap-view"]        = { icon = icons.misc.bug,            hl = "Special" },
+		["grug-far"]        = { icon = icons.misc.search,         hl = "Constant" },
+		fzf                 = { icon = icons.misc.terminal,       hl = "Special" },
+		gitcommit           = { icon = icons.misc.git,            hl = "Number" },
+		gitrebase           = { icon = icons.misc.git,            hl = "Number" },
+		fugitive            = { icon = icons.misc.git,            hl = "Number" },
+		lazy                = { icon = icons.symbol_kinds.Method, hl = "Special" },
+		lazyterm            = { icon = icons.misc.terminal,       hl = "Special" },
+		minifiles           = { icon = icons.symbol_kinds.Folder, hl = "Directory" },
+		qf                  = { icon = icons.misc.search,         hl = "Conditional" },
 	}
+	-- stylua: ignore end
 
-	local filetype = vim.bo[sl_bufnr()].filetype
-	if filetype == "" then
-		filetype = "[No Name]"
-	end
+	local buf = sl_bufnr()
+	local ft = vim.bo[buf].filetype
+	local buftype = vim.bo[buf].buftype
+
+	ft = ft == "" and "[No Name]" or ft
+	local buf_name = vim.api.nvim_buf_get_name(sl_bufnr())
 
 	local icon, icon_hl
-	if special_icons[filetype] then
-		icon, icon_hl = unpack(special_icons[filetype])
+	local ft_settings = ft_icons[ft]
+
+	if ft_settings then
+		icon = ft_settings.icon
+		icon_hl = ft_settings.hl
 	else
-		local buf_name = vim.api.nvim_buf_get_name(0)
-		local name, ext = vim.fn.fnamemodify(buf_name, ":t"), vim.fn.fnamemodify(buf_name, ":e")
+		local name = vim.fn.fnamemodify(buf_name, ":t")
+		local ext = vim.fn.fnamemodify(buf_name, ":e")
 
 		icon, icon_hl = devicons.get_icon(name, ext)
 		if not icon then
-			icon, icon_hl = devicons.get_icon_by_filetype(filetype, { default = true })
+			icon, icon_hl = devicons.get_icon_by_filetype(ft, { default = true })
 		end
 	end
 	icon_hl = get_or_create_hl(icon_hl)
 
-	local filename = vim.fs.basename(vim.api.nvim_buf_get_name(sl_bufnr()))
+	local basename = vim.fn.fnamemodify(buf_name, ":t")
+	local display_name = basename == "" and buf_name or basename
 
-	return sl_hl(icon, icon_hl) .. " " .. sl_hl(filename, "StatuslineTitle")
+	if buftype == "terminal" then
+		if display_name:match("^zsh ?") then
+			icon = icons.misc.terminal
+			icon_hl = get_or_create_hl("Special")
+		elseif display_name:match("^python ?") then
+			icon, icon_hl = devicons.get_icon_by_filetype("python", { default = true })
+		elseif
+			display_name:match("^claude ?")
+			or display_name:match("^opencode ?")
+			or display_name:match("^copilot ?")
+		then
+			icon = icons.misc.robot
+			icon_hl = get_or_create_hl("Special")
+		end
+	end
+
+	return sl_hl(icon, icon_hl) .. " " .. sl_hl(display_name, "StatuslineTitle")
 end
 
 ---@return string

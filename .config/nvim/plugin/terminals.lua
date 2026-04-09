@@ -3,7 +3,7 @@ local term = require("utils.term")
 -------------------
 -- Regular shell --
 -------------------
-vim.keymap.set("n", "<leader><leader>t", term.make_toggler(nil, "terminal"), { desc = "Open terminal" })
+vim.keymap.set("n", "<leader><leader>t", term.make_toggler(nil, "zsh"), { desc = "Open terminal" })
 
 -------------
 -- IPython --
