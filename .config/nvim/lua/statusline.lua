@@ -35,10 +35,6 @@ for group, opts in pairs(statusline_groups) do
 	vim.api.nvim_set_hl(0, group, opts)
 end
 
-local status_hl = function(string, group)
-	return "%#" .. group .. "#" .. string
-end
-
 --- Keeps track of the highlight groups I've already created.
 ---@type table<string, boolean>
 local statusline_hls = {}
@@ -58,6 +54,23 @@ local get_or_create_hl = function(hl)
 	end
 
 	return hl_name
+end
+
+---@param x string
+---@param group string
+---@return string
+local sl_hl = function(x, group)
+	return "%#" .. group .. "#" .. x
+end
+
+---@return number
+local sl_winid = function()
+	return vim.g.statusline_winid or 0
+end
+
+---@return number
+local sl_bufnr = function()
+	return vim.api.nvim_win_get_buf(sl_winid())
 end
 
 --- Current mode.
@@ -110,9 +123,9 @@ local mode_component = function()
 	local hl = settings.hl or "Other"
 
 	return table.concat({
-		status_hl("", "StatuslineModeSeparator" .. hl),
-		status_hl(mode, "StatuslineMode" .. hl),
-		status_hl("", "StatuslineModeSeparator" .. hl),
+		sl_hl("", "StatuslineModeSeparator" .. hl),
+		sl_hl(mode, "StatuslineMode" .. hl),
+		sl_hl("", "StatuslineModeSeparator" .. hl),
 	})
 end
 
@@ -191,9 +204,9 @@ local lsp_progress_component = function()
 	end
 
 	return table.concat({
-		status_hl("󱥸 ", "StatuslineSpinner"),
-		status_hl(progress_status.client .. "  ", "StatuslineTitle"),
-		status_hl(progress_status.title .. "...", "StatuslineItalic"),
+		sl_hl("󱥸 ", "StatuslineSpinner"),
+		sl_hl(progress_status.client .. "  ", "StatuslineTitle"),
+		sl_hl(progress_status.title .. "...", "StatuslineItalic"),
 	})
 end
 
@@ -218,7 +231,7 @@ local file_component = function()
 		qf = { icons.misc.search, "Conditional" },
 	}
 
-	local filetype = vim.bo.filetype
+	local filetype = vim.bo[sl_bufnr()].filetype
 	if filetype == "" then
 		filetype = "[No Name]"
 	end
@@ -237,9 +250,9 @@ local file_component = function()
 	end
 	icon_hl = get_or_create_hl(icon_hl)
 
-	local filename = vim.fs.basename(vim.api.nvim_buf_get_name(0))
+	local filename = vim.fs.basename(vim.api.nvim_buf_get_name(sl_bufnr()))
 
-	return status_hl(icon, icon_hl) .. " " .. status_hl(filename, "StatuslineTitle")
+	return sl_hl(icon, icon_hl) .. " " .. sl_hl(filename, "StatuslineTitle")
 end
 
 -- --- File-content encoding for the current buffer.
@@ -252,7 +265,7 @@ end
 --- The current line, total line count, and column position.
 ---@return string
 local position_component = function()
-	return status_hl(string.format("%2d:%-2d", vim.fn.line("."), vim.fn.virtcol(".")), "StatuslineTitle")
+	return sl_hl(string.format("%2d:%-2d", vim.fn.line("."), vim.fn.virtcol(".")), "StatuslineTitle")
 end
 
 local M = {}
@@ -260,22 +273,28 @@ local M = {}
 --- Renders the statusline.
 ---@return string
 function M.render()
-	return table.concat({
-		mode_component(),
-		"  ",
-		file_component(),
-		"  ",
-		dap_component() or lsp_progress_component(),
-		-- Separates lhs and rhs
-		status_hl("%=", "StatusLine"),
-		vim.diagnostic.status(),
-		"  ",
-		git_component(),
-		"  ",
-		-- M.encoding_component(),
-		-- "  ",
-		position_component(),
-	})
+	-- Active window
+	if sl_winid() == vim.fn.win_getid() then
+		return table.concat({
+			mode_component(),
+			"  ",
+			file_component(),
+			"  ",
+			dap_component() or lsp_progress_component(),
+			-- Separates lhs and rhs
+			sl_hl("%=", "StatusLine"),
+			vim.diagnostic.status(),
+			"  ",
+			git_component(),
+			"  ",
+			-- M.encoding_component(),
+			-- "  ",
+			position_component(),
+		})
+	-- Inactive windows
+	else
+		return file_component()
+	end
 end
 
 return M
