@@ -52,6 +52,7 @@ M.misc = {
 	dashed_bar = "┊",
 	ellipsis = "…",
 	git = "",
+	branch = "",
 	palette = "󰏘",
 	robot = "󰚩",
 	search = "",

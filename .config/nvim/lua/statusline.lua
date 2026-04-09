@@ -13,19 +13,20 @@ end
 -- Groups used for my statusline.
 ---@type table<string, vim.api.keyset.highlight>
 local statusline_groups = {
-	StatuslineItalic   = { fg = get_hl("Statusline").fg, bg = get_hl("Statusline").bg, italic = true },
-	StatuslineTitle    = { fg = get_hl("Statusline").fg, bg = get_hl("Statusline").bg, bold = true },
+	StatuslineItalic   = { italic = true },
+	StatusLineBold     = { bold = true },
+	StatuslineProgress = { fg = get_hl("LineNr").fg },
 	StatuslineInverted = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
-	StatuslineSpinner  = { fg = get_hl("DiffAdd").fg,    bg = get_hl("Statusline").bg, bold = true },
+	StatuslineIcon     = { fg = get_hl("Special").fg },
 }
 for mode, color in pairs({
-	Normal  = { fg = get_hl("Todo").fg,       bg = get_hl("Statusline").fg },
-	Pending = { fg = get_hl("Todo").fg,       bg = get_hl("Statusline").fg },
-	Visual  = { fg = get_hl("ToDo").fg,       bg = get_hl("SpecialKey").fg },
-	Insert  = { fg = get_hl("ToDo").fg,       bg = get_hl("diffAdded").fg  },
-	Command = { fg = get_hl("Todo").fg,       bg = get_hl("Number").fg     },
-	Replace = { fg = get_hl("Normal").bg,     bg = get_hl("Constant").fg   },
-	Other   = { fg = get_hl("Statusline").fg, bg = get_hl("Statusline").bg },
+	Normal  = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
+	Pending = { fg = get_hl("Statusline").bg, bg = get_hl("Comment").fg },
+	Visual  = { fg = get_hl("Statusline").bg, bg = get_hl("SpecialKey").fg },
+	Insert  = { fg = get_hl("Statusline").bg, bg = get_hl("diffAdded").fg  },
+	Command = { fg = get_hl("Statusline").bg, bg = get_hl("Number").fg     },
+	Replace = { fg = get_hl("Statusline").bg, bg = get_hl("Constant").fg   },
+	Other   = { link = "StatusLine" },
 }) do
 	statusline_groups["StatuslineMode"          .. mode] = { fg = color.fg, bg = color.bg }
 	statusline_groups["StatuslineModeSeparator" .. mode] = { fg = color.bg, bg = color.fg }
@@ -36,32 +37,10 @@ for group, opts in pairs(statusline_groups) do
 	vim.api.nvim_set_hl(0, group, opts)
 end
 
---- Keeps track of the highlight groups I've already created.
----@type table<string, boolean>
-local statusline_hls = {}
-
----@param hl string
----@return string
-local get_or_create_hl = function(hl)
-	local hl_name = "Statusline" .. hl
-
-	if not statusline_hls[hl] then
-		-- If not in the cache, create the highlight group using the icon's foreground color
-		-- and the statusline's background color.
-		local bg_hl = vim.api.nvim_get_hl(0, { name = "StatusLine" })
-		local fg_hl = vim.api.nvim_get_hl(0, { name = hl })
-		vim.api.nvim_set_hl(0, hl_name, { bg = ("#%06x"):format(bg_hl.bg), fg = ("#%06x"):format(fg_hl.fg) })
-		statusline_hls[hl] = true
-	end
-
-	return hl_name
-end
-
----@param x string
 ---@param group string
 ---@return string
-local sl_hl = function(x, group)
-	return "%#" .. group .. "#" .. x
+local sl_hl = function(group)
+	return "%#" .. group .. "#"
 end
 
 ---@return number
@@ -124,9 +103,9 @@ local mode_component = function()
 	local hl = settings.hl or "Other"
 
 	return table.concat({
-		sl_hl(mode_separators[1] or "", "StatuslineModeSeparator" .. hl),
-		sl_hl(mode, "StatuslineMode" .. hl),
-		sl_hl(mode_separators[2] or "", "StatuslineModeSeparator" .. hl),
+		sl_hl("StatuslineModeSeparator" .. hl) .. (mode_separators[1] or ""),
+		sl_hl("StatuslineMode" .. hl) .. mode,
+		sl_hl("StatuslineModeSeparator" .. hl) .. (mode_separators[2] or ""),
 	})
 end
 
@@ -138,7 +117,7 @@ local git_component = function()
 		return ""
 	end
 
-	local component = string.format(" %s", head)
+	local component = sl_hl("StatuslineIcon") .. icons.misc.branch .. " " .. sl_hl("StatusLine") .. head
 
 	local num_hunks = #(require("gitsigns").get_hunks(1) or {})
 	if num_hunks > 0 then
@@ -155,7 +134,7 @@ local dap_component = function()
 		return nil
 	end
 
-	return string.format("%%#%s#%s  %s", get_or_create_hl("Special"), icons.misc.bug, require("dap").status())
+	return string.format("%%#%s#%s  %s", "Special", icons.misc.bug, require("dap").status())
 end
 
 ---@type table<string, string?>
@@ -206,9 +185,8 @@ local lsp_progress_component = function()
 	end
 
 	return table.concat({
-		sl_hl(icons.misc.lsp .. " ", "StatuslineSpinner"),
-		sl_hl(progress_status.client .. "  ", "StatuslineTitle"),
-		sl_hl(progress_status.title .. "...", "StatuslineItalic"),
+		sl_hl("StatuslineIcon") .. icons.misc.lsp,
+		sl_hl("StatuslineProgress") .. progress_status.client .. "  " .. progress_status.title,
 	})
 end
 
@@ -258,7 +236,6 @@ local file_component = function()
 			icon, icon_hl = devicons.get_icon_by_filetype(ft, { default = true })
 		end
 	end
-	icon_hl = get_or_create_hl(icon_hl)
 
 	local basename = vim.fn.fnamemodify(buf_name, ":t")
 	local display_name = basename == "" and buf_name or basename
@@ -266,7 +243,7 @@ local file_component = function()
 	if buftype == "terminal" then
 		if display_name:match("^zsh ?") then
 			icon = icons.misc.terminal
-			icon_hl = get_or_create_hl("Special")
+			icon_hl = "Special"
 		elseif display_name:match("^python ?") then
 			icon, icon_hl = devicons.get_icon_by_filetype("python", { default = true })
 		elseif
@@ -275,17 +252,17 @@ local file_component = function()
 			or display_name:match("^copilot ?")
 		then
 			icon = icons.misc.robot
-			icon_hl = get_or_create_hl("Special")
+			icon_hl = "Special"
 		end
 	end
 
-	return sl_hl(icon, icon_hl) .. " " .. sl_hl(display_name, "StatuslineTitle")
+	return sl_hl(icon_hl) .. icon .. " " .. sl_hl("StatusLineBold") .. display_name
 end
 
 ---@return string
 local modified_component = function()
 	if vim.bo[sl_bufnr()].modified then
-		return sl_hl("[+]", "StatuslineModified")
+		return sl_hl("StatuslineModified") .. "[+]"
 	else
 		return ""
 	end
@@ -301,7 +278,7 @@ end
 --- The current line, total line count, and column position.
 ---@return string
 local position_component = function()
-	return sl_hl(string.format(" %2d:%-2d ", vim.fn.line("."), vim.fn.virtcol(".")), "StatuslineInverted")
+	return sl_hl("StatuslineInverted") .. string.format(" %2d:%-2d ", vim.fn.line("."), vim.fn.virtcol("."))
 end
 
 local M = {}
@@ -320,7 +297,7 @@ function M.render()
 			"  ",
 			dap_component() or lsp_progress_component(),
 			-- Separates lhs and rhs
-			sl_hl("%=", "StatusLine"),
+			sl_hl("StatusLine") .. "%=",
 			vim.diagnostic.status(),
 			"  ",
 			git_component(),
