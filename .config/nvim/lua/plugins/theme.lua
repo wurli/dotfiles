@@ -104,24 +104,24 @@ local rose_pine = {
 	end,
 }
 
-local get_wordcount = function()
-	local wordcount = vim.fn.wordcount()
-	local mode = vim.fn.mode()
-	if mode == "V" or mode == "v" then
-		return string.format("w: %s/%s", wordcount.visual_words, wordcount.words)
-	else
-		return string.format("w: %s", wordcount.words)
-	end
-end
-local get_charcount = function()
-	local wordcount = vim.fn.wordcount()
-	local mode = vim.fn.mode()
-	if mode == "V" or mode == "v" then
-		return string.format("c: %s/%s", wordcount.visual_chars, wordcount.chars)
-	else
-		return string.format("c: %s", wordcount.chars)
-	end
-end
+-- local get_wordcount = function()
+-- 	local wordcount = vim.fn.wordcount()
+-- 	local mode = vim.fn.mode()
+-- 	if mode == "V" or mode == "v" then
+-- 		return string.format("w: %s/%s", wordcount.visual_words, wordcount.words)
+-- 	else
+-- 		return string.format("w: %s", wordcount.words)
+-- 	end
+-- end
+-- local get_charcount = function()
+-- 	local wordcount = vim.fn.wordcount()
+-- 	local mode = vim.fn.mode()
+-- 	if mode == "V" or mode == "v" then
+-- 		return string.format("c: %s/%s", wordcount.visual_chars, wordcount.chars)
+-- 	else
+-- 		return string.format("c: %s", wordcount.chars)
+-- 	end
+-- end
 
 return {
 	{
@@ -131,44 +131,12 @@ return {
 			vim.cmd.colorscheme("cobalt")
 		end,
 	},
-	-- { dir = "~/Repos/cobalt.nvim",     cond = not vim.g.vscode },
+
 	{
 		"folke/tokyonight.nvim",
 		cond = not vim.g.vscode,
 		cmd = "ToggleColours",
 	},
-
-	-- {
-	--     -- Note: default hl is |hl-Whitespace|
-	--     -- scope is |hl-LineNr|
-	--     "lukas-reineke/indent-blankline.nvim",
-	--     cond = not vim.g.vscode,
-	--     opts = {
-	--         indent = {
-	--             char = "│",
-	--             tab_char = "│",
-	--         },
-	--         scope = { show_start = false, show_end = false },
-	--         exclude = {
-	--             filetypes = {
-	--                 "Trouble",
-	--                 "alpha",
-	--                 "dashboard",
-	--                 "help",
-	--                 "lazy",
-	--                 "mason",
-	--                 "neo-tree",
-	--                 "notify",
-	--                 "snacks_notif",
-	--                 "snacks_terminal",
-	--                 "snacks_win",
-	--                 "toggleterm",
-	--                 "trouble",
-	--             },
-	--         },
-	--     },
-	--     main = "ibl",
-	-- },
 
 	{
 		"petertriho/nvim-scrollbar",
@@ -177,44 +145,6 @@ return {
 			-- Enable in terminal buffers
 			excluded_buftypes = {},
 		},
-	},
-
-	{
-		"nvim-lualine/lualine.nvim",
-		cond = not vim.g.vscode and false,
-		lazy = false,
-		config = function()
-			require("lualine").setup({
-				options = {
-					section_separators = "",
-					disabled_filetypes = {
-						statusline = { "jet" },
-					},
-				},
-				sections = {
-					lualine_a = { "mode" },
-					lualine_b = { "branch", "diff", "diagnostics" },
-					-- show relative path, not just filename
-					lualine_c = { { "filename", path = 1 } },
-					lualine_x = { "encoding", "fileformat", "filetype" },
-					lualine_y = { "progress" },
-					lualine_z = { "location" },
-				},
-				extensions = {
-					{
-						sections = {
-							lualine_a = { "mode" },
-							lualine_b = { "branch", "diff", "diagnostics" },
-							lualine_c = { { "filename", path = 1 } },
-							lualine_x = { get_wordcount, get_charcount },
-							lualine_y = { "progress" },
-							lualine_z = { "location" },
-						},
-						filetypes = { "markdown", "quarto", "txt" },
-					},
-				},
-			})
-		end,
 	},
 
 	{

@@ -26,7 +26,6 @@ return {
 			-- Automatically install LSPs and related tools to stdpath for Neovim
 			{ "mason-org/mason.nvim" },
 			{ "mason-org/mason-lspconfig.nvim" },
-			{ "j-hui/fidget.nvim", opts = {} },
 		},
 		config = function()
 			vim.api.nvim_create_autocmd("LspAttach", {
