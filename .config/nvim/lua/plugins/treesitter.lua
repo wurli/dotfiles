@@ -6,7 +6,7 @@ end
 
 local ts_goto = function(type, query_string, query_group)
 	return function()
-		require("nvim-treesitter-textobjects.move")["goto_" .. type](query_string, query_group)
+		require("nvim-treesitter-textobjects.move")["goto_" .. type:gsub("prev", "previous")](query_string, query_group)
 	end
 end
 
@@ -56,11 +56,11 @@ return {
 			{ "if", mode = { "x", "o" }, ts_select("@function.inner", "textobjects") },
 			{ "is", mode = { "x", "o" }, ts_select("@local.scope", "locals") },
 			{ "]m", mode = { "n", "x", "o" }, ts_goto("next_start", "@function.outer", "textobjects") },
-			{ "[m", mode = { "n", "x", "o" }, ts_goto("previous_start", "@function.outer", "textobjects") },
+			{ "[m", mode = { "n", "x", "o" }, ts_goto("prev_start", "@function.outer", "textobjects") },
 			{ "]M", mode = { "n", "x", "o" }, ts_goto("next_end", "@function.outer", "textobjects") },
-			{ "[M", mode = { "n", "x", "o" }, ts_goto("previous_end", "@function.outer", "textobjects") },
+			{ "[M", mode = { "n", "x", "o" }, ts_goto("prev_end", "@function.outer", "textobjects") },
 			{ "]s", mode = { "n", "x", "o" }, ts_goto("next_start", "@local.scope", "locals") },
-			{ "[s", mode = { "n", "x", "o" }, ts_goto("previous_start", "@local.scope", "locals") },
+			{ "[s", mode = { "n", "x", "o" }, ts_goto("prev_start", "@local.scope", "locals") },
 		},
 	},
 }
