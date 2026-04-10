@@ -109,6 +109,14 @@ local mode_component = function()
 	return sl_hl("StatusLineMode" .. hl) .. " " .. mode .. " "
 end
 
+vim.api.nvim_create_autocmd("User", {
+	pattern = "GitSignsUpdate",
+	group = vim.api.nvim_create_augroup("jscott/statusline_gitsigns", { clear = true }),
+	callback = function()
+		vim.api.nvim__redraw({ statusline = true })
+	end,
+})
+
 ---@return string?
 local git_component = function()
 	local head = vim.b.gitsigns_head
