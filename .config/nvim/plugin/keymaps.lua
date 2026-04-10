@@ -17,6 +17,8 @@ map("n", "<leader>yf", function()
 		file = file:sub(#cwd + 1)
 	end
 
+	vim.notify(string.format('Yanked: "%s"', file))
+
 	vim.fn.setreg("+", file)
 end, { desc = "Yank the current file path" })
 
