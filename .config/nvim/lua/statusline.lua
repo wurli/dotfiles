@@ -240,7 +240,7 @@ end
 ---@return string
 local modified_component = function()
 	if vim.bo[sl_bufnr()].modified then
-		return sl_hl("StatusLineModified") .. "[+]"
+		return sl_hl("StatusLineModified") .. " [+]"
 	else
 		return ""
 	end
@@ -280,8 +280,7 @@ function M.render()
 	if sl_winid() == vim.fn.win_getid() then
 		return table.concat({
 			mode_component(),
-			file_component(),
-			modified_component(),
+			file_component() .. modified_component(),
 			dap_component() or lsp_progress_component(),
 			"%=",
 			diagnostic_component(),
