@@ -130,7 +130,7 @@ end
 ---@return string?
 local dap_component = function()
 	if not package.loaded["dap"] or require("dap").status() == "" then
-		return nil
+		return
 	end
 
 	return string.format("%%#%s#%s  %s", "Special", icons.misc.bug.symbol, require("dap").status())
@@ -171,15 +171,15 @@ vim.api.nvim_create_autocmd("LspProgress", {
 	end,
 })
 
----@return string
+---@return string?
 local lsp_progress_component = function()
 	if not progress_status.client or not progress_status.title then
-		return ""
+		return
 	end
 
 	-- Avoid noisy messages while typing.
 	if vim.startswith(vim.api.nvim_get_mode().mode, "i") then
-		return ""
+		return
 	end
 
 	return highlight_icon(icons.misc.lsp)
@@ -289,6 +289,7 @@ function M.render()
 		mode_component(),
 		file_component(),
 		modified_component(),
+		" ",
 		dap_component() or lsp_progress_component(),
 		"%=",
 		diagnostic_component(),
