@@ -118,9 +118,10 @@ local git_component = function()
 
 	local component = highlight_icon(icons.misc.branch) .. " " .. sl_hl("StatusLine") .. head
 
-	local num_hunks = #(require("gitsigns").get_hunks(1) or {})
-	if num_hunks > 0 then
-		component = component .. string.format(" (#Hunks: %d)", num_hunks)
+	local n_hunks = #(require("gitsigns").get_hunks(sl_bufnr()) or {})
+	if n_hunks > 0 then
+		local s = n_hunks == 1 and "" or "s"
+		component = component .. sl_hl("StatusLineDimItalic") .. string.format(" (%d hunk%s)", n_hunks, s)
 	end
 
 	return component
