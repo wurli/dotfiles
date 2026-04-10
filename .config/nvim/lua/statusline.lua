@@ -109,11 +109,11 @@ local mode_component = function()
 	return sl_hl("StatusLineMode" .. hl) .. " " .. mode .. " "
 end
 
----@return string
+---@return string?
 local git_component = function()
 	local head = vim.b.gitsigns_head
 	if not head or head == "" then
-		return ""
+		return
 	end
 
 	local component = highlight_icon(icons.misc.branch) .. " " .. sl_hl("StatusLine") .. head
@@ -190,6 +190,8 @@ local lsp_progress_component = function()
 		.. progress_status.title
 end
 
+---@return string
+---@return number
 local diagnostic_component = function()
 	-- Add some padding around the actual info; need to use patterns so
 	-- highlights are also applied to the padding.
@@ -237,12 +239,10 @@ local file_component = function()
 	return sl_hl(icon_hl) .. icon .. " " .. sl_hl("StatusLineBold") .. display_name
 end
 
----@return string
+---@return string?
 local modified_component = function()
 	if vim.bo[sl_bufnr()].modified then
-		return sl_hl("StatusLineModified") .. " [+]"
-	else
-		return ""
+		return sl_hl("StatusLineModified") .. "[+]"
 	end
 end
 
@@ -253,6 +253,7 @@ end
 -- 	return encoding == "" and "" or status_hl(" " .. encoding, "StatusLineModeSeparatorOther")
 -- end
 
+---@return string
 local wordcount_component = function()
 	local wc = vim.api.nvim_buf_call(sl_bufnr(), vim.fn.wordcount)
 	local visual = vim.fn.mode():match("^[vV\22]")
@@ -273,26 +274,30 @@ end
 
 local M = {}
 
---- Renders the statusline.
 ---@return string
 function M.render()
-	-- Active window
-	if sl_winid() == vim.fn.win_getid() then
-		return table.concat({
-			mode_component(),
-			file_component() .. modified_component(),
-			dap_component() or lsp_progress_component(),
-			"%=",
-			diagnostic_component(),
-			vim.bo[sl_bufnr()].filetype == "markdown" and wordcount_component() or "",
-			git_component(),
-			-- M.encoding_component(),
-			position_component(),
-		}, sl_hl("StatusLine") .. " ")
-	-- Inactive windows
-	else
+	local win_is_active = sl_winid() == vim.fn.win_getid()
+
+	if not win_is_active then
 		return " " .. file_component()
 	end
+
+	local ft = vim.bo[sl_bufnr()].filetype
+
+	local components = {
+		mode_component(),
+		file_component(),
+		modified_component(),
+		dap_component() or lsp_progress_component(),
+		"%=",
+		diagnostic_component(),
+		ft == "markdown" and wordcount_component() or "",
+		git_component(),
+		position_component(),
+	}
+
+	-- Flatten removes any nil components
+	return table.concat(vim.iter(components):flatten():totable(), sl_hl("StatusLine") .. " ")
 end
 
 return M
