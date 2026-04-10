@@ -147,6 +147,18 @@ return {
 					map("n", "<leader>hr", gitsigns.reset_hunk, "Git Reset Hunk")
 					map("n", "<leader>hS", gitsigns.stage_buffer, "Git Stage Buffer")
 					map("n", "<leader>hR", gitsigns.reset_buffer, "Git Reset Buffer")
+					map("n", "[h", function()
+						gitsigns.nav_hunk("prev")
+					end, "Git go to last hunk")
+					map("n", "]h", function()
+						gitsigns.nav_hunk("next")
+					end, "Git go to last hunk")
+					map("n", "[H", function()
+						gitsigns.nav_hunk("first")
+					end, "Git go to last hunk")
+					map("n", "]H", function()
+						gitsigns.nav_hunk("last")
+					end, "Git go to last hunk")
 
 					-- Text object
 					map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
