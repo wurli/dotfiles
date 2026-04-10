@@ -3,20 +3,33 @@ local icons = require("utils.icons")
 local mode_separators = {} -- { "", "" }
 
 ---@param group string
+---@return string
+local sl_hl = function(group)
+	return "%#" .. group .. "#"
+end
+
+---@param group string
 ---@return vim.api.keyset.get_hl_info
 local get_hl = function(group)
 	return vim.api.nvim_get_hl(0, { name = group, link = false, create = false })
+end
+
+---@param icon CustomIcon
+---@return string
+local highlight_icon = function(icon)
+	return sl_hl(icon.group) .. icon.symbol .. sl_hl("StatusLine")
 end
 
 local set_hl_groups = function()
 	-- stylua: ignore start
 	---@type table<string, vim.api.keyset.highlight>
 	local statusline_groups = {
-		StatuslineItalic   = { italic = true },
-		StatusLineBold     = { bold = true },
-		StatuslineDim      = { fg = get_hl("LineNr").fg },
-		StatuslineInverted = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
-		StatuslineIcon     = { fg = get_hl("Special").fg },
+		StatuslineItalic    = { italic = true },
+		StatusLineBold      = { bold = true },
+		StatuslineDim       = { fg = get_hl("LineNr").fg },
+		StatuslineDimItalic = { fg = get_hl("LineNr").fg, italic = true },
+		StatuslineInverted  = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
+		StatuslineIcon      = { fg = get_hl("Special").fg },
 	}
 	for mode, color in pairs({
 		Normal  = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
@@ -45,12 +58,6 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 	desc = "Re-apply statusline highlights on colorscheme change",
 	callback = set_hl_groups,
 })
-
----@param group string
----@return string
-local sl_hl = function(group)
-	return "%#" .. group .. "#"
-end
 
 ---@return number
 local sl_winid = function()
@@ -131,7 +138,7 @@ local git_component = function()
 		return ""
 	end
 
-	local component = sl_hl("StatuslineIcon") .. icons.misc.branch .. " " .. sl_hl("StatusLine") .. head
+	local component = highlight_icon(icons.misc.branch) .. " " .. sl_hl("StatusLine") .. head
 
 	local num_hunks = #(require("gitsigns").get_hunks(1) or {})
 	if num_hunks > 0 then
@@ -147,7 +154,7 @@ local dap_component = function()
 		return nil
 	end
 
-	return string.format("%%#%s#%s  %s", "Special", icons.misc.bug, require("dap").status())
+	return string.format("%%#%s#%s  %s", "Special", icons.misc.bug.symbol, require("dap").status())
 end
 
 ---@type table<string, string?>
@@ -196,10 +203,13 @@ local lsp_progress_component = function()
 		return ""
 	end
 
-	return table.concat({
-		sl_hl("StatuslineIcon") .. icons.misc.lsp,
-		sl_hl("StatuslineDim") .. progress_status.client .. "  " .. progress_status.title,
-	})
+	return highlight_icon(icons.misc.lsp)
+		.. " "
+		.. sl_hl("StatuslineDim")
+		.. progress_status.client
+		.. ": "
+		.. sl_hl("StatuslineDimItalic")
+		.. progress_status.title
 end
 
 local diagnostic_component = function()
@@ -213,25 +223,6 @@ end
 local file_component = function()
 	local devicons = require("nvim-web-devicons")
 
-	-- Special icons for some filetypes.
-	-- stylua: ignore start
-	local ft_icons = {
-		DiffviewFileHistory = { icon = icons.misc.git,            hl = "Number" },
-		DiffviewFiles       = { icon = icons.misc.git,            hl = "Number" },
-		["ccc-ui"]          = { icon = icons.misc.palette,        hl = "Comment" },
-		["dap-view"]        = { icon = icons.misc.bug,            hl = "Special" },
-		["grug-far"]        = { icon = icons.misc.search,         hl = "Constant" },
-		fzf                 = { icon = icons.misc.terminal,       hl = "Special" },
-		gitcommit           = { icon = icons.misc.git,            hl = "Number" },
-		gitrebase           = { icon = icons.misc.git,            hl = "Number" },
-		fugitive            = { icon = icons.misc.git,            hl = "Number" },
-		lazy                = { icon = icons.symbol_kinds.Method, hl = "Special" },
-		lazyterm            = { icon = icons.misc.terminal,       hl = "Special" },
-		minifiles           = { icon = icons.symbol_kinds.Folder, hl = "Directory" },
-		qf                  = { icon = icons.misc.search,         hl = "Conditional" },
-	}
-	-- stylua: ignore end
-
 	local buf = sl_bufnr()
 	local ft = vim.bo[buf].filetype
 	local buftype = vim.bo[buf].buftype
@@ -240,11 +231,11 @@ local file_component = function()
 	local buf_name = vim.api.nvim_buf_get_name(sl_bufnr())
 
 	local icon, icon_hl
-	local ft_settings = ft_icons[ft]
+	local ft_settings = icons.ft[ft]
 
 	if ft_settings then
-		icon = ft_settings.icon
-		icon_hl = ft_settings.hl
+		icon = ft_settings.symbol
+		icon_hl = ft_settings.group
 	else
 		local name = vim.fn.fnamemodify(buf_name, ":t")
 		local ext = vim.fn.fnamemodify(buf_name, ":e")
@@ -260,13 +251,13 @@ local file_component = function()
 
 	if buftype == "terminal" then
 		if disp_name:match("^zsh") then
-			icon = icons.misc.terminal
-			icon_hl = "Special"
+			icon = icons.misc.terminal.symbol
+			icon_hl = icons.misc.terminal.group
+		elseif disp_name:match("^claude") or disp_name:match("^opencode") or disp_name:match("^copilot") then
+			icon = icons.misc.robot.symbol
+			icon_hl = icons.misc.robot.group
 		elseif disp_name:match("^python ?") then
 			icon, icon_hl = devicons.get_icon_by_filetype("python", { default = true })
-		elseif disp_name:match("^claude") or disp_name:match("^opencode") or disp_name:match("^copilot") then
-			icon = icons.misc.robot
-			icon_hl = "Special"
 		end
 	end
 
