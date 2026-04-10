@@ -1,6 +1,7 @@
 local icons = require("utils.icons")
 
-local mode_separators = { "", "" }
+-- local mode_separators = { "", "" }
+local mode_separators = {}
 
 ---param group string
 ---@param group string
@@ -114,11 +115,18 @@ local mode_component = function()
 	local mode = settings.name or "UNKNOWN"
 	local hl = settings.hl or "Other"
 
-	return table.concat({
-		sl_hl("StatuslineModeSeparator" .. hl) .. (mode_separators[1] or ""),
-		sl_hl("StatuslineMode" .. hl) .. mode,
-		sl_hl("StatuslineModeSeparator" .. hl) .. (mode_separators[2] or ""),
-	})
+	local lsep = mode_separators[1]
+	local rsep = mode_separators[2]
+
+	if lsep and rsep then
+		return table.concat({
+			sl_hl("StatuslineModeSeparator" .. hl) .. lsep,
+			sl_hl("StatuslineMode" .. hl) .. mode,
+			sl_hl("StatuslineModeSeparator" .. hl) .. rsep,
+		})
+	else
+		return sl_hl("StatuslineMode" .. hl) .. " " .. mode .. " "
+	end
 end
 
 --- Git status (if any).
@@ -202,6 +210,12 @@ local lsp_progress_component = function()
 	})
 end
 
+local diagnostic_component = function()
+	-- Add some padding around the actual info; need to use patterns so
+	-- highlights are also applied to the padding.
+	return vim.diagnostic.status(sl_bufnr()):gsub("%w+:", " %0", 1):gsub("(:%d+)%%", "%1 %%")
+end
+
 --- The buffer's filetype.
 ---@return string
 local file_component = function()
@@ -264,7 +278,7 @@ local file_component = function()
 		end
 	end
 
-	return sl_hl(icon_hl) .. " " .. icon .. " " .. sl_hl("StatusLineBold") .. disp_name
+	return sl_hl(icon_hl) .. icon .. " " .. sl_hl("StatusLineBold") .. disp_name
 end
 
 ---@return string
@@ -298,25 +312,18 @@ function M.render()
 	if sl_winid() == vim.fn.win_getid() then
 		return table.concat({
 			mode_component(),
-			" ",
 			file_component(),
-			" ",
 			modified_component(),
-			"  ",
 			dap_component() or lsp_progress_component(),
-			-- Separates lhs and rhs
-			sl_hl("StatusLine") .. "%=",
-			vim.diagnostic.status(),
-			"  ",
+			"%=",
+			diagnostic_component(),
 			git_component(),
-			"  ",
 			-- M.encoding_component(),
-			-- "  ",
 			position_component(),
-		})
+		}, sl_hl("StatusLine") .. " ")
 	-- Inactive windows
 	else
-		return file_component()
+		return " " .. file_component()
 	end
 end
 
