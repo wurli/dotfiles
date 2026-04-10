@@ -1,7 +1,5 @@
 local icons = require("utils.icons")
 
-local mode_separators = {} -- { "", "" }
-
 ---@param group string
 ---@return string
 local sl_hl = function(group)
@@ -21,29 +19,20 @@ local highlight_icon = function(icon)
 end
 
 local set_hl_groups = function()
-	-- stylua: ignore start
 	---@type table<string, vim.api.keyset.highlight>
 	local statusline_groups = {
-		StatuslineItalic    = { italic = true },
-		StatusLineBold      = { bold = true },
-		StatuslineDim       = { fg = get_hl("LineNr").fg },
-		StatuslineDimItalic = { fg = get_hl("LineNr").fg, italic = true },
-		StatuslineInverted  = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
-		StatuslineIcon      = { fg = get_hl("Special").fg },
+		StatusLineModeNormal = { fg = get_hl("StatusLine").bg, bg = get_hl("StatusLine").fg },
+		StatusLineModePending = { fg = get_hl("StatusLine").bg, bg = get_hl("Comment").fg },
+		StatusLineModeVisual = { fg = get_hl("StatusLine").bg, bg = get_hl("SpecialKey").fg },
+		StatusLineModeInsert = { fg = get_hl("StatusLine").bg, bg = get_hl("diffAdded").fg },
+		StatusLineModeCommand = { fg = get_hl("StatusLine").bg, bg = get_hl("Number").fg },
+		StatusLineModeReplace = { fg = get_hl("StatusLine").bg, bg = get_hl("Constant").fg },
+		StatusLineModeOther = { link = "StatusLine" },
+		StatusLineBold = { bold = true },
+		StatusLineDim = { fg = get_hl("LineNr").fg },
+		StatusLineDimItalic = { fg = get_hl("LineNr").fg, italic = true },
+		StatusLineInverted = { link = "StatusLineModeNormal" },
 	}
-	for mode, color in pairs({
-		Normal  = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
-		Pending = { fg = get_hl("Statusline").bg, bg = get_hl("Comment").fg },
-		Visual  = { fg = get_hl("Statusline").bg, bg = get_hl("SpecialKey").fg },
-		Insert  = { fg = get_hl("Statusline").bg, bg = get_hl("diffAdded").fg  },
-		Command = { fg = get_hl("Statusline").bg, bg = get_hl("Number").fg     },
-		Replace = { fg = get_hl("Statusline").bg, bg = get_hl("Constant").fg   },
-		Other   = { link = "StatusLine" },
-	}) do
-		statusline_groups["StatuslineMode"          .. mode] = { fg = color.fg, bg = color.bg }
-		statusline_groups["StatuslineModeSeparator" .. mode] = { fg = color.bg, bg = color.fg }
-	end
-	-- stylua: ignore end
 
 	for group, opts in pairs(statusline_groups) do
 		vim.api.nvim_set_hl(0, group, opts)
@@ -117,18 +106,7 @@ local mode_component = function()
 	local mode = settings.name or "UNKNOWN"
 	local hl = settings.hl or "Other"
 
-	local lsep = mode_separators[1]
-	local rsep = mode_separators[2]
-
-	if lsep and rsep then
-		return table.concat({
-			sl_hl("StatuslineModeSeparator" .. hl) .. lsep,
-			sl_hl("StatuslineMode" .. hl) .. mode,
-			sl_hl("StatuslineModeSeparator" .. hl) .. rsep,
-		})
-	else
-		return sl_hl("StatuslineMode" .. hl) .. " " .. mode .. " "
-	end
+	return sl_hl("StatusLineMode" .. hl) .. " " .. mode .. " "
 end
 
 ---@return string
@@ -205,10 +183,10 @@ local lsp_progress_component = function()
 
 	return highlight_icon(icons.misc.lsp)
 		.. " "
-		.. sl_hl("StatuslineDim")
+		.. sl_hl("StatusLineDim")
 		.. progress_status.client
 		.. ": "
-		.. sl_hl("StatuslineDimItalic")
+		.. sl_hl("StatusLineDimItalic")
 		.. progress_status.title
 end
 
@@ -224,50 +202,45 @@ local file_component = function()
 	local devicons = require("nvim-web-devicons")
 
 	local buf = sl_bufnr()
-	local ft = vim.bo[buf].filetype
 	local buftype = vim.bo[buf].buftype
+	local ft = vim.bo[buf].filetype
 
-	ft = ft == "" and "[No Name]" or ft
-	local buf_name = vim.api.nvim_buf_get_name(sl_bufnr())
+	local buf_path = vim.api.nvim_buf_get_name(sl_bufnr())
+	local buf_name = vim.fn.fnamemodify(buf_path, ":t")
+	local buf_ext = vim.fn.fnamemodify(buf_path, ":e")
 
-	local icon, icon_hl
-	local ft_settings = icons.ft[ft]
+	local icon = (icons.ft[ft] or {}).symbol
+	local icon_hl = (icons.ft[ft] or {}).group
 
-	if ft_settings then
-		icon = ft_settings.symbol
-		icon_hl = ft_settings.group
-	else
-		local name = vim.fn.fnamemodify(buf_name, ":t")
-		local ext = vim.fn.fnamemodify(buf_name, ":e")
-
-		icon, icon_hl = devicons.get_icon(name, ext)
-		if not icon then
-			icon, icon_hl = devicons.get_icon_by_filetype(ft, { default = true })
-		end
+	if not icon then
+		icon, icon_hl = devicons.get_icon(buf_name, buf_ext)
 	end
 
-	local basename = vim.fn.fnamemodify(buf_name, ":t")
-	local disp_name = basename == "" and buf_name or basename
+	if not icon then
+		icon, icon_hl = devicons.get_icon_by_filetype(ft, { default = true })
+	end
+
+	local display_name = buf_name == "" and buf_path or buf_name
 
 	if buftype == "terminal" then
-		if disp_name:match("^zsh") then
+		if display_name:match("^zsh") then
 			icon = icons.misc.terminal.symbol
 			icon_hl = icons.misc.terminal.group
-		elseif disp_name:match("^claude") or disp_name:match("^opencode") or disp_name:match("^copilot") then
+		elseif display_name:match("^claude") or display_name:match("^opencode") or display_name:match("^copilot") then
 			icon = icons.misc.robot.symbol
 			icon_hl = icons.misc.robot.group
-		elseif disp_name:match("^python ?") then
+		elseif display_name:match("^python ?") then
 			icon, icon_hl = devicons.get_icon_by_filetype("python", { default = true })
 		end
 	end
 
-	return sl_hl(icon_hl) .. icon .. " " .. sl_hl("StatusLineBold") .. disp_name
+	return sl_hl(icon_hl) .. icon .. " " .. sl_hl("StatusLineBold") .. display_name
 end
 
 ---@return string
 local modified_component = function()
 	if vim.bo[sl_bufnr()].modified then
-		return sl_hl("StatuslineModified") .. "[+]"
+		return sl_hl("StatusLineModified") .. "[+]"
 	else
 		return ""
 	end
@@ -277,14 +250,14 @@ end
 -- ---@return string
 -- local encoding_component = function()
 -- 	local encoding = vim.opt.fileencoding:get()
--- 	return encoding == "" and "" or status_hl(" " .. encoding, "StatuslineModeSeparatorOther")
+-- 	return encoding == "" and "" or status_hl(" " .. encoding, "StatusLineModeSeparatorOther")
 -- end
 
 local wordcount_component = function()
 	local wc = vim.api.nvim_buf_call(sl_bufnr(), vim.fn.wordcount)
 	local visual = vim.fn.mode():match("^[vV\22]")
 
-	return sl_hl("StatuslineDim")
+	return sl_hl("StatusLineDim")
 		.. " "
 		.. string.format("w: %s%s", visual and wc.visual_words .. "/" or "", wc.words)
 		.. " "
@@ -295,7 +268,7 @@ end
 --- The current line, total line count, and column position.
 ---@return string
 local position_component = function()
-	return sl_hl("StatuslineInverted") .. string.format(" %2d:%-2d ", vim.fn.line("."), vim.fn.virtcol("."))
+	return sl_hl("StatusLineInverted") .. string.format(" %2d:%-2d ", vim.fn.line("."), vim.fn.virtcol("."))
 end
 
 local M = {}
