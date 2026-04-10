@@ -280,34 +280,16 @@ end
 -- 	return encoding == "" and "" or status_hl(" " .. encoding, "StatuslineModeSeparatorOther")
 -- end
 
----@param types? ("chars" | "words")[]
-local wordcount_component = function(types)
-	types = types or { "words", "chars" }
+local wordcount_component = function()
+	local wc = vim.api.nvim_buf_call(sl_bufnr(), vim.fn.wordcount)
+	local visual = vim.fn.mode():match("^[vV\22]")
 
-	local wordcount = vim.api.nvim_buf_call(sl_bufnr(), vim.fn.wordcount)
-	local mode = vim.fn.mode()
-
-	local out
-	if mode == "V" or mode == "v" then
-		out = {
-			words = string.format("w: %s/%s", wordcount.visual_words, wordcount.words),
-			chars = string.format("c: %s/%s", wordcount.visual_chars, wordcount.chars),
-		}
-	else
-		out = {
-			words = string.format("w: %s", wordcount.words),
-			chars = string.format("c: %s", wordcount.chars),
-		}
-	end
-
-	local text = table.concat(
-		vim.tbl_map(function(type)
-			return out[type]
-		end, types),
-		" "
-	)
-
-	return sl_hl("StatuslineDim") .. " " .. text .. " "
+	return sl_hl("StatuslineDim")
+		.. " "
+		.. string.format("w: %s%s", visual and wc.visual_words .. "/" or "", wc.words)
+		.. " "
+		.. string.format("c: %s%s", visual and wc.visual_chars .. "/" or "", wc.chars)
+		.. " "
 end
 
 --- The current line, total line count, and column position.
