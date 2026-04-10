@@ -1,3 +1,15 @@
+local ts_select = function(query_string, query_group)
+	return function()
+		require("nvim-treesitter-textobjects.select").select_textobject(query_string, query_group)
+	end
+end
+
+local ts_goto = function(type, query_string, query_group)
+	return function()
+		require("nvim-treesitter-textobjects.move")["goto_" .. type](query_string, query_group)
+	end
+end
+
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
@@ -40,74 +52,15 @@ return {
 			},
 		},
 		keys = {
-			-- Selection maps
-			{
-				"af",
-				mode = { "x", "o" },
-				function()
-					require("nvim-treesitter-textobjects.select").select_textobject("@function.outer", "textobjects")
-				end,
-			},
-			{
-				"if",
-				mode = { "x", "o" },
-				function()
-					require("nvim-treesitter-textobjects.select").select_textobject("@function.inner", "textobjects")
-				end,
-			},
-			{
-				"is",
-				mode = { "x", "o" },
-				function()
-					require("nvim-treesitter-textobjects.select").select_textobject("@local.scope", "locals")
-				end,
-			},
-
-			-- Move maps
-			{
-				"]m",
-				mode = { "n", "x", "o" },
-				function()
-					require("nvim-treesitter-textobjects.move").goto_next_start("@function.outer", "textobjects")
-				end,
-			},
-			{
-				"[m",
-				mode = { "n", "x", "o" },
-				function()
-					require("nvim-treesitter-textobjects.move").goto_previous_start("@function.outer", "textobjects")
-				end,
-			},
-
-			{
-				"]M",
-				mode = { "n", "x", "o" },
-				function()
-					require("nvim-treesitter-textobjects.move").goto_next_end("@function.outer", "textobjects")
-				end,
-			},
-			{
-				"[M",
-				mode = { "n", "x", "o" },
-				function()
-					require("nvim-treesitter-textobjects.move").goto_previous_end("@function.outer", "textobjects")
-				end,
-			},
-
-			{
-				"]s",
-				mode = { "n", "x", "o" },
-				function()
-					require("nvim-treesitter-textobjects.move").goto_next_start("@local.scope", "locals")
-				end,
-			},
-			{
-				"[s",
-				mode = { "n", "x", "o" },
-				function()
-					require("nvim-treesitter-textobjects.move").goto_previous_start("@local.scope", "locals")
-				end,
-			},
+			{ "af", mode = { "x", "o" }, ts_select("@function.outer", "textobjects") },
+			{ "if", mode = { "x", "o" }, ts_select("@function.inner", "textobjects") },
+			{ "is", mode = { "x", "o" }, ts_select("@local.scope", "locals") },
+			{ "]m", mode = { "n", "x", "o" }, ts_goto("next_start", "@function.outer", "textobjects") },
+			{ "[m", mode = { "n", "x", "o" }, ts_goto("previous_start", "@function.outer", "textobjects") },
+			{ "]M", mode = { "n", "x", "o" }, ts_goto("next_end", "@function.outer", "textobjects") },
+			{ "[M", mode = { "n", "x", "o" }, ts_goto("previous_end", "@function.outer", "textobjects") },
+			{ "]s", mode = { "n", "x", "o" }, ts_goto("next_start", "@local.scope", "locals") },
+			{ "[s", mode = { "n", "x", "o" }, ts_goto("previous_start", "@local.scope", "locals") },
 		},
 	},
 }
