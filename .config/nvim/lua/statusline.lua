@@ -208,7 +208,7 @@ local diagnostic_component = function()
 end
 
 --- The buffer's filetype.
----@return string
+---@return string?
 local file_component = function()
 	local devicons = require("nvim-web-devicons")
 
@@ -216,9 +216,13 @@ local file_component = function()
 	local buftype = vim.bo[buf].buftype
 	local ft = vim.bo[buf].filetype
 
-	local buf_path = vim.api.nvim_buf_get_name(sl_bufnr())
+	local buf_path = vim.api.nvim_buf_get_name(buf)
 	local buf_name = vim.fn.fnamemodify(buf_path, ":t")
 	local buf_ext = vim.fn.fnamemodify(buf_path, ":e")
+
+	if ft == "" and buf_path == "" then
+		return
+	end
 
 	local icon = (icons.ft[ft] or {}).symbol
 	local icon_hl = (icons.ft[ft] or {}).group
@@ -288,7 +292,8 @@ function M.render()
 	local win_is_active = sl_winid() == vim.fn.win_getid()
 
 	if not win_is_active then
-		return " " .. file_component()
+		local file = file_component()
+		return file and " " .. file or ""
 	end
 
 	local ft = vim.bo[sl_bufnr()].filetype
