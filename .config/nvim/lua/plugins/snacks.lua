@@ -275,7 +275,7 @@ return {
 		-- { "<leader>sq",      function() Snacks.picker.qflist() end,                                                      desc = "Quickfix List" },
 		-- { "<leader>sR",      function() Snacks.picker.resume() end,                                                      desc = "Resume" },
 		{ "<leader>fu", pick("undo"), desc = "Undo History" },
-		-- { "<leader>uC",      function() Snacks.picker.colorschemes() end,                                                desc = "Colorschemes" },
+		{ "<leader>fC", pick("colorschemes"), desc = "Colorschemes" },
 		-- -- LSP
 		{ "<leader>gd", pick("lsp_definitions"), desc = "Goto Definition" },
 		-- { "gD",              function() Snacks.picker.lsp_declarations() end,                                            desc = "Goto Declaration" },

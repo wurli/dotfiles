@@ -11,6 +11,7 @@ vim.opt.incsearch = true
 vim.opt.linebreak = true
 vim.opt.list = true
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+vim.opt.mousemodel = "extend"
 vim.opt.number = true
 vim.opt.number = true
 vim.opt.relativenumber = true
