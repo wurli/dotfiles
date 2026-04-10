@@ -273,9 +273,9 @@ local wordcount_component = function()
 
 	return sl_hl("StatusLineDim")
 		.. " "
-		.. string.format("w: %s%s", visual and wc.visual_words .. "/" or "", wc.words)
+		.. string.format("%s%sw", visual and wc.visual_words .. "/" or "", wc.words)
 		.. " "
-		.. string.format("c: %s%s", visual and wc.visual_chars .. "/" or "", wc.chars)
+		.. string.format("%s%sc", visual and wc.visual_chars .. "/" or "", wc.chars)
 		.. " "
 end
 
