@@ -1,9 +1,7 @@
 local icons = require("utils.icons")
 
--- local mode_separators = { "", "" }
-local mode_separators = {}
+local mode_separators = {} -- { "", "" }
 
----param group string
 ---@param group string
 ---@return vim.api.keyset.get_hl_info
 local get_hl = function(group)
@@ -12,12 +10,11 @@ end
 
 local set_hl_groups = function()
 	-- stylua: ignore start
-	-- Groups used for my statusline.
 	---@type table<string, vim.api.keyset.highlight>
 	local statusline_groups = {
 		StatuslineItalic   = { italic = true },
 		StatusLineBold     = { bold = true },
-		StatuslineProgress = { fg = get_hl("LineNr").fg },
+		StatuslineDim      = { fg = get_hl("LineNr").fg },
 		StatuslineInverted = { fg = get_hl("Statusline").bg, bg = get_hl("Statusline").fg },
 		StatuslineIcon     = { fg = get_hl("Special").fg },
 	}
@@ -40,7 +37,6 @@ local set_hl_groups = function()
 	end
 end
 
--- Set up highlights on initial load
 set_hl_groups()
 
 -- Re-apply highlights when colorscheme changes
@@ -66,7 +62,6 @@ local sl_bufnr = function()
 	return vim.api.nvim_win_get_buf(sl_winid())
 end
 
---- Current mode.
 ---@return string
 local mode_component = function()
 	-- Note that: \19 = ^S and \22 = ^V.
@@ -129,7 +124,6 @@ local mode_component = function()
 	end
 end
 
---- Git status (if any).
 ---@return string
 local git_component = function()
 	local head = vim.b.gitsigns_head
@@ -147,7 +141,6 @@ local git_component = function()
 	return component
 end
 
---- The current debugging status (if any).
 ---@return string?
 local dap_component = function()
 	if not package.loaded["dap"] or require("dap").status() == "" then
@@ -192,7 +185,6 @@ vim.api.nvim_create_autocmd("LspProgress", {
 	end,
 })
 
---- The latest LSP progress message.
 ---@return string
 local lsp_progress_component = function()
 	if not progress_status.client or not progress_status.title then
@@ -206,7 +198,7 @@ local lsp_progress_component = function()
 
 	return table.concat({
 		sl_hl("StatuslineIcon") .. icons.misc.lsp,
-		sl_hl("StatuslineProgress") .. progress_status.client .. "  " .. progress_status.title,
+		sl_hl("StatuslineDim") .. progress_status.client .. "  " .. progress_status.title,
 	})
 end
 
@@ -297,6 +289,36 @@ end
 -- 	return encoding == "" and "" or status_hl(" " .. encoding, "StatuslineModeSeparatorOther")
 -- end
 
+---@param types? ("chars" | "words")[]
+local wordcount_component = function(types)
+	types = types or { "words", "chars" }
+
+	local wordcount = vim.api.nvim_buf_call(sl_bufnr(), vim.fn.wordcount)
+	local mode = vim.fn.mode()
+
+	local out
+	if mode == "V" or mode == "v" then
+		out = {
+			words = string.format("w: %s/%s", wordcount.visual_words, wordcount.words),
+			chars = string.format("c: %s/%s", wordcount.visual_chars, wordcount.chars),
+		}
+	else
+		out = {
+			words = string.format("w: %s", wordcount.words),
+			chars = string.format("c: %s", wordcount.chars),
+		}
+	end
+
+	local text = table.concat(
+		vim.tbl_map(function(type)
+			return out[type]
+		end, types),
+		" "
+	)
+
+	return sl_hl("StatuslineDim") .. " " .. text .. " "
+end
+
 --- The current line, total line count, and column position.
 ---@return string
 local position_component = function()
@@ -317,6 +339,7 @@ function M.render()
 			dap_component() or lsp_progress_component(),
 			"%=",
 			diagnostic_component(),
+			vim.bo[sl_bufnr()].filetype == "markdown" and wordcount_component() or "",
 			git_component(),
 			-- M.encoding_component(),
 			position_component(),

@@ -105,25 +105,6 @@ local rose_pine = {
 	end,
 }
 
--- local get_wordcount = function()
--- 	local wordcount = vim.fn.wordcount()
--- 	local mode = vim.fn.mode()
--- 	if mode == "V" or mode == "v" then
--- 		return string.format("w: %s/%s", wordcount.visual_words, wordcount.words)
--- 	else
--- 		return string.format("w: %s", wordcount.words)
--- 	end
--- end
--- local get_charcount = function()
--- 	local wordcount = vim.fn.wordcount()
--- 	local mode = vim.fn.mode()
--- 	if mode == "V" or mode == "v" then
--- 		return string.format("c: %s/%s", wordcount.visual_chars, wordcount.chars)
--- 	else
--- 		return string.format("c: %s", wordcount.chars)
--- 	end
--- end
-
 return {
 	{
 		"wurli/cobalt.nvim",
