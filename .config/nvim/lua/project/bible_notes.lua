@@ -33,15 +33,13 @@ _G._bible_handle_curr_motion = function(mode)
 		end
 	end
 
-	local ref = ""
-	if start_verse == end_verse then
-		ref = book .. " " .. chapter .. ":" .. start_verse
-	else
-		ref = book .. " " .. chapter .. ":" .. start_verse .. "-" .. end_verse
+	local ref = book .. " " .. chapter .. ":" .. start_verse
+	if end_verse ~= start_verse then
+		ref = ref .. "-" .. end_verse
 	end
 
 	local text = vim.fn.getregion(selection_start, selection_end, {
-		type = mode == "line" and "V" or mode == "block" and "" or mode == "char" and "v",
+		type = mode == "line" and "V" or mode == "block" and "" or mode == "char" and "v" or "v",
 	})
 
 	for i, line in ipairs(text) do
