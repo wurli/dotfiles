@@ -6,7 +6,7 @@ vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 map("n", "<c-w><c-f>", [[:vsplit<cr>gF]], { desc = "Open file under cursor" })
 
 map("n", "!", function()
-	vim.fn.feedkeys(":!", "n")
+	vim.fn.feedkeys(":! ", "n")
 end, { desc = "Enter command mode" })
 
 map("n", "<leader>yf", function()
