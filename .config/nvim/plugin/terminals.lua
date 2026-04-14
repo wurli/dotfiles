@@ -3,7 +3,23 @@ local term = require("utils.term")
 -------------------
 -- Regular shell --
 -------------------
-vim.keymap.set("n", "<leader><leader>t", term.make_toggler(nil, { name = "zsh" }), { desc = "Open terminal" })
+vim.keymap.set(
+	"n",
+	"<leader><leader>t",
+	term.make_toggler(nil, {
+		name = "zsh",
+		job_opts = {
+			env = {
+				EDITOR = string.format(
+					'nvim --server "%s" --remote-send "<c-c>:vs<cr>" && nvim --server "%s" --remote "$@"',
+					vim.v.servername,
+					vim.v.servername
+				),
+			},
+		},
+	}),
+	{ desc = "Open terminal" }
+)
 
 -------------
 -- IPython --

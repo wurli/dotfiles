@@ -12,7 +12,9 @@ fi
 # export COLORTERM=truecolor
 export CLICOLOR=1
 export HISTSIZE=10000 # Default 1000 lines isn't enough
-export EDITOR=nvim
+if [[ -z EDITOR ]]; then
+	export EDITOR=nvim
+fi
 export JUPYTER_PATH=$HOME/Repos/jet
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -20,6 +22,7 @@ export JUPYTER_PATH=$HOME/Repos/jet
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # path+=("$HOME/.local/bin/")
 path=($HOME/.local/bin/ $path)
+path=($HOME/.config/scripts/ $path)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Shell autocompletions
