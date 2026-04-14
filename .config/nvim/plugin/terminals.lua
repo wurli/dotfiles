@@ -8,15 +8,15 @@ vim.keymap.set(
 	"<leader><leader>t",
 	term.make_toggler(nil, {
 		name = "zsh",
-		job_opts = {
-			env = {
-				EDITOR = string.format(
-					'nvim --server "%s" --remote-send "<c-c>:vs<cr>" && nvim --server "%s" --remote "$@"',
-					vim.v.servername,
-					vim.v.servername
-				),
-			},
-		},
+		-- job_opts = {
+		-- 	env = {
+		-- 		EDITOR = string.format(
+		-- 			'nvim --server "%s" --remote-send "<c-c>:vs<cr>" && nvim --server "%s" --remote "$@"',
+		-- 			vim.v.servername,
+		-- 			vim.v.servername
+		-- 		),
+		-- 	},
+		-- },
 	}),
 	{ desc = "Open terminal" }
 )
