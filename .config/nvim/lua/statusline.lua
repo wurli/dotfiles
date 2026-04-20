@@ -48,16 +48,6 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 	callback = set_hl_groups,
 })
 
----@return number
-local sl_winid = function()
-	return vim.g.statusline_winid or 0
-end
-
----@return number
-local sl_bufnr = function()
-	return vim.api.nvim_win_get_buf(sl_winid())
-end
-
 ---@return string
 local mode_component = function()
 	-- Note that: \19 = ^S and \22 = ^V.
@@ -112,9 +102,7 @@ end
 vim.api.nvim_create_autocmd("User", {
 	pattern = "GitSignsUpdate",
 	group = vim.api.nvim_create_augroup("jscott/statusline_gitsigns", { clear = true }),
-	callback = function()
-		vim.api.nvim__redraw({ statusline = true })
-	end,
+	command = "redrawstatus",
 })
 
 ---@return string?
@@ -126,7 +114,7 @@ local git_component = function()
 
 	local component = highlight_icon(icons.misc.branch) .. " " .. sl_hl("StatusLine") .. head
 
-	local n_hunks = #(require("gitsigns").get_hunks(sl_bufnr()) or {})
+	local n_hunks = #(require("gitsigns").get_hunks(0) or {})
 	if n_hunks > 0 then
 		local s = n_hunks == 1 and "" or "s"
 		component = component .. sl_hl("StatusLineDimItalic") .. string.format(" (%d hunk%s)", n_hunks, s)
@@ -204,7 +192,7 @@ end
 local diagnostic_component = function()
 	-- Add some padding around the actual info; need to use patterns so
 	-- highlights are also applied to the padding.
-	return vim.diagnostic.status(sl_bufnr()):gsub("%w+:", " %0", 1):gsub("(:%d+)%%", "%1 %%")
+	return vim.diagnostic.status(0):gsub("%w+:", " %0", 1):gsub("(:%d+)%%", "%1 %%")
 end
 
 --- The buffer's filetype.
@@ -212,11 +200,10 @@ end
 local file_component = function()
 	local devicons = require("nvim-web-devicons")
 
-	local buf = sl_bufnr()
-	local buftype = vim.bo[buf].buftype
-	local ft = vim.bo[buf].filetype
+	local buftype = vim.bo.buftype
+	local ft = vim.bo.filetype
 
-	local buf_path = vim.api.nvim_buf_get_name(buf)
+	local buf_path = vim.api.nvim_buf_get_name(0)
 	local buf_name = vim.fn.fnamemodify(buf_path, ":t")
 	local buf_ext = vim.fn.fnamemodify(buf_path, ":e")
 
@@ -254,7 +241,7 @@ end
 
 ---@return string?
 local modified_component = function()
-	if vim.bo[sl_bufnr()].modified then
+	if vim.bo.modified then
 		return sl_hl("StatusLineModified") .. "[+]"
 	end
 end
@@ -268,7 +255,7 @@ end
 
 ---@return string
 local wordcount_component = function()
-	local wc = vim.api.nvim_buf_call(sl_bufnr(), vim.fn.wordcount)
+	local wc = vim.api.nvim_buf_call(0, vim.fn.wordcount)
 	local visual = vim.fn.mode():match("^[vV\22]")
 
 	return sl_hl("StatusLineDim")
@@ -285,34 +272,32 @@ local position_component = function()
 	return sl_hl("StatusLineInverted") .. string.format(" %2d:%-2d ", vim.fn.line("."), vim.fn.virtcol("."))
 end
 
-local M = {}
+return {
+	---@return string
+	render = function()
+		local win_is_active = tonumber(vim.g.actual_curwin) == vim.api.nvim_get_current_win()
 
----@return string
-function M.render()
-	local win_is_active = sl_winid() == vim.fn.win_getid()
+		if not win_is_active then
+			local file = file_component()
+			return file and " " .. file or ""
+		end
 
-	if not win_is_active then
-		local file = file_component()
-		return file and " " .. file or ""
-	end
+		local ft = vim.bo.filetype
 
-	local ft = vim.bo[sl_bufnr()].filetype
+		local components = {
+			mode_component(),
+			file_component(),
+			modified_component(),
+			" ",
+			dap_component() or lsp_progress_component(),
+			"%=",
+			diagnostic_component(),
+			ft == "markdown" and wordcount_component() or "",
+			git_component(),
+			position_component(),
+		}
 
-	local components = {
-		mode_component(),
-		file_component(),
-		modified_component(),
-		" ",
-		dap_component() or lsp_progress_component(),
-		"%=",
-		diagnostic_component(),
-		ft == "markdown" and wordcount_component() or "",
-		git_component(),
-		position_component(),
-	}
-
-	-- Flatten removes any nil components
-	return table.concat(vim.iter(components):flatten():totable(), sl_hl("StatusLine") .. " ")
-end
-
-return M
+		-- Flatten removes any nil components
+		return table.concat(vim.iter(components):flatten():totable(), sl_hl("StatusLine") .. " ")
+	end,
+}
