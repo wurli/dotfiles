@@ -126,6 +126,14 @@ return {
 		opts = {
 			-- Enable in terminal buffers
 			excluded_buftypes = {},
+			handlers = {
+				handle = true,
+				cursor = false,
+				diagnostic = false,
+				gitsigns = false,
+				search = false,
+				ale = false,
+			},
 		},
 	},
 
