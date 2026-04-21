@@ -8,6 +8,7 @@ return {
 			python = { "ruff_format" },
 			rust = { "rustfmt", lsp_format = "fallback" },
 			r = { "air", lsp_format = "fallback" },
+			markdown = { "injected" },
 		},
 		format_on_save = {
 			lsp_format = "fallback",
