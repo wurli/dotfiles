@@ -1,10 +1,14 @@
 local icons = require("utils.icons")
 
----@param group string
----@return string
-local sl_hl = function(group)
-	return "%#" .. group .. "#"
-end
+local hl = {}
+
+setmetatable(hl, {
+	__index = function(_, group)
+		return function(text)
+			return "%#" .. group .. "#" .. text .. "%*"
+		end
+	end,
+})
 
 ---@param group string
 ---@return vim.api.keyset.get_hl_info
@@ -14,8 +18,8 @@ end
 
 ---@param icon CustomIcon
 ---@return string
-local highlight_icon = function(icon)
-	return sl_hl(icon.group) .. icon.symbol .. sl_hl("StatusLine")
+local hl_icon = function(icon)
+	return hl[icon.group](icon.symbol)
 end
 
 local set_hl_groups = function()
@@ -94,9 +98,9 @@ local mode_component = function()
 
 	local settings = mode_settings[vim.api.nvim_get_mode().mode] or {}
 	local mode = settings.name or "UNKNOWN"
-	local hl = settings.hl or "Other"
+	local group = settings.hl or "Other"
 
-	return sl_hl("StatusLineMode" .. hl) .. " " .. mode .. " "
+	return hl["StatusLineMode" .. group](" " .. mode .. " ")
 end
 
 vim.api.nvim_create_autocmd("User", {
@@ -112,12 +116,12 @@ local git_component = function()
 		return
 	end
 
-	local component = highlight_icon(icons.misc.branch) .. " " .. sl_hl("StatusLine") .. head
+	local component = hl_icon(icons.misc.branch) .. " " .. head
 
 	local n_hunks = #(require("gitsigns").get_hunks(0) or {})
 	if n_hunks > 0 then
 		local s = n_hunks == 1 and "" or "s"
-		component = component .. sl_hl("StatusLineDimItalic") .. string.format(" (%d hunk%s)", n_hunks, s)
+		component = component .. hl.StatusLineDimItalic(string.format(" (%d hunk%s)", n_hunks, s))
 	end
 
 	return component
@@ -178,13 +182,10 @@ local lsp_progress_component = function()
 		return
 	end
 
-	return highlight_icon(icons.misc.lsp)
+	return hl_icon(icons.misc.lsp)
 		.. " "
-		.. sl_hl("StatusLineDim")
-		.. progress_status.client
-		.. ": "
-		.. sl_hl("StatusLineDimItalic")
-		.. progress_status.title
+		.. hl.StatusLineDim(progress_status.client .. ": ")
+		.. hl.StatusLineDimItalic(progress_status.title)
 end
 
 ---@return string
@@ -195,7 +196,7 @@ local diagnostic_component = function()
 	return vim.diagnostic.status(0):gsub("%w+:", " %0", 1):gsub("(:%d+)%%", "%1 %%")
 end
 
-local show_full_path = false
+local truncate_path = true
 
 --- The buffer's filetype.
 ---@return string?
@@ -227,10 +228,10 @@ local file_component = function()
 
 	local display_name
 
-	if show_full_path or buf_tail == "" then
-		display_name = sl_hl("Directory") .. buf_head .. "/" .. sl_hl("StatusLine") .. buf_tail
-	else
+	if truncate_path and buf_tail ~= "" then
 		display_name = buf_tail
+	else
+		display_name = hl.Directory(buf_head .. "/") .. buf_tail
 	end
 
 	if buftype == "terminal" then
@@ -245,18 +246,18 @@ local file_component = function()
 		end
 	end
 
-	return sl_hl(icon_hl) .. icon .. " " .. sl_hl("StatusLineBold") .. display_name
+	return hl[icon_hl](icon) .. " " .. hl.StatusLineBold(display_name)
 end
 
 vim.keymap.set("n", "<leader>sp", function()
-	show_full_path = not show_full_path
+	truncate_path = not truncate_path
 	vim.cmd.redrawstatus()
 end, { desc = "Statusline: toggle full file paths" })
 
 ---@return string?
 local modified_component = function()
 	if vim.bo.modified then
-		return sl_hl("StatusLineModified") .. "[+]"
+		return hl.StatusLineModified("[+]")
 	end
 end
 
@@ -272,18 +273,19 @@ local wordcount_component = function()
 	local wc = vim.api.nvim_buf_call(0, vim.fn.wordcount)
 	local visual = vim.fn.mode():match("^[vV\22]")
 
-	return sl_hl("StatusLineDim")
-		.. " "
+	local out = " "
 		.. string.format("%s%sw", visual and wc.visual_words .. "/" or "", wc.words)
 		.. " "
 		.. string.format("%s%sc", visual and wc.visual_chars .. "/" or "", wc.chars)
 		.. " "
+
+	return hl.StatusLineDim(out)
 end
 
 --- The current line, total line count, and column position.
 ---@return string
 local position_component = function()
-	return sl_hl("StatusLineInverted") .. string.format(" %2d:%-2d ", vim.fn.line("."), vim.fn.virtcol("."))
+	return hl.StatusLineInverted(string.format(" %2d:%-2d ", vim.fn.line("."), vim.fn.virtcol(".")))
 end
 
 return {
@@ -313,6 +315,6 @@ return {
 		}
 
 		-- Flatten removes any nil components
-		return table.concat(vim.iter(components):flatten():totable(), sl_hl("StatusLine") .. " ")
+		return table.concat(vim.iter(components):flatten():totable(), " ")
 	end,
 }
