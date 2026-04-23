@@ -61,8 +61,6 @@ return {
 			harpoon:list():select(5)
 		end)
 
-		vim.api.nvim_set_hl(0, "harpoonDirectory", { fg = "#8091A0" })
-
 		-- Toggle previous & next buffers stored within Harpoon list
 		-- vim.keymap.set("n", "<M-p>", function() harpoon:list():prev() end)
 		-- vim.keymap.set("n", "<M-n>", function() harpoon:list():next() end)
