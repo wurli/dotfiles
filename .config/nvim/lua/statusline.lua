@@ -289,33 +289,34 @@ local position_component = function()
 	return hl.StatusLineInverted(string.format(" %2d:%-2d ", vim.fn.line("."), vim.fn.virtcol(".")))
 end
 
+local lpad = function(pad, x)
+	return x and pad .. x or ""
+end
+
+local rpad = function(pad, x)
+	return x and x .. pad or ""
+end
+
 return {
 	---@return string
 	render = function()
 		local win_is_active = tonumber(vim.g.actual_curwin) == vim.api.nvim_get_current_win()
 
 		if not win_is_active then
-			local file = file_component()
-			return file and " " .. file or ""
+			return lpad(" ", file_component())
 		end
 
-		local ft = vim.bo.filetype
-
-		local components = {
+		return table.concat({
 			mode_component(),
 			"%<", -- Don't truncate the mode component
-			file_component(),
-			modified_component(),
-			" ",
-			dap_component() or lsp_progress_component(),
+			lpad(" ", file_component()),
+			lpad(" ", modified_component()),
+			lpad("  ", dap_component() or lsp_progress_component()),
 			"%=",
-			diagnostic_component(),
-			ft == "markdown" and wordcount_component() or "",
-			git_component(),
+			rpad(" ", diagnostic_component()),
+			rpad(" ", vim.bo.filetype == "markdown" and wordcount_component()),
+			rpad(" ", git_component()),
 			position_component(),
-		}
-
-		-- Flatten removes any nil components
-		return table.concat(vim.iter(components):flatten():totable(), " ")
+		})
 	end,
 }
