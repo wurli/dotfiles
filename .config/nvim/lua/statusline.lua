@@ -20,12 +20,6 @@ local get_hl = function(group)
 	return vim.api.nvim_get_hl(0, { name = group, link = false, create = false })
 end
 
----@param icon CustomIcon
----@return string
-local hl_icon = function(icon)
-	return hl[icon.group](icon.symbol)
-end
-
 local set_hl_groups = function()
 	---@type table<string, vim.api.keyset.highlight>
 	local statusline_groups = {
@@ -120,7 +114,8 @@ local git_component = function()
 		return
 	end
 
-	local component = hl_icon(icons.misc.branch) .. " " .. head
+	local icon = icons.misc.branch
+	local component = hl[icon.group](icon.symbol) .. " " .. head
 
 	local n_hunks = #(require("gitsigns").get_hunks(0) or {})
 	if n_hunks > 0 then
@@ -186,7 +181,9 @@ local lsp_progress_component = function()
 		return
 	end
 
-	return hl_icon(icons.misc.lsp)
+	local icon = icons.misc.lsp
+
+	return hl[icon.group](icon.symbol)
 		.. " "
 		.. hl.StatusLineDim(progress_status.client .. ": ")
 		.. hl.StatusLineDimItalic(progress_status.title)
