@@ -2,9 +2,13 @@ local icons = require("utils.icons")
 
 local hl = {}
 
+-- Indexing `hl` with a highlight group returns a function that applies that
+-- highlight to some text within the statusline.
 setmetatable(hl, {
 	__index = function(_, group)
 		return function(text)
+			-- %#Bla#: starts highlighting with Bla
+			-- %*:     restores default highlighting
 			return "%#" .. group .. "#" .. text .. "%*"
 		end
 	end,
