@@ -195,6 +195,8 @@ local diagnostic_component = function()
 	return vim.diagnostic.status(0):gsub("%w+:", " %0", 1):gsub("(:%d+)%%", "%1 %%")
 end
 
+local show_full_path = false
+
 --- The buffer's filetype.
 ---@return string?
 local file_component = function()
@@ -204,7 +206,8 @@ local file_component = function()
 	local ft = vim.bo.filetype
 
 	local buf_path = vim.api.nvim_buf_get_name(0)
-	local buf_name = vim.fn.fnamemodify(buf_path, ":t")
+	local buf_tail = vim.fn.fnamemodify(buf_path, ":t")
+	local buf_head = vim.fn.fnamemodify(buf_path, ":h")
 	local buf_ext = vim.fn.fnamemodify(buf_path, ":e")
 
 	if ft == "" and buf_path == "" then
@@ -215,14 +218,20 @@ local file_component = function()
 	local icon_hl = (icons.ft[ft] or {}).group
 
 	if not icon then
-		icon, icon_hl = devicons.get_icon(buf_name, buf_ext)
+		icon, icon_hl = devicons.get_icon(buf_tail, buf_ext)
 	end
 
 	if not icon then
 		icon, icon_hl = devicons.get_icon_by_filetype(ft, { default = true })
 	end
 
-	local display_name = buf_name == "" and buf_path or buf_name
+	local display_name
+
+	if show_full_path or buf_tail == "" then
+		display_name = sl_hl("Directory") .. buf_head .. "/" .. sl_hl("StatusLine") .. buf_tail
+	else
+		display_name = buf_tail
+	end
 
 	if buftype == "terminal" then
 		if display_name:match("^zsh") then
@@ -238,6 +247,11 @@ local file_component = function()
 
 	return sl_hl(icon_hl) .. icon .. " " .. sl_hl("StatusLineBold") .. display_name
 end
+
+vim.keymap.set("n", "<leader>sp", function()
+	show_full_path = not show_full_path
+	vim.cmd.redrawstatus()
+end, { desc = "Statusline: toggle full file paths" })
 
 ---@return string?
 local modified_component = function()
@@ -286,6 +300,7 @@ return {
 
 		local components = {
 			mode_component(),
+			"%<", -- Don't truncate the mode component
 			file_component(),
 			modified_component(),
 			" ",
