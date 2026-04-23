@@ -286,7 +286,7 @@ end
 --- The current line, total line count, and column position.
 ---@return string
 local position_component = function()
-	return hl.StatusLineInverted(string.format(" %2d:%-2d ", vim.fn.line("."), vim.fn.virtcol(".")))
+	return hl.StatusLineInverted(" %2l:%-2c ")
 end
 
 local lpad = function(pad, x)
