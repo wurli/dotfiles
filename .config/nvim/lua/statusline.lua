@@ -209,7 +209,7 @@ local file_component = function()
 
 	local buf_path = vim.api.nvim_buf_get_name(0)
 	local buf_tail = vim.fn.fnamemodify(buf_path, ":t")
-	local buf_head = vim.fn.fnamemodify(buf_path, ":h")
+	local buf_head = vim.fn.fnamemodify(buf_path, ":~:.:h")
 	local buf_ext = vim.fn.fnamemodify(buf_path, ":e")
 
 	if ft == "" and buf_path == "" then
