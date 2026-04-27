@@ -1,0 +1,600 @@
+#!/usr/bin/env zsh
+# Azure DevOps helpers.
+#
+# One-off setup (run once in your terminal):
+#   az devops configure --defaults \
+#     organization=https://dev.azure.com/mydevopsorg \
+#     project="My Devops Project"
+#
+# Add to .zshrc:
+# export DEVOPS_TEAM="My DevOps Team"
+# source /path/to/this/script
+
+# --- Config ---------------------------------------------------------------
+
+# Team context for @CurrentIteration and the default area/iteration on create.
+# Override by exporting DEVOPS_TEAM before sourcing, or edit here.
+: "${DEVOPS_TEAM:=Please configure a team!}"
+
+# Azure DevOps' well-known AAD application ID — same for every ADO tenant
+# worldwide. Passed as --resource to `az account get-access-token` so AAD
+# mints a token whose audience matches dev.azure.com.
+AZURE_DEVOPS_RESOURCE_ID="499b84ac-1321-427f-aa17-267ca6975798"
+
+# --- Required tools -------------------------------------------------------
+
+for _devops_tool in az fzf pandoc bat jq; do
+  if ! command -v "$_devops_tool" >/dev/null 2>&1; then
+    echo "devops: required tool '$_devops_tool' not installed" >&2
+    exit 1
+  fi
+done
+unset _devops_tool
+
+# --- Helpers --------------------------------------------------------------
+
+_devops_defaults() {
+  # Print "org<TAB>project" from az devops defaults (single read).
+  az devops configure --list 2>/dev/null \
+    | awk -F' = ' '$1=="organization"{o=$2} $1=="project"{p=$2} END{printf "%s\t%s", o, p}'
+}
+
+_devops_team_area() {
+  # Team's default area path (full form, with project prefix). Cached per
+  # process — WIQL queries use this to keep result counts under the 20k cap.
+  [[ -n "$_DEVOPS_TEAM_AREA" ]] && { printf '%s\n' "$_DEVOPS_TEAM_AREA"; return; }
+  _DEVOPS_TEAM_AREA=$(az boards area team list --team "$DEVOPS_TEAM" -o json 2>/dev/null \
+    | jq -r '.defaultValue // empty')
+  printf '%s\n' "$_DEVOPS_TEAM_AREA"
+}
+
+_devops_url() {
+  # Print the browser URL for a work item id.
+  local org project
+  IFS=$'\t' read -r org project < <(_devops_defaults)
+  printf '%s/%s/_workitems/edit/%s\n' \
+    "${org%/}" "$(printf %s "$project" | jq -sRr @uri)" "$1"
+}
+
+_devops_pick() {
+  # Interactive fzf picker over _devops_list. Echoes the chosen id on stdout,
+  # the full row on stderr (for visibility). Returns 1 if the user aborts or
+  # there's nothing to pick.
+  # Usage: id=$(_devops_pick <prompt> [type] [status] [owner] [iteration]) || return 1
+  local list line
+  local -a list_args
+  [[ -n "$2" ]] && list_args+=(--type "$2")
+  [[ -n "$3" ]] && list_args+=(--status "$3")
+  [[ -n "$4" ]] && list_args+=(--owner "$4")
+  [[ -n "$5" ]] && list_args+=(--iteration "$5")
+  list=$(_devops_list "${list_args[@]}") || { echo "$list" >&2; return 1; }
+  line=$(printf '%s\n' "$list" | fzf --prompt="$1> " --height=40% --reverse) || return 1
+  echo "Selected: $line" >&2
+  echo "${line%% *}"
+}
+
+_devops_decode_entities() {
+  # Decode the HTML entities ADO bakes into markdown fields.
+  sed 's/&nbsp;/ /g; s/&amp;/\&/g; s/&lt;/</g; s/&gt;/>/g; s/&quot;/"/g; s/&#39;/'"'"'/g'
+}
+
+_devops_query() {
+  # Run a WIQL query and format the id/type/state/title columns as tsv.
+  # Returns 1 (with no output) if the query had no results, so callers can
+  # distinguish "empty" from "got rows" without inspecting the output.
+  local out
+  out=$(az boards query --wiql "$1" \
+    --output tsv \
+    --query '[].[id, fields."System.WorkItemType", fields."System.State", fields."System.Title"]')
+  [[ -z "$out" ]] && return 1
+  printf '%s\n' "$out" | column -t -s $'\t'
+}
+
+_devops_type_filter() {
+  # Map a short --type alias to a WIQL 'AND [System.WorkItemType] = ...' clause.
+  # Empty input → empty output (no filter).
+  case "$1" in
+    ""|all)               echo "" ;;
+    story|userstory)      echo "AND [System.WorkItemType] = 'User Story'" ;;
+    bug)                  echo "AND [System.WorkItemType] = 'Bug'" ;;
+    task)                 echo "AND [System.WorkItemType] = 'Task'" ;;
+    feature)              echo "AND [System.WorkItemType] = 'Feature'" ;;
+    epic)                 echo "AND [System.WorkItemType] = 'Epic'" ;;
+    *)
+      echo "devops: unknown --type '$1' (valid: story, bug, task, feature, epic, all)" >&2
+      return 1
+      ;;
+  esac
+}
+
+_devops_status_filter() {
+  # Map a --status alias to a WIQL 'AND [System.State] = ...' clause.
+  # Empty input → no filter (include everything).
+  case "$1" in
+    ""|all)    echo "" ;;
+    open)      echo "AND [System.State] NOT IN ('Closed','Removed','Done')" ;;
+    new)       echo "AND [System.State] = 'New'" ;;
+    active)    echo "AND [System.State] = 'Active'" ;;
+    blocked)   echo "AND [System.State] = 'Blocked'" ;;
+    inreview)  echo "AND [System.State] = 'In Review'" ;;
+    closed)    echo "AND [System.State] = 'Closed'" ;;
+    *)
+      echo "devops: unknown --status '$1' (valid: open, new, active, blocked, inreview, closed, all)" >&2
+      return 1
+      ;;
+  esac
+}
+
+_devops_iteration_filter() {
+  # Map --iteration value to a WIQL 'AND [System.IterationPath] ...' clause.
+  # Empty → default: @CurrentIteration for the team. 'all' → no filter.
+  # Anything else is treated as a literal iteration path (matched with UNDER
+  # so parent iteration paths include their children).
+  local project
+  case "$1" in
+    all)      echo "" ;;
+    ""|current)
+      IFS=$'\t' read -r _ project < <(_devops_defaults)
+      printf "AND [System.IterationPath] = @CurrentIteration('[%s]\\\\%s')\n" \
+        "$project" "$DEVOPS_TEAM"
+      ;;
+    *)        printf "AND [System.IterationPath] UNDER '%s'\n" "${1//\'/\'\'}" ;;
+  esac
+}
+
+_devops_owner_filter() {
+  # Map --owner value to a WIQL 'AND [System.AssignedTo] = ...' clause.
+  # Empty (default) → @Me. 'me' is an explicit alias for the same. 'all' → no
+  # filter. Anything else is treated as a literal name/email.
+  case "$1" in
+    ""|me)   echo "AND [System.AssignedTo] = @Me" ;;
+    all)     echo "" ;;
+    *)       printf "AND [System.AssignedTo] = '%s'\n" "${1//\'/\'\'}" ;;
+  esac
+}
+
+_devops_parse_filters() {
+  # Scan args for --type/-t, --status/-s, --owner/-o, --iteration/-i. Sets globals:
+  #   DEVOPS_TYPE, DEVOPS_STATUS, DEVOPS_OWNER, DEVOPS_ITERATION — values (empty if absent)
+  #   DEVOPS_REST                                                — array of remaining positional args
+  # Callers typically do:
+  #   _devops_parse_filters "$@"
+  #   set -- "${DEVOPS_REST[@]}"
+  DEVOPS_TYPE=""
+  DEVOPS_STATUS=""
+  DEVOPS_OWNER=""
+  DEVOPS_ITERATION=""
+  DEVOPS_REST=()
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -t|--type)      DEVOPS_TYPE="$2";       shift 2 ;;
+      --type=*)       DEVOPS_TYPE="${1#--type=}";           shift ;;
+      -t=*)           DEVOPS_TYPE="${1#-t=}";               shift ;;
+      -s|--status)    DEVOPS_STATUS="$2";     shift 2 ;;
+      --status=*)     DEVOPS_STATUS="${1#--status=}";       shift ;;
+      -s=*)           DEVOPS_STATUS="${1#-s=}";             shift ;;
+      -o|--owner)     DEVOPS_OWNER="$2";      shift 2 ;;
+      --owner=*)      DEVOPS_OWNER="${1#--owner=}";         shift ;;
+      -o=*)           DEVOPS_OWNER="${1#-o=}";              shift ;;
+      -i|--iteration) DEVOPS_ITERATION="$2";  shift 2 ;;
+      --iteration=*)  DEVOPS_ITERATION="${1#--iteration=}"; shift ;;
+      -i=*)           DEVOPS_ITERATION="${1#-i=}";          shift ;;
+      *)              DEVOPS_REST+=("$1");                  shift ;;
+    esac
+  done
+}
+
+# --- Subcommand implementations -------------------------------------------
+
+_devops_states() {
+  # States are per-work-item-type. Default to User Story.
+  local type="${1:-User Story}" project
+  IFS=$'\t' read -r _ project < <(_devops_defaults)
+  az devops invoke \
+    --area wit --resource workitemtypes \
+    --route-parameters project="$project" type="$type" \
+    --api-version 7.1 \
+    --query 'states[].name' --output tsv
+}
+
+_devops_iterations() {
+  # Print all leaf iteration paths in project-relative form, one per line
+  # (matching System.IterationPath). Strips the leading '\Project\Iteration\'
+  # or '\Project\' prefix that `az boards iteration project list` returns.
+  local project
+  IFS=$'\t' read -r _ project < <(_devops_defaults)
+  az boards iteration project list --depth 10 -o json 2>/dev/null \
+    | jq -r --arg p "$project" '
+        .. | objects | select(.path? and (.hasChildren // false) == false)
+        | .path | sub("^\\\\" + $p + "\\\\Iteration\\\\"; $p + "\\")
+               | sub("^\\\\" + $p + "\\\\"; $p + "\\")'
+}
+
+_devops_list() {
+  # Accepts --type/-t, --status/-s, --owner/-o, --iteration/-i flags (or a
+  # bare type alias for back-compat). Called both as a top-level command and
+  # as a primitive by _devops_pick.
+  local type_clause status_clause owner_clause iter_clause alias area
+  _devops_parse_filters "$@"
+  set -- "${DEVOPS_REST[@]}"
+  alias="${DEVOPS_TYPE:-$1}"
+  type_clause=$(_devops_type_filter "$alias") || return 1
+  status_clause=$(_devops_status_filter "$DEVOPS_STATUS") || return 1
+  owner_clause=$(_devops_owner_filter "$DEVOPS_OWNER") || return 1
+  iter_clause=$(_devops_iteration_filter "$DEVOPS_ITERATION") || return 1
+  area=$(_devops_team_area)
+  _devops_query "
+    SELECT [System.Id], [System.WorkItemType], [System.State], [System.Title]
+    FROM WorkItems
+    WHERE [System.AreaPath] UNDER '${area//\'/\'\'}'
+      ${owner_clause}
+      ${status_clause}
+      ${type_clause}
+      ${iter_clause}
+    ORDER BY [System.ChangedDate] DESC
+  " || { echo "[No items to show]"; return 1; }
+}
+
+_devops_sprint() {
+  # Shorthand for `devops list --iteration current`. Accepts all the same
+  # flags as list; any explicit --iteration overrides 'current'.
+  local -a args
+  _devops_parse_filters "$@"
+  [[ -z "$DEVOPS_ITERATION" ]] && DEVOPS_ITERATION=current
+  args=(--iteration "$DEVOPS_ITERATION")
+  [[ -n "$DEVOPS_TYPE"   ]] && args+=(--type   "$DEVOPS_TYPE")
+  [[ -n "$DEVOPS_STATUS" ]] && args+=(--status "$DEVOPS_STATUS")
+  [[ -n "$DEVOPS_OWNER"  ]] && args+=(--owner  "$DEVOPS_OWNER")
+  _devops_list "${args[@]}" "${DEVOPS_REST[@]}"
+}
+
+_devops_show() {
+  local id project
+  _devops_parse_filters "$@"
+  set -- "${DEVOPS_REST[@]}"
+  id="$1"
+  [[ -z "$id" ]] && { id=$(_devops_pick show "$DEVOPS_TYPE" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION") || return 1; }
+  IFS=$'\t' read -r _ project < <(_devops_defaults)
+
+  # ADO descriptions/comments are markdown wrapped with HTML entities.
+  # Decode entities first so pandoc sees real markdown characters (e.g. &gt; → >).
+  html2md() { _devops_decode_entities | pandoc -f gfm -t gfm --wrap=preserve 2>/dev/null; }
+
+  {
+    echo '## Summary'
+    echo '```'
+    az boards work-item show --id "$id" --output table | tail -n +3
+    echo '```'
+
+    echo
+    echo '## Description'
+    az boards work-item show --id "$id" -o json \
+      | jq -r '.fields."System.Description" // ""' \
+      | html2md
+
+    echo
+    echo '## Comments'
+    az devops invoke \
+      --area wit --resource comments \
+      --route-parameters project="$project" workItemId="$id" \
+      --api-version 7.1-preview -o json 2>/dev/null \
+      | jq -r '.comments[] | "\u0001\(.createdBy.displayName)\t\(.createdDate)\t\(.text)"' \
+      | while IFS=$'\t' read -r who when text; do
+          who=${who#$'\001'}
+          printf '\n**%s** — _%s_\n\n' "$who" "$when"
+          printf '%s\n' "$text" | html2md
+        done
+  } | bat -l md --style=plain --paging=never
+}
+
+_devops_open() {
+  local id
+  _devops_parse_filters "$@"
+  set -- "${DEVOPS_REST[@]}"
+  id="$1"
+  [[ -z "$id" ]] && { id=$(_devops_pick open "$DEVOPS_TYPE" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION") || return 1; }
+  az boards work-item show --id "$id" --open >/dev/null
+}
+
+_devops_edit() {
+  local id tmp patch org project token url before_hash after_hash
+  local title_before title_after desc_after
+  _devops_parse_filters "$@"
+  set -- "${DEVOPS_REST[@]}"
+  id="$1"
+  [[ -z "$id" ]] && { id=$(_devops_pick edit "$DEVOPS_TYPE" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION") || return 1; }
+  IFS=$'\t' read -r org project < <(_devops_defaults)
+
+  # Buffer layout: first non-comment line = title, then a blank separator,
+  # then the description. The HTML-comment marker is purely a hint for the
+  # user; the parser only keys off blank lines and '<!--' prefixes.
+  tmp=$(mktemp -t devops.XXXXXX).md
+  title_before=$(az boards work-item show --id "$id" -o json \
+    | jq -r '.fields."System.Title" // ""')
+  {
+    printf '%s\n\n<!-- First line above is the title. Everything below this comment is the description (markdown). -->\n' "$title_before"
+    az boards work-item show --id "$id" -o json \
+      | jq -r '.fields."System.Description" // ""' \
+      | _devops_decode_entities
+  } > "$tmp"
+
+  before_hash=$(shasum "$tmp" | awk '{print $1}')
+  ${EDITOR:-nvim} "$tmp" </dev/tty
+  after_hash=$(shasum "$tmp" | awk '{print $1}')
+
+  if [[ "$before_hash" == "$after_hash" ]]; then
+    echo "No changes — #$id not updated."
+    rm -f "$tmp"
+    return 0
+  fi
+
+  # Split buffer: first non-comment, non-blank line is the new title;
+  # everything after the first blank line (skipping '<!--' marker lines) is
+  # the new description.
+  title_after=$(awk '!/^<!--/ && NF { print; exit }' "$tmp")
+  desc_after=$(awk '
+    /^<!--/ { next }
+    !seen_title && NF { seen_title=1; next }
+    seen_title { print }
+  ' "$tmp")
+
+  if [[ -z "${title_after//[[:space:]]/}" ]]; then
+    echo "Empty title — #$id not updated."
+    rm -f "$tmp"
+    return 0
+  fi
+
+  # Stage description to a file so jq --rawfile can embed it verbatim
+  # (safe for arbitrary quotes/backslashes in the description).
+  printf '%s' "$desc_after" > "$tmp.desc"
+
+  # Build JSON-patch: always send description (with markdown format hint),
+  # only send title if it actually changed.
+  patch=$(mktemp -t devops-patch.XXXXXX).json
+  jq -n \
+    --arg title "$title_after" \
+    --arg title_before "$title_before" \
+    --rawfile desc "$tmp.desc" '
+      [
+        {op: "add", path: "/fields/System.Description", value: $desc},
+        {op: "add", path: "/multilineFieldsFormat/System.Description", value: "markdown"}
+      ]
+      + (if $title != $title_before
+           then [{op: "add", path: "/fields/System.Title", value: $title}]
+           else [] end)
+    ' > "$patch"
+
+  token=$(az account get-access-token \
+    --resource "$AZURE_DEVOPS_RESOURCE_ID" \
+    --query accessToken -o tsv)
+  url="${org%/}/$(printf %s "$project" | jq -sRr @uri)/_apis/wit/workitems/${id}?api-version=7.1"
+
+  if curl -sS -f -X PATCH \
+    -H "Authorization: Bearer $token" \
+    -H "Content-Type: application/json-patch+json" \
+    --data-binary @"$patch" \
+    "$url" >/dev/null; then
+    if [[ "$title_after" != "$title_before" ]]; then
+      printf 'Updated #%s (title + description)\n%s\n' "$id" "$(_devops_url "$id")"
+    else
+      printf 'Updated description for #%s (markdown)\n%s\n' "$id" "$(_devops_url "$id")"
+    fi
+  else
+    echo "Update failed for #$id" >&2
+  fi
+
+  rm -f "$tmp" "$tmp.desc" "$patch"
+}
+
+_devops_comment() {
+  local id text tmp
+  _devops_parse_filters "$@"
+  set -- "${DEVOPS_REST[@]}"
+  id="$1"
+  text="$2"
+  [[ -z "$id" ]] && { id=$(_devops_pick comment "$DEVOPS_TYPE" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION") || return 1; }
+
+  # If no text was given, open $EDITOR for the comment body.
+  if [[ -z "$text" ]]; then
+    tmp=$(mktemp -t devops-comment.XXXXXX).md
+    ${EDITOR:-nvim} "$tmp" </dev/tty
+    text=$(<"$tmp")
+    rm -f "$tmp"
+    if [[ -z "${text//[[:space:]]/}" ]]; then
+      echo "Empty comment — #$id not updated."
+      return 0
+    fi
+  fi
+
+  az boards work-item update --id "$id" --discussion "$text" --output none && \
+    printf 'Commented on #%s\n%s\n' "$id" "$(_devops_url "$id")"
+}
+
+_devops_update() {
+  local id state
+  _devops_parse_filters "$@"
+  set -- "${DEVOPS_REST[@]}"
+  id="$1"
+  state="$2"
+
+  [[ -z "$id" ]] && { id=$(_devops_pick update "$DEVOPS_TYPE" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION") || return 1; }
+
+  # If no state, pick from valid states with fzf.
+  # Hardcoded for snappiness — use 'devops states [type]' to see the live list.
+  if [[ -z "$state" ]]; then
+    state=$(printf '%s\n' "New" "Active" "Blocked" "In Review" "Closed" \
+      | fzf --prompt="state> " --height=30% --reverse) || return 1
+  fi
+
+  az boards work-item update --id "$id" --state "$state" --output none && \
+    printf 'Updated #%s → %s\n%s\n' "$id" "$state" "$(_devops_url "$id")"
+}
+
+_devops_new() {
+  # Create a new work item. Pickers for type; $EDITOR for title+description.
+  # Usage: devops new [title]
+  #   -t/--type  short alias (story, bug, task, feature, epic); picker if absent.
+  local type title desc tmp wit_type id parent_id parent_alias parent_line
+  local parent_iter current_iter iter_paths iter_path
+  local team="$DEVOPS_TEAM"
+  _devops_parse_filters "$@"
+  set -- "${DEVOPS_REST[@]}"
+  title="$1"
+
+  # Resolve work item type from --type alias, or pick from the known aliases.
+  # Also infer the natural parent type so the parent picker is narrowed.
+  case "${DEVOPS_TYPE:-}" in
+    story|userstory) wit_type="User Story"; parent_alias="feature" ;;
+    bug)             wit_type="Bug";        parent_alias="story" ;;
+    task)            wit_type="Task";       parent_alias="story" ;;
+    feature)         wit_type="Feature";    parent_alias="epic" ;;
+    epic)            wit_type="Epic";       parent_alias="" ;;
+    ""|all)
+      wit_type=$(printf '%s\n' "User Story" "Bug" "Task" "Feature" "Epic" \
+        | fzf --prompt="type> " --height=30% --reverse) || return 1
+      case "$wit_type" in
+        "User Story") parent_alias="feature" ;;
+        "Bug"|"Task") parent_alias="story" ;;
+        "Feature")    parent_alias="epic" ;;
+        "Epic")       parent_alias="" ;;
+      esac
+      ;;
+    *)
+      echo "devops: unknown --type '$DEVOPS_TYPE' (valid: story, bug, task, feature, epic)" >&2
+      return 1
+      ;;
+  esac
+
+  # Pick a parent from my open items of the natural parent type. A blank
+  # selection (Esc) means "no parent". Epics have no parent type.
+  if [[ -n "$parent_alias" ]]; then
+    parent_line=$(_devops_list --type "$parent_alias" 2>/dev/null \
+      | fzf --prompt="parent (esc=none)> " --height=40% --reverse)
+    [[ -n "$parent_line" ]] && parent_id="${parent_line%% *}"
+  fi
+
+  # Pick an iteration. Top entries are the parent's iteration (if any) and the
+  # team's current sprint, then the full list (deduped).
+  if [[ -n "$parent_id" ]]; then
+    parent_iter=$(az boards work-item show --id "$parent_id" -o json 2>/dev/null \
+      | jq -r '.fields."System.IterationPath" // empty')
+  fi
+  current_iter=$(az boards iteration team list --team "$team" --timeframe current -o json 2>/dev/null \
+    | jq -r '.[0].path // empty')
+  iter_paths=$(_devops_iterations)
+  if [[ -n "$iter_paths" ]]; then
+    iter_path=$({
+        [[ -n "$parent_iter" ]]  && echo "$parent_iter"
+        [[ -n "$current_iter" ]] && echo "$current_iter"
+        echo "$iter_paths"
+      } | awk '!seen[$0]++' \
+        | fzf --prompt="iteration (esc=none)> " --height=40% --reverse)
+  fi
+
+  # Title + description via $EDITOR. First non-empty, non-comment line is the
+  # title; remaining lines (after a blank separator) become the description.
+  tmp=$(mktemp -t devops-new.XXXXXX).md
+  {
+    [[ -n "$title" ]] && printf '%s\n' "$title" || printf '\n'
+    cat <<'EOF'
+
+# First line above is the title. Everything below this comment block is the
+# description (markdown). Lines starting with '#' are ignored.
+EOF
+  } > "$tmp"
+  ${EDITOR:-nvim} "$tmp" </dev/tty
+
+  title=$(awk '!/^#/ && NF { print; exit }' "$tmp")
+  desc=$(awk '
+    /^#/ { next }
+    !seen_title && NF { seen_title=1; next }
+    seen_title { print }
+  ' "$tmp")
+  rm -f "$tmp"
+
+  if [[ -z "${title//[[:space:]]/}" ]]; then
+    echo "Empty title — nothing created."
+    return 0
+  fi
+
+  local me area_path
+  me=$(az account show --query user.name -o tsv 2>/dev/null)
+
+  # Default area = team's default area (required for the item to land on the
+  # team's board/sprint). --area wants the full path *with* project prefix
+  # (unlike --iteration, which wants it stripped).
+  area_path=$(_devops_team_area)
+
+  local -a create_args
+  create_args=(--type "$wit_type" --title "$title")
+  [[ -n "${desc//[[:space:]]/}" ]] && create_args+=(--description "$desc")
+  [[ -n "$iter_path" ]] && create_args+=(--iteration "$iter_path")
+  [[ -n "$area_path" ]] && create_args+=(--area "$area_path")
+  [[ -n "$me" ]] && create_args+=(--assigned-to "$me")
+  id=$(az boards work-item create "${create_args[@]}" --query id -o tsv) || return 1
+
+  if [[ -n "$parent_id" ]]; then
+    az boards work-item relation add \
+      --id "$id" --relation-type parent --target-id "$parent_id" \
+      --output none && echo "Linked parent #$parent_id"
+  fi
+
+  printf 'Created %s #%s\n%s\n' "$wit_type" "$id" "$(_devops_url "$id")"
+}
+
+_devops_help() {
+  cat <<'EOF'
+usage: devops <command> [args]
+
+Commands:
+  new [title]       Create a work item (picker for type, $EDITOR for title/desc)
+  list              List open work items (mine by default)
+  sprint            List work items in the current iteration (mine by default)
+  show [id]         Show details for a work item (picker if no id)
+  open [id]         Open a work item in the browser (picker if no id)
+  edit [id]         Edit a work item's description in $EDITOR (picker if no id)
+  comment [id] [t]  Add a comment to a work item (picker if no id, $EDITOR if no text)
+  update [id] [st]  Change a work item's state (picker for missing args)
+  states [type]     List valid states for a work item type (default: User Story)
+  iterations        List all leaf iteration paths (project-relative)
+  help              Show this message
+
+Global flags:
+  -t, --type <a>    Filter to one work item type. Aliases: story, bug, task,
+                    feature, epic, all. Applies to list, sprint, and the
+                    picker used by show/open/edit/update/comment.
+  -s, --status <a>  Filter to one state. Aliases: open (not Closed/Removed/Done),
+                    new, active, blocked, inreview, closed, all. Default: all.
+  -o, --owner <w>   Filter by assignee. Default 'me' (signed-in user). Use 'all'
+                    for any assignee, or pass a literal name/email.
+  -i, --iteration <i>  Filter by iteration. Default 'current' = team's current
+                    sprint. Use 'all' to include every iteration, or pass a
+                    literal path (matched with UNDER so parents include children).
+EOF
+}
+
+# --- Dispatcher ------------------------------------------------------------
+
+devops() {
+  local cmd="$1"; shift 2>/dev/null
+  case "$cmd" in
+    new)     _devops_new     "$@" ;;
+    list)    _devops_list    "$@" ;;
+    sprint)  _devops_sprint  "$@" ;;
+    show)    _devops_show    "$@" ;;
+    open)    _devops_open    "$@" ;;
+    edit)    _devops_edit    "$@" ;;
+    comment) _devops_comment "$@" ;;
+    update)  _devops_update  "$@" ;;
+    states)  _devops_states  "$@" ;;
+    iterations) _devops_iterations "$@" ;;
+    ""|help|-h|--help) _devops_help ;;
+    *)
+      echo "devops: unknown command '$cmd'" >&2
+      _devops_help >&2
+      exit 1
+      ;;
+  esac
+}
+
+devops "$@"
