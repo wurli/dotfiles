@@ -272,7 +272,7 @@ return {
 			desc = "Man Pages",
 		},
 		-- { "<leader>sp",      function() Snacks.picker.lazy() end,                                                        desc = "Search for Plugin Spec" },
-		-- { "<leader>sq",      function() Snacks.picker.qflist() end,                                                      desc = "Quickfix List" },
+		{ "<leader>fq", pick("qflist"), desc = "Quickfix List" },
 		-- { "<leader>sR",      function() Snacks.picker.resume() end,                                                      desc = "Resume" },
 		{ "<leader>fu", pick("undo"), desc = "Undo History" },
 		{ "<leader>fC", pick("colorschemes"), desc = "Colorschemes" },
