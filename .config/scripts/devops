@@ -154,8 +154,10 @@ _devops_owner_filter() {
 }
 
 _devops_parse_filters() {
-  # Scan args for --type/-t, --status/-s, --owner/-o, --iteration/-i. Sets globals:
-  #   DEVOPS_TYPE, DEVOPS_STATUS, DEVOPS_OWNER, DEVOPS_ITERATION — values (empty if absent)
+  # Scan args for --type/-t, --status/-s, --owner/-o, --iteration/-i, --parent/-p.
+  # Sets globals:
+  #   DEVOPS_TYPE, DEVOPS_STATUS, DEVOPS_OWNER, DEVOPS_ITERATION, DEVOPS_PARENT
+  #                                                              — values (empty if absent)
   #   DEVOPS_REST                                                — array of remaining positional args
   # Callers typically do:
   #   _devops_parse_filters "$@"
@@ -164,6 +166,7 @@ _devops_parse_filters() {
   DEVOPS_STATUS=""
   DEVOPS_OWNER=""
   DEVOPS_ITERATION=""
+  DEVOPS_PARENT=""
   DEVOPS_REST=()
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -179,6 +182,9 @@ _devops_parse_filters() {
       -i|--iteration) DEVOPS_ITERATION="$2";  shift 2 ;;
       --iteration=*)  DEVOPS_ITERATION="${1#--iteration=}"; shift ;;
       -i=*)           DEVOPS_ITERATION="${1#-i=}";          shift ;;
+      -p|--parent)    DEVOPS_PARENT="$2";     shift 2 ;;
+      --parent=*)     DEVOPS_PARENT="${1#--parent=}";       shift ;;
+      -p=*)           DEVOPS_PARENT="${1#-p=}";             shift ;;
       *)              DEVOPS_REST+=("$1");                  shift ;;
     esac
   done
@@ -465,10 +471,15 @@ _devops_new() {
       ;;
   esac
 
-  # Pick a parent from my open items of the natural parent type. A blank
-  # selection (Esc) means "no parent". Epics have no parent type.
-  if [[ -n "$parent_alias" ]]; then
-    parent_line=$(_devops_list --type "$parent_alias" 2>/dev/null \
+  # Pick a parent from open items of the natural parent type. Widen the search
+  # beyond the default @Me / @CurrentIteration filters — parents are often
+  # owned by someone else or live in a future sprint. A blank selection (Esc)
+  # means "no parent". Epics have no parent type. --parent <id> skips the
+  # picker; --parent none explicitly creates with no parent link.
+  if [[ -n "$DEVOPS_PARENT" ]]; then
+    [[ "$DEVOPS_PARENT" != "none" ]] && parent_id="$DEVOPS_PARENT"
+  elif [[ -n "$parent_alias" ]]; then
+    parent_line=$(_devops_list --type "$parent_alias" --status open --owner all --iteration all 2>/dev/null \
       | fzf --prompt="parent (esc=none)> " --height=40% --reverse)
     [[ -n "$parent_line" ]] && parent_id="${parent_line%% *}"
   fi
@@ -570,6 +581,8 @@ Global flags:
   -i, --iteration <i>  Filter by iteration. Default 'current' = team's current
                     sprint. Use 'all' to include every iteration, or pass a
                     literal path (matched with UNDER so parents include children).
+  -p, --parent <id>  (new only) Skip the parent picker. Pass a work item id to
+                    link as parent, or 'none' to create with no parent.
 EOF
 }
 
