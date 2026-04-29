@@ -46,6 +46,8 @@ terms.make_toggler = function(cmd, opts)
 		local ok, win = pcall(vim.api.nvim_open_win, t.buf, true, { split = "right" })
 		t.win = ok and win or vim.api.nvim_get_current_win()
 
+		vim.wo.winhighlight = "Normal:NormalFloat"
+
 		if vim.bo[t.buf].buftype ~= "terminal" then
 			if opts.init then
 				opts.init()
