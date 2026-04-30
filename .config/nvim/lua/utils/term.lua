@@ -4,6 +4,9 @@
 --
 -- TODO: at some point rewrite to be a bit more extensible.
 
+local term_hl_ns = vim.api.nvim_create_namespace("term_highlights")
+vim.api.nvim_set_hl(term_hl_ns, "Normal", { link = "NormalFloat" })
+
 ---@class Terms
 ---@field terminals table<string, CustomTerm>
 local terms = { terminals = {} }
@@ -42,11 +45,21 @@ terms.make_toggler = function(cmd, opts)
 		local initial_win = vim.api.nvim_get_current_win()
 		local t = terms.terminals[name]
 
-		t.buf = vim.api.nvim_buf_is_valid(t.buf) and t.buf or vim.api.nvim_create_buf(false, true)
+		if not vim.api.nvim_buf_is_valid(t.buf) then
+			t.buf = vim.api.nvim_create_buf(false, true)
+
+			local make_ns_setter = function(ns)
+				return function()
+					vim.api.nvim_win_set_hl_ns(0, ns)
+				end
+			end
+
+			vim.api.nvim_create_autocmd("BufWinEnter", { buffer = t.buf, callback = make_ns_setter(term_hl_ns) })
+			vim.api.nvim_create_autocmd("BufWinLeave", { buffer = t.buf, callback = make_ns_setter(0) })
+		end
+
 		local ok, win = pcall(vim.api.nvim_open_win, t.buf, true, { split = "right" })
 		t.win = ok and win or vim.api.nvim_get_current_win()
-
-		vim.wo.winhighlight = "Normal:NormalFloat"
 
 		if vim.bo[t.buf].buftype ~= "terminal" then
 			if opts.init then
