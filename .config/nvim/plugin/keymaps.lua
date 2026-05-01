@@ -9,16 +9,36 @@ map("n", "!", function()
 	vim.fn.feedkeys(":! ", "n")
 end, { desc = "Enter command mode" })
 
-map("n", "<leader>yf", function()
+local cur_file = function()
 	local file = vim.fn.expand("%")
 	local cwd = vim.fn.getcwd() .. "/"
 
 	if file:find(cwd, 1, true) == 1 then
 		file = file:sub(#cwd + 1)
 	end
+	return file
+end
 
+map("n", "<leader>yf", function()
+	local file = cur_file()
 	vim.notify(string.format('Yanked: "%s"', file))
+	vim.fn.setreg("+", file)
+end, { desc = "Yank the current file path" })
 
+map("n", "<leader>yp", function()
+	local file = cur_file() .. "#L" .. vim.fn.line(".")
+	vim.notify(string.format('Yanked: "%s"', file))
+	vim.fn.setreg("+", file)
+end, { desc = "Yank the current file path" })
+
+map("v", "<leader>yp", function()
+	local region = { vim.fn.getpos("v")[2], vim.fn.getpos(".")[2] }
+	table.sort(region)
+	local file = cur_file() .. "#L" .. region[1]
+	if region[1] ~= region[2] then
+		file = file .. "-" .. region[2]
+	end
+	vim.notify(string.format('Yanked: "%s"', file))
 	vim.fn.setreg("+", file)
 end, { desc = "Yank the current file path" })
 
