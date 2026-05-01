@@ -268,6 +268,17 @@ db-rerun() {
 		databricks bundle run -t "$target" -p "$target" "$@"
 }
 
+unquarantine() {
+	local file="$1"
+
+	# If -f is on PATH, get as a file path
+	if [[ -f "$file" ]]; then
+		file="$(which "$file")"
+	fi
+
+	xattr -d com.apple.quarantine $(which "$1")
+}
+
 source ~/.zprofile
 
 
