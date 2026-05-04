@@ -161,11 +161,9 @@ vim.api.nvim_create_autocmd("LspProgress", {
 		if progress_status.kind == "end" then
 			progress_status.title = nil
 			-- Wait a bit before clearing the status.
-			vim.defer_fn(function()
-				vim.api.nvim__redraw({ statusline = true })
-			end, 3000)
+			vim.defer_fn(vim.cmd.redrawstatus, 3000)
 		else
-			vim.api.nvim__redraw({ statusline = true })
+			vim.cmd.redrawstatus()
 		end
 	end,
 })
@@ -197,7 +195,7 @@ local diagnostic_component = function()
 	return vim.diagnostic.status(0):gsub("%w+:", " %0", 1):gsub("(:%d+)%%", "%1 %%")
 end
 
-local truncate_path = true
+local truncate_path = false
 
 --- The buffer's filetype.
 ---@return string?
@@ -228,31 +226,32 @@ local file_component = function()
 	end
 
 	local display_name
+	local buf_tail_pretty = truncate_path and hl.StatusLineBold(buf_tail) or buf_tail
 
-	if truncate_path and buf_tail ~= "" then
-		display_name = buf_tail
-	else
-		display_name = hl.Directory(buf_head .. "/") .. buf_tail
+	if (truncate_path and buf_tail ~= "") or buf_head == "." then
+		display_name = buf_tail_pretty
+	elseif buf_head ~= "." then
+		display_name = hl.Directory(buf_head .. "/") .. buf_tail_pretty
 	end
 
 	if buftype == "terminal" then
-		if display_name:match("^zsh") then
+		if display_name:match("zsh") then
 			icon = icons.misc.terminal.symbol
 			icon_hl = icons.misc.terminal.group
-		elseif display_name:match("^claude") or display_name:match("^opencode") or display_name:match("^copilot") then
+		elseif display_name:match("claude") or display_name:match("opencode") or display_name:match("copilot") then
 			icon = icons.misc.robot.symbol
 			icon_hl = icons.misc.robot.group
-		elseif display_name:match("^python ?") then
+		elseif display_name:match("python") then
 			icon, icon_hl = devicons.get_icon_by_filetype("python", { default = true })
 		end
 	end
 
-	return hl[icon_hl](icon) .. " " .. hl.StatusLineBold(display_name)
+	return hl[icon_hl](icon) .. " " .. display_name
 end
 
 vim.keymap.set("n", "<leader>sp", function()
 	truncate_path = not truncate_path
-	vim.cmd.redrawstatus()
+	vim.cmd([[redrawstatus!]])
 end, { desc = "Statusline: toggle full file paths" })
 
 ---@return string?
