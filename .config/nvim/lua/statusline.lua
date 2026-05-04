@@ -198,14 +198,17 @@ end
 local truncate_path = false
 
 --- The buffer's filetype.
+---@param opts? { trunc: boolean }
 ---@return string?
-local file_component = function()
+local file_component = function(buf, opts)
+	opts = opts or {}
+	buf = buf or 0
 	local devicons = require("nvim-web-devicons")
 
-	local buftype = vim.bo.buftype
-	local ft = vim.bo.filetype
+	local buftype = vim.bo[buf].buftype
+	local ft = vim.bo[buf].filetype
 
-	local buf_path = vim.api.nvim_buf_get_name(0)
+	local buf_path = vim.api.nvim_buf_get_name(buf)
 	local buf_tail = vim.fn.fnamemodify(buf_path, ":t")
 	local buf_head = vim.fn.fnamemodify(buf_path, ":~:.:h")
 	local buf_ext = vim.fn.fnamemodify(buf_path, ":e")
@@ -226,11 +229,16 @@ local file_component = function()
 	end
 
 	local display_name
+
+	if opts.trunc == nil then
+		opts.trunc = (truncate_path and buf_tail ~= "") or buf_head == "."
+	end
+
 	local buf_tail_pretty = truncate_path and hl.StatusLineBold(buf_tail) or buf_tail
 
-	if (truncate_path and buf_tail ~= "") or buf_head == "." then
+	if opts.trunc then
 		display_name = buf_tail_pretty
-	elseif buf_head ~= "." then
+	else
 		display_name = hl.Directory(buf_head .. "/") .. buf_tail_pretty
 	end
 
@@ -298,7 +306,7 @@ end
 
 return {
 	---@return string
-	render = function()
+	render_statusline = function()
 		local win_is_active = tonumber(vim.g.actual_curwin) == vim.api.nvim_get_current_win()
 
 		if not win_is_active then
@@ -317,5 +325,15 @@ return {
 			rpad(" ", git_component()),
 			position_component(),
 		})
+	end,
+
+	render_tabline = function()
+		local names = {}
+		for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
+			local win = vim.api.nvim_tabpage_get_win(tab)
+			local buf = vim.api.nvim_win_get_buf(win)
+			table.insert(names, file_component(buf, { trunc = true }) or "[Empty]")
+		end
+		return table.concat(names, " ")
 	end,
 }
