@@ -57,7 +57,7 @@ local file_info = function(buf)
 
 	return {
 		icon = icon,
-		icon_hl = "%#" .. icon_hl .. "#",
+		icon_hl = "%$" .. icon_hl .. "$",
 		parts = split_path(buf_path),
 	}
 end
@@ -67,7 +67,8 @@ return {
 		local hls = {
 			inactive = "%#TabLine#",
 			active = "%#TabLineSel#",
-			dir = "%#Directory#",
+			fill = "%#TabLineFill#",
+			dir = "%$Directory$",
 		}
 
 		local paths = {} ---@type { icon?: string, icon_hl?: string, parts?: string[], display?: string[], unique_part?: number, active: boolean }[]
@@ -114,10 +115,10 @@ return {
 			end
 			local icon = path.icon and path.icon .. " " or ""
 			local icon_hl = path.active and path.icon_hl and path.icon_hl or ""
-			local text_hl = path.active and hls.active or hls.inactive
-			table.insert(items, text_hl .. " " .. icon_hl .. icon .. text_hl .. text)
+
+			table.insert(items, base_hl .. " " .. icon_hl .. icon .. base_hl .. text)
 		end
 
-		return table.concat(items, " ")
+		return hls.fill .. table.concat(items, " ") .. hls.fill
 	end,
 }
