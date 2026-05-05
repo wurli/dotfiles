@@ -1,6 +1,22 @@
 local icons = require("utils.icons")
 
-local file_component = function(buf)
+---@param path string
+---@return string[]
+local split_path = function(path)
+	local out = {}
+	while true do
+		local base = vim.fs.basename(path)
+		local dir = vim.fs.dirname(path)
+
+		if path == dir then
+			return out
+		end
+		table.insert(out, base)
+		path = dir
+	end
+end
+
+local file_info = function(buf)
 	local devicons = require("nvim-web-devicons")
 
 	local buftype = vim.bo[buf].buftype
@@ -11,7 +27,7 @@ local file_component = function(buf)
 	local buf_ext = vim.fn.fnamemodify(buf_path, ":e")
 
 	if ft == "" and buf_path == "" then
-		return
+		return {}
 	end
 
 	local icon = (icons.ft[ft] or {}).symbol
@@ -42,29 +58,63 @@ local file_component = function(buf)
 	return {
 		icon = icon,
 		icon_hl = "%#" .. icon_hl .. "#",
-		filename = display_name,
+		parts = split_path(buf_path),
 	}
 end
 
 return {
 	render = function()
-		local hl = {
+		local hls = {
 			inactive = "%#TabLine#",
 			active = "%#TabLineSel#",
+			dir = "%#Directory#",
 		}
 
-		local items = {}
+		local paths = {} ---@type { icon?: string, icon_hl?: string, parts?: string[], display?: string[], unique_part?: number, active: boolean }[]
 		for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
 			local win = vim.api.nvim_tabpage_get_win(tab)
 			local buf = vim.api.nvim_win_get_buf(win)
-			local item = file_component(buf)
-			local active = tab == vim.api.nvim_get_current_tabpage()
+			local info = file_info(buf)
+			info.active = tab == vim.api.nvim_get_current_tabpage()
+			table.insert(paths, info)
+		end
 
-			local text = item and item.filename or "[No Name]"
-			local icon = item and item.icon .. " " or ""
-			local icon_hl = active and item and item.icon_hl or ""
-			local text_hl = active and hl.active or hl.inactive
+		for i, p in ipairs(paths) do
+			for part, _ in ipairs(p.parts or {}) do
+				local collision
+				for ii, pp in ipairs(paths) do
+					if ii ~= i and pp.parts and p.parts[part] == pp.parts[part] then
+						collision = part
+						break
+					end
+				end
+				if not collision then
+					p.unique_part = part
+					break
+				end
+			end
+			p.unique_part = p.unique_part or 1
+		end
 
+		local ellipsis = icons.misc.ellipsis.symbol
+
+		local items = {}
+		for _, path in ipairs(paths) do
+			local base_hl = path.active and hls.active or hls.inactive
+
+			local text
+			if not path.parts then
+				text = "[No name]"
+			elseif path.unique_part == 1 then
+				text = path.parts[1]
+			elseif path.unique_part == 2 then
+				text = hls.dir .. path.parts[2] .. "/" .. base_hl .. path.parts[1]
+			elseif path.unique_part > 2 then
+				text = hls.dir .. path.parts[path.unique_part] .. "/" .. ellipsis .. "/" .. base_hl .. path.parts[1]
+			end
+			local icon = path.icon and path.icon .. " " or ""
+			local icon_hl = path.active and path.icon_hl and path.icon_hl or ""
+			local text_hl = path.active and hls.active or hls.inactive
 			table.insert(items, text_hl .. " " .. icon_hl .. icon .. text_hl .. text)
 		end
 
