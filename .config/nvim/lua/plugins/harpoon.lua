@@ -10,7 +10,7 @@ return {
 		local harpoon = require("harpoon")
 		harpoon:extend({
 			ADD = function(x)
-				vim.notify("Harpoon: added " .. vim.fs.basename(x.item.value) .. " at position " .. x.idx)
+				vim.notify(string.format("Harpoon<%s> set to `%s`", x.idx, vim.fs.basename(x.item.value)))
 			end,
 		})
 		harpoon:setup()
