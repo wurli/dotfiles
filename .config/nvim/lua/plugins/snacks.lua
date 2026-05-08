@@ -178,6 +178,7 @@ return {
 				dirs = {
 					vim.fn.expand("~/10_Data/Plaintext/parsed"),
 					vim.fn.expand("~/Repos/Zurich-Integrated-Benefits-Analytics.wiki"),
+					vim.fn.expand("~/Repos/CLP-Quotes.wiki"),
 					vim.fn.expand("~/Repos/work-notes"),
 				},
 			}),
