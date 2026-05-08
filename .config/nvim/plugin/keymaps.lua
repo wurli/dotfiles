@@ -42,6 +42,21 @@ map("v", "<leader>yp", function()
 	vim.fn.setreg("+", file)
 end, { desc = "Yank the current file path" })
 
+-- g?: Web search
+vim.keymap.set("n", "g?", function()
+	vim.ui.open(("https://google.com/search?q=%s"):format(vim.fn.expand("<cword>")))
+end)
+vim.keymap.set("x", "g?", function()
+	vim.ui.open(
+		("https://google.com/search?q=%s"):format(
+			vim.trim(
+				table.concat(vim.fn.getregion(vim.fn.getpos("."), vim.fn.getpos("v"), { type = vim.fn.mode() }), " ")
+			)
+		)
+	)
+	vim.api.nvim_input("<esc>")
+end)
+
 -- Ctrl-Z is my tmux leader and I never use :suspend
 map({ "n", "v" }, "<c-z>", "<Nop>", { noremap = true, silent = true })
 
