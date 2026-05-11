@@ -25,7 +25,7 @@ end
 ---@param path string
 ---@param sep? string
 ---@return string[]
-local split_path2 = function(path, sep)
+local split_path = function(path, sep)
 	return vim.split(path, sep or "/", { plain = true, trimempty = false })
 end
 
@@ -137,14 +137,14 @@ end
 local abbreviate_paths = function(paths, extra)
 	local split_paths = {}
 	for _, path in ipairs(paths) do
-		table.insert(split_paths, split_path2(path))
+		table.insert(split_paths, split_path(path))
 	end
 
 	local compare
 	if extra == nil then
 		compare = vim.deepcopy(split_paths)
 	else
-		compare = vim.tbl_map(split_path2, extra)
+		compare = vim.tbl_map(split_path, extra)
 		for _, path in ipairs(split_paths) do
 			table.insert(compare, path)
 		end
@@ -257,12 +257,11 @@ end
 -- 	"./.claude/hooks/auto-format.sh",
 -- 	"./.claude/hooks/discourage-pip.sh",
 -- }))
-
-vim.print(abbreviate_paths({
-	"./.venv/lib/python3.12/site-packages/numpy/core/__init__.py",
-	"./.venv/lib/python3.12/site-packages/pandas/core/__init__.py",
-	"./.venv/lib/python3.12/site-packages/dateutil/zoneinfo/__init__.py",
-}))
+-- vim.print(abbreviate_paths({
+-- 	"./.venv/lib/python3.12/site-packages/numpy/core/__init__.py",
+-- 	"./.venv/lib/python3.12/site-packages/pandas/core/__init__.py",
+-- 	"./.venv/lib/python3.12/site-packages/dateutil/zoneinfo/__init__.py",
+-- }))
 
 return {
 	render = function()
