@@ -253,6 +253,17 @@ local file_info = function(buf)
 	}
 end
 
+-- vim.print(abbreviate_paths({
+-- 	"./.claude/hooks/auto-format.sh",
+-- 	"./.claude/hooks/discourage-pip.sh",
+-- }))
+
+vim.print(abbreviate_paths({
+	"./.venv/lib/python3.12/site-packages/numpy/core/__init__.py",
+	"./.venv/lib/python3.12/site-packages/pandas/core/__init__.py",
+	"./.venv/lib/python3.12/site-packages/dateutil/zoneinfo/__init__.py",
+}))
+
 return {
 	render = function()
 		local hls = {
