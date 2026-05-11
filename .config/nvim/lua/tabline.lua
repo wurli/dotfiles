@@ -86,6 +86,7 @@ end
 ---@param x any[][]
 ---@return any[][]
 local array_unique = function(x)
+	array_sort(x)
 	local out = { x[1] }
 	for i = 2, #x do
 		if not array_eq(x[i], x[i - 1]) then
@@ -112,10 +113,9 @@ end
 ---most one nil value appears at a time.
 ---@param x any[]
 local array_compact = function(x)
-	local max_i = last_key(x)
 	local prev_i = 0
 	local out = {}
-	for i = 1, max_i do
+	for i = 1, last_key(x) do
 		if x[i] then
 			if i == prev_i + 1 then
 				out[prev_i + 1] = x[i]
@@ -150,7 +150,6 @@ local abbreviate_paths = function(paths, extra)
 		end
 	end
 
-	array_sort(compare)
 	compare = array_unique(compare)
 
 	local max_path_len = 0
