@@ -26,7 +26,7 @@ end
 ---@param sep? string
 ---@return string[]
 local split_path2 = function(path, sep)
-	return vim.split(path, sep or "/", { plain = true, trimempty = true })
+	return vim.split(path, sep or "/", { plain = true, trimempty = false })
 end
 
 ---Example:
@@ -168,7 +168,7 @@ local abbreviate_paths = function(paths, extra)
 		return x
 	end
 
-	for i = max_path_len - 1, 1, -1 do
+	for i = max_path_len - 1, 2, -1 do
 		local compare_squashed = vim.deepcopy(compare)
 		compare_squashed = squash_dir(compare_squashed, i)
 		local paths_squashed = vim.deepcopy(split_paths)
@@ -213,6 +213,11 @@ local file_info = function(buf)
 	local buf_path_short = vim.fn.fnamemodify(buf_path, ":~:.")
 	local buf_tail = vim.fn.fnamemodify(buf_path, ":t")
 	local buf_ext = vim.fn.fnamemodify(buf_path, ":e")
+
+	local wd_path = "./" .. buf_path_short
+	if vim.uv.fs_stat(wd_path) then
+		buf_path_short = wd_path
+	end
 
 	if ft == "" and buf_path == "" then
 		return {}
