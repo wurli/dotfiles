@@ -129,8 +129,6 @@ local array_compact = function(x)
 	return out
 end
 
--- TODO: at some point would be nice to have an algorithm which can efficiently
--- and correctly deduplicate arbitrary paths.
 ---@param paths string[]
 ---@param extra? string[]
 ---@return string[]
@@ -167,7 +165,7 @@ local abbreviate_paths = function(paths, extra)
 		return x
 	end
 
-	for i = max_path_len - 1, 2, -1 do
+	for i = max_path_len - 1, 1, -1 do
 		local compare_squashed = vim.deepcopy(compare)
 		compare_squashed = squash_dir(compare_squashed, i)
 		local paths_squashed = vim.deepcopy(split_paths)
@@ -213,11 +211,6 @@ local file_info = function(buf)
 	local buf_tail = vim.fn.fnamemodify(buf_path, ":t")
 	local buf_ext = vim.fn.fnamemodify(buf_path, ":e")
 
-	local wd_path = "./" .. buf_path_short
-	if vim.uv.fs_stat(wd_path) then
-		buf_path_short = wd_path
-	end
-
 	if ft == "" and buf_path == "" then
 		return {}
 	end
@@ -251,6 +244,11 @@ local file_info = function(buf)
 		path = buf_path_short,
 	}
 end
+
+-- vim.print(abbreviate_paths({
+-- 	"tmux.conf",
+-- 	".config/nvim/lua/tabline.lua",
+-- }, {}))
 
 -- vim.print(abbreviate_paths({
 -- 	"./.claude/hooks/auto-format.sh",
