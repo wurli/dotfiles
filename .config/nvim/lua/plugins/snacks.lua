@@ -262,7 +262,7 @@ return {
 			end,
 			desc = "Highlights",
 		},
-		-- { "<leader>si",      function() Snacks.picker.icons() end,                                                       desc = "Icons" },
+		{ "<leader>fi", pick("icons"), desc = "Icons" },
 		-- { "<leader>sj",      function() Snacks.picker.jumps() end,                                                       desc = "Jumps" },
 		{ "<leader>fk", pick("keymaps"), desc = "Keymaps" },
 		-- { "<leader>sl",      function() Snacks.picker.loclist() end,                                                     desc = "Location List" },
