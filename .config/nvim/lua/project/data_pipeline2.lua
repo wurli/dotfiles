@@ -36,6 +36,8 @@ vim.keymap.set({ "n", "v" }, "<leader>gd", function()
 
 	if file and file ~= vim.api.nvim_buf_get_name(0) then
 		vim.cmd.edit(files)
+	else
+		vim.lsp.buf.definition({})
 	end
 end, { desc = "Go to (notebook) definition" })
 
