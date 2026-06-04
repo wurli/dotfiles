@@ -417,7 +417,7 @@ _devops_comment() {
 }
 
 _devops_update() {
-  local id state
+  local id state match
   _devops_parse_filters "$@"
   set -- "${DEVOPS_REST[@]}"
   id="$1"
@@ -425,11 +425,28 @@ _devops_update() {
 
   [[ -z "$id" ]] && { id=$(_devops_pick update "$DEVOPS_TYPE" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION") || return 1; }
 
-  # If no state, pick from valid states with fzf.
-  # Hardcoded for snappiness — use 'devops states [type]' to see the live list.
+  # Valid states are hardcoded for snappiness — use 'devops states [type]' to see the live list.
+  local -a valid_states=("New" "Active" "Blocked" "In Review" "Closed")
+
   if [[ -z "$state" ]]; then
-    state=$(printf '%s\n' "New" "Active" "Blocked" "In Review" "Closed" \
+    state=$(printf '%s\n' "${valid_states[@]}" \
       | fzf --prompt="state> " --height=30% --reverse) || return 1
+  else
+    # Case-insensitive match against the valid set, ignoring spaces, so 'new' → 'New',
+    # 'in review' / 'inreview' / 'InReview' → 'In Review'.
+    match=""
+    local needle="${${state:l}// /}"
+    for s in "${valid_states[@]}"; do
+      if [[ "${${s:l}// /}" == "$needle" ]]; then
+        match="$s"
+        break
+      fi
+    done
+    if [[ -z "$match" ]]; then
+      echo "devops: unknown state '$state' (valid: ${(j:, :)${(@q)valid_states}})" >&2
+      return 1
+    fi
+    state="$match"
   fi
 
   az boards work-item update --id "$id" --state "$state" --output none && \
