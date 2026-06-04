@@ -1,0 +1,82 @@
+#!/bin/zsh
+
+PICKER_DIRS=(
+    $HOME/Repos
+)
+
+NO_SWITCH=0
+SESSION_ARG=""
+while (( $# )); do
+    case "$1" in
+        --no-switch) NO_SWITCH=1; shift ;;
+        --session) SESSION_ARG="$2"; shift 2 ;;
+        --session=*) SESSION_ARG="${1#--session=}"; shift ;;
+        *) shift ;;
+    esac
+done
+
+typeset -A SESSIONS
+while IFS= read -r name; do
+    [[ -z "$name" ]] && continue
+    SESSIONS[$name]=1
+done < <(zmx list --short 2>/dev/null)
+
+if [[ -n "$SESSION_ARG" ]]; then
+    if (( ${+SESSIONS[$SESSION_ARG]} )); then
+        target="$SESSION_ARG"
+        is_session=1
+    else
+        target=""
+        for dir in "${PICKER_DIRS[@]}"; do
+            [[ -d "$dir/$SESSION_ARG" ]] || continue
+            target="$dir/$SESSION_ARG"
+            break
+        done
+        if [[ -z "$target" ]]; then
+            print -u2 "zmx-picker: no session or directory matching '$SESSION_ARG'"
+            exit 1
+        fi
+        is_session=0
+    fi
+else
+    typeset -a ENTRIES
+    for name in "${(k)SESSIONS[@]}"; do
+        ENTRIES+=("[zmx] $name"$'\t'"$name"$'\t'"1")
+    done
+
+    for dir in "${PICKER_DIRS[@]}"; do
+        [[ -d "$dir" ]] || continue
+        for subdir in "$dir"/*/; do
+            subdir="${subdir%/}"
+            name="${subdir:t}"
+            (( ${+SESSIONS[$name]} )) && continue
+            ENTRIES+=("$subdir"$'\t'"$subdir"$'\t'"0")
+        done
+    done
+
+    selected=$(printf '%s\n' "${ENTRIES[@]}" | fzf --with-nth=1 --delimiter=$'\t')
+    fzf_status=$?
+    (( fzf_status != 0 )) && exit $fzf_status
+    [[ -z "$selected" ]] && exit 0
+
+    target=$(printf '%s' "$selected" | cut -d$'\t' -f2)
+    is_session=$(printf '%s' "$selected" | cut -d$'\t' -f3)
+fi
+
+if [[ "$NO_SWITCH" == "1" ]]; then
+    printf '%s\n' "$target"
+    exit 0
+fi
+
+if [[ "$is_session" == "1" ]]; then
+    name="$target"
+    zmx attach "$name"
+    zmx send "$name" 'if jobs %+ &>/dev/null; then fg %+; fi'
+else
+    name="${target:t}"
+    (
+        cd "$target" || exit 1
+        zmx attach "$name"
+        zmx send "$name" 'if jobs %+ &>/dev/null; then fg %+; fi'
+    )
+fi

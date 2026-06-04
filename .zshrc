@@ -118,18 +118,17 @@ bindkey -s '\ei' "tmux-sessionizer -s 1\n"
 bindkey -s '\eo' "tmux-sessionizer -s 2\n"
 bindkey -s '\ep' "tmux-sessionizer -s 3\n"
 
-function fg() {
-    RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
-    INITIAL_QUERY="${*:-}"
-
-    fzf --ansi --disabled --query "$INITIAL_QUERY" \
-    --bind "start:reload:$RG_PREFIX {q}" \
-    --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
-    --delimiter : \
-    --preview 'bat --color=always {1} --highlight-line {2} --style=plain,numbers ' \
-    --preview-window 'right,50%,border-none,+{2}+3/3,~3' \
-    --bind 'enter:become(nvim {1} +{2})'
-}
+# function fg() {
+#     RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
+#     INITIAL_QUERY="${*:-}"
+#     fzf --ansi --disabled --query "$INITIAL_QUERY" \
+#     --bind "start:reload:$RG_PREFIX {q}" \
+#     --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
+#     --delimiter : \
+#     --preview 'bat --color=always {1} --highlight-line {2} --style=plain,numbers ' \
+#     --preview-window 'right,50%,border-none,+{2}+3/3,~3' \
+#     --bind 'enter:become(nvim {1} +{2})'
+# }
 
 retag() {
 	local tag="$1"
@@ -284,3 +283,4 @@ source ~/.zprofile
 
 # Load Angular CLI autocompletion.
 source <(ng completion script)
+

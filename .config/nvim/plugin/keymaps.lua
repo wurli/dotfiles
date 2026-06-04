@@ -154,11 +154,55 @@ map("v", "<M-k>", ":m '<-2<CR>gv=gv", { desc = "Move selected lines up" })
 -- Workaround for meta-key limitations in terminal emulators
 map({ "i", "n", "c", "v", "t" }, "<M-3>", "#", { noremap = true, desc = "Insert #" })
 
-vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
-vim.keymap.set("n", "<M-u>", "<cmd>silent !tmux neww tmux-sessionizer -s 0<CR>")
-vim.keymap.set("n", "<M-i>", "<cmd>silent !tmux neww tmux-sessionizer -s 1<CR>")
-vim.keymap.set("n", "<M-o>", "<cmd>silent !tmux neww tmux-sessionizer -s 2<CR>")
-vim.keymap.set("n", "<M-p>", "<cmd>silent !tmux neww tmux-sessionizer -s 3<CR>")
+vim.keymap.set("n", "<C-f>", function()
+	local screen_cols = vim.o.columns
+	local screen_rows = vim.o.lines
+	local win_width = math.floor(screen_cols * 0.6)
+	local win_height = math.floor(screen_rows * 0.8)
+
+	local buf = vim.api.nvim_create_buf(false, true)
+	local win = vim.api.nvim_open_win(buf, true, {
+		relative = "editor",
+		width = win_width,
+		height = win_height,
+		col = math.floor((screen_cols - win_width) / 2),
+		row = math.floor((screen_rows - win_height) / 2),
+		style = "minimal",
+		title = "Switch Session",
+	})
+	vim.cmd.startinsert()
+	vim.api.nvim_create_autocmd("TermLeave", {
+		group = vim.api.nvim_create_augroup("ZmxPicker", { clear = true }),
+		buffer = buf,
+		once = true,
+		callback = function()
+			vim.api.nvim_win_close(win, true)
+			vim.cmd.stopinsert()
+		end,
+	})
+
+	local tmpfile = vim.fn.tempname()
+
+	vim.fn.jobstart({
+		"sh",
+		"-c",
+		vim.fn.getenv("XDG_CONFIG_HOME") .. "/scripts/zmx-picker --no-switch > " .. vim.fn.shellescape(tmpfile),
+	}, {
+		term = true,
+		stdout_buffered = true,
+		on_exit = function(_, code, _)
+			vim.api.nvim_win_close(win, true)
+			if code == 0 then
+				local selection = vim.fn.readfile(tmpfile)[1]
+				os.remove(tmpfile)
+				if selection and selection ~= "" then
+					vim.cmd.suspend()
+					vim.system({ "zmx-picker", "--session", selection })
+				end
+			end
+		end,
+	})
+end, {})
 
 map("n", "<leader>lz", "<cmd>Lazy<CR>", { desc = "Open Lazy" })
 
