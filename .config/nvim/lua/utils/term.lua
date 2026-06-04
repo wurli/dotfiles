@@ -54,7 +54,10 @@ terms.make_toggler = function(cmd, opts)
 				end
 			end
 
-			vim.api.nvim_create_autocmd("BufWinEnter", { buffer = t.buf, callback = make_ns_setter(term_hl_ns) })
+			vim.api.nvim_create_autocmd(
+				{ "BufWinEnter", "WinNew", "TabEnter" },
+				{ buffer = t.buf, callback = make_ns_setter(term_hl_ns) }
+			)
 			vim.api.nvim_create_autocmd("BufWinLeave", { buffer = t.buf, callback = make_ns_setter(0) })
 		end
 
