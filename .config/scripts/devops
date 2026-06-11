@@ -14,7 +14,7 @@
 
 # Team context for @CurrentIteration and the default area/iteration on create.
 # Override by exporting DEVOPS_TEAM before sourcing, or edit here.
-: "${DEVOPS_TEAM:=Please configure a team!}"
+: "${DEVOPS_TEAM:=Please set \$DEVOPS_TEAM to configure a team!}"
 
 # Azure DevOps' well-known AAD application ID — same for every ADO tenant
 # worldwide. Passed as --resource to `az account get-access-token` so AAD
