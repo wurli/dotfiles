@@ -153,6 +153,56 @@ _devops_owner_filter() {
   esac
 }
 
+_devops_print_filters() {
+  # Print the effective filters (after defaults) above query results.
+  # Args: type, status, owner, iteration — same shape as _devops_pick.
+  local f_type="$1" f_status="$2" f_owner="$3" f_iter="$4"
+  local project me current_name type_clause status_clause type_disp status_disp
+  IFS=$'\t' read -r _ project < <(_devops_defaults)
+  printf 'project:   %s\n' "${project}"
+  printf 'team:      %s\n' "${DEVOPS_TEAM}"
+
+  # Extract the canonical type/status names from the WIQL clauses so the
+  # display matches the real ADO values (e.g. 'new' → 'New', 'inreview' → 'In Review').
+  type_clause=$(_devops_type_filter "$f_type" 2>/dev/null)
+  if [[ "$type_clause" =~ \'([^\']+)\' ]]; then
+    type_disp="${match[1]:-${BASH_REMATCH[1]}}"
+  else
+    type_disp="all"
+  fi
+  status_clause=$(_devops_status_filter "$f_status" 2>/dev/null)
+  case "$f_status" in
+    open) status_disp="open (not Closed/Removed/Done)" ;;
+    *)
+      if [[ "$status_clause" =~ \'([^\']+)\' ]]; then
+        status_disp="${match[1]:-${BASH_REMATCH[1]}}"
+      else
+        status_disp="all"
+      fi
+      ;;
+  esac
+  printf 'type:      %s\n' "$type_disp"
+  printf 'status:    %s\n' "$status_disp"
+  case "$f_owner" in
+    all)     printf 'owner:     all\n' ;;
+    ""|me)
+      me=$(az account show --query user.name -o tsv 2>/dev/null)
+      printf 'owner:     %s (me)\n' "${me:-me}"
+      ;;
+    *)       printf 'owner:     %s\n' "$f_owner" ;;
+  esac
+  case "$f_iter" in
+    all)          printf 'iteration: all\n' ;;
+    ""|current)
+      current_name=$(az boards iteration team list --team "$DEVOPS_TEAM" --timeframe current -o json 2>/dev/null \
+        | jq -r '.[0].name // empty')
+      printf 'iteration: %s (current)\n' "${current_name:-current}"
+      ;;
+    *)            printf 'iteration: %s\n' "$f_iter" ;;
+  esac
+  echo
+}
+
 _devops_parse_filters() {
   # Scan args for --type/-t, --status/-s, --owner/-o, --iteration/-i, --parent/-p.
   # Sets globals:
@@ -229,6 +279,7 @@ _devops_list() {
   owner_clause=$(_devops_owner_filter "$DEVOPS_OWNER") || return 1
   iter_clause=$(_devops_iteration_filter "$DEVOPS_ITERATION") || return 1
   area=$(_devops_team_area)
+  _devops_print_filters "$alias" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION" >&2
   _devops_query "
     SELECT [System.Id], [System.WorkItemType], [System.State], [System.Title]
     FROM WorkItems
