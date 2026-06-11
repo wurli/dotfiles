@@ -128,9 +128,9 @@ _devops_status_filter() {
 _devops_iteration_filter() {
   # Map --iteration value to a WIQL 'AND [System.IterationPath] ...' clause.
   # Empty → default: @CurrentIteration for the team. 'all' → no filter.
-  # Anything else is treated as a literal iteration path (matched with UNDER
-  # so parent iteration paths include their children).
-  local project
+  # Anything else is treated as an iteration leaf name and resolved against
+  # the project's iteration list to its full path.
+  local project resolved
   case "$1" in
     all)      echo "" ;;
     ""|current)
@@ -138,7 +138,14 @@ _devops_iteration_filter() {
       printf "AND [System.IterationPath] = @CurrentIteration('[%s]\\\\%s')\n" \
         "$project" "$DEVOPS_TEAM"
       ;;
-    *)        printf "AND [System.IterationPath] UNDER '%s'\n" "${1//\'/\'\'}" ;;
+    *)
+      resolved=$(_devops_iterations | awk -v leaf="$1" -F'\\' '$NF == leaf { print; exit }')
+      if [[ -z "$resolved" ]]; then
+        echo "devops: no iteration with leaf name '$1' (use 'devops iterations' to list)" >&2
+        return 1
+      fi
+      printf "AND [System.IterationPath] = '%s'\n" "${resolved//\'/\'\'}"
+      ;;
   esac
 }
 
