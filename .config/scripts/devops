@@ -288,32 +288,27 @@ _devops_parse_filters() {
   # Callers typically do:
   #   _devops_parse_filters "$@"
   #   set -- "${DEVOPS_REST[@]}"
-  DEVOPS_TYPE=""
-  DEVOPS_STATUS=""
-  DEVOPS_OWNER=""
-  DEVOPS_ITERATION=""
-  DEVOPS_PARENT=""
-  DEVOPS_REST=()
-  while [[ $# -gt 0 ]]; do
-    case "$1" in
-      -t|--type)      DEVOPS_TYPE="$2";       shift 2 ;;
-      --type=*)       DEVOPS_TYPE="${1#--type=}";           shift ;;
-      -t=*)           DEVOPS_TYPE="${1#-t=}";               shift ;;
-      -s|--status)    DEVOPS_STATUS="$2";     shift 2 ;;
-      --status=*)     DEVOPS_STATUS="${1#--status=}";       shift ;;
-      -s=*)           DEVOPS_STATUS="${1#-s=}";             shift ;;
-      -o|--owner)     DEVOPS_OWNER="$2";      shift 2 ;;
-      --owner=*)      DEVOPS_OWNER="${1#--owner=}";         shift ;;
-      -o=*)           DEVOPS_OWNER="${1#-o=}";              shift ;;
-      -i|--iteration) DEVOPS_ITERATION="$2";  shift 2 ;;
-      --iteration=*)  DEVOPS_ITERATION="${1#--iteration=}"; shift ;;
-      -i=*)           DEVOPS_ITERATION="${1#-i=}";          shift ;;
-      -p|--parent)    DEVOPS_PARENT="$2";     shift 2 ;;
-      --parent=*)     DEVOPS_PARENT="${1#--parent=}";       shift ;;
-      -p=*)           DEVOPS_PARENT="${1#-p=}";             shift ;;
-      *)              DEVOPS_REST+=("$1");                  shift ;;
-    esac
-  done
+  #
+  # Uses zsh's zparseopts. -D removes parsed flags from the positional args,
+  # -E lets non-flag args appear before flags. Each spec is `long:=arr -short:=arr`
+  # which puts both the flag name and its value into `arr` (we ignore [1], take [2]).
+  # Accepted forms: `--type val`, `--type=val`, `-t val`. (`-t=val` is *not*
+  # accepted — zparseopts only supports `=`-glued values for long flags.)
+  local -a t s o i p
+  zparseopts -D -E \
+    -type:=t t:=t \
+    -status:=s s:=s \
+    -owner:=o o:=o \
+    -iteration:=i i:=i \
+    -parent:=p p:=p \
+    || return 1
+  # zparseopts preserves the leading '=' when invoked as --flag=value; strip it.
+  DEVOPS_TYPE="${t[2]#=}"
+  DEVOPS_STATUS="${s[2]#=}"
+  DEVOPS_OWNER="${o[2]#=}"
+  DEVOPS_ITERATION="${i[2]#=}"
+  DEVOPS_PARENT="${p[2]#=}"
+  DEVOPS_REST=("$@")
 }
 
 # --- Subcommand implementations -------------------------------------------
@@ -346,12 +341,31 @@ _devops_iterations() {
   printf '%s\n' "$_DEVOPS_ITERATIONS"
 }
 
+_devops_build_wiql() {
+  # Build the WIQL string used by `list`/`sprint`. Args:
+  #   $1 = area path, $2 = type clause, $3 = status clause,
+  #   $4 = owner clause, $5 = iteration clause.
+  # Empty clauses are skipped.
+  printf '%s\n' "
+    SELECT [System.Id], [System.WorkItemType], [System.State], [System.Title]
+    FROM WorkItems
+    WHERE [System.AreaPath] UNDER '${1//\'/\'\'}'
+      $4
+      $3
+      $2
+      $5
+    ORDER BY [System.ChangedDate] DESC
+  "
+}
+
 _devops_list() {
   # Accepts --type/-t, --status/-s, --owner/-o, --iteration/-i flags (or a
   # bare type alias for back-compat). Called both as a top-level command and
   # as a primitive by _devops_pick.
-  local type_clause status_clause owner_clause iter_clause alias area
-  local filter_file query_file area_file query_pid query_rc
+  local alias type_clause status_clause owner_clause iter_clause area
+  local filter_file query_file area_file area_pid filter_pid query_pid query_rc
+
+  # 1. Parse args, resolve filter clauses (pure shell, fast).
   _devops_parse_filters "$@"
   set -- "${DEVOPS_REST[@]}"
   alias="${DEVOPS_TYPE:-$1}"
@@ -360,40 +374,29 @@ _devops_list() {
   owner_clause=$(_devops_owner_filter "$DEVOPS_OWNER") || return 1
   iter_clause=$(_devops_iteration_filter "$DEVOPS_ITERATION") || return 1
 
-  # Three things race here: the team-area lookup (needed by WIQL), the filter
-  # block (printed above results), and — once area is back — the WIQL query.
-  # team_area is cached after first call, so this only matters on cold runs.
+  # 2. Fan out: team_area (needed by WIQL) and the filter block run in
+  #    parallel. team_area is cached after first call so this only matters
+  #    on cold runs.
   filter_file=$(mktemp -t devops-filters.XXXXXX)
   query_file=$(mktemp -t devops-query.XXXXXX)
   area_file=$(mktemp -t devops-area.XXXXXX)
-  local area_pid filter_pid
-  _devops_team_area >"$area_file" &
-  area_pid=$!
-  _devops_print_filters "$alias" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION" >"$filter_file" 2>&1 &
-  filter_pid=$!
+  _devops_team_area >"$area_file" & area_pid=$!
+  _devops_print_filters "$alias" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION" \
+    >"$filter_file" 2>&1 & filter_pid=$!
 
-  # Wait for area only — filter block keeps running while we kick off WIQL.
+  # 3. Once area is back, kick off the WIQL query (still in parallel with
+  #    the filter block).
   wait "$area_pid"
   area=$(<"$area_file")
   rm -f "$area_file"
-  # Backgrounded subshell can't write the cache var; populate it here so
-  # subsequent calls in this shell hit the cache.
-  _DEVOPS_TEAM_AREA="$area"
+  _DEVOPS_TEAM_AREA="$area"  # backgrounded subshell can't populate cache
 
-  _devops_query "
-    SELECT [System.Id], [System.WorkItemType], [System.State], [System.Title]
-    FROM WorkItems
-    WHERE [System.AreaPath] UNDER '${area//\'/\'\'}'
-      ${owner_clause}
-      ${status_clause}
-      ${type_clause}
-      ${iter_clause}
-    ORDER BY [System.ChangedDate] DESC
-  " >"$query_file" &
-  query_pid=$!
+  _devops_query "$(_devops_build_wiql "$area" "$type_clause" "$status_clause" \
+    "$owner_clause" "$iter_clause")" >"$query_file" & query_pid=$!
+
+  # 4. Join, print in fixed order: filters to stderr, results to stdout.
   wait "$filter_pid"
   wait "$query_pid"; query_rc=$?
-
   cat "$filter_file" >&2
   if [[ $query_rc -ne 0 ]]; then
     rm -f "$filter_file" "$query_file"
