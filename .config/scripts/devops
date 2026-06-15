@@ -78,16 +78,69 @@ _devops_decode_entities() {
   sed 's/&nbsp;/ /g; s/&amp;/\&/g; s/&lt;/</g; s/&gt;/>/g; s/&quot;/"/g; s/&#39;/'"'"'/g'
 }
 
+_devops_token() {
+  # Cache the AAD access token for the duration of the shell. Tokens are
+  # valid for ~1h; for an interactive shell that's plenty. Saves ~500ms on
+  # every REST call after the first.
+  [[ -n "$_DEVOPS_TOKEN" ]] && { printf '%s\n' "$_DEVOPS_TOKEN"; return; }
+  _DEVOPS_TOKEN=$(az account get-access-token \
+    --resource "$AZURE_DEVOPS_RESOURCE_ID" \
+    --query accessToken -o tsv 2>/dev/null)
+  if [[ -z "$_DEVOPS_TOKEN" ]]; then
+    echo "devops: failed to get access token (run 'az login'?)" >&2
+    return 1
+  fi
+  printf '%s\n' "$_DEVOPS_TOKEN"
+}
+
+_devops_api_base() {
+  # Print the base REST URL for the current org+project: "<org>/<project-uri-encoded>".
+  [[ -n "$_DEVOPS_API_BASE" ]] && { printf '%s\n' "$_DEVOPS_API_BASE"; return; }
+  local org project
+  IFS=$'\t' read -r org project < <(_devops_defaults)
+  _DEVOPS_API_BASE="${org%/}/$(printf %s "$project" | jq -sRr @uri)"
+  printf '%s\n' "$_DEVOPS_API_BASE"
+}
+
 _devops_query() {
   # Run a WIQL query and format the id/type/state/title columns as tsv.
   # Returns 1 (with no output) if the query had no results, so callers can
   # distinguish "empty" from "got rows" without inspecting the output.
-  local out
-  out=$(az boards query --wiql "$1" \
-    --output tsv \
-    --query '[].[id, fields."System.WorkItemType", fields."System.State", fields."System.Title"]')
-  [[ -z "$out" ]] && return 1
-  printf '%s\n' "$out" | column -t -s $'\t'
+  #
+  # Uses the REST API directly (POST wiql + GET workitems) to skip `az`'s
+  # ~300ms Python startup. Token + base URL are cached per-shell.
+  local token base ids fields_csv body
+  token=$(_devops_token) || return 1
+  base=$(_devops_api_base) || return 1
+
+  # Step 1: POST WIQL → list of {id, url}.
+  ids=$(jq -nc --arg q "$1" '{query: $q}' \
+    | curl -sS -f -X POST \
+        -H "Authorization: Bearer $token" \
+        -H "Content-Type: application/json" \
+        --data-binary @- \
+        "$base/_apis/wit/wiql?api-version=7.1" 2>/dev/null \
+    | jq -r '.workItems[]?.id' \
+    | paste -sd, -)
+  [[ -z "$ids" ]] && return 1
+
+  # Step 2: GET full rows for those ids. Cap fields to what we display.
+  fields_csv="System.Id,System.WorkItemType,System.State,System.Title"
+  body=$(curl -sS -f \
+    -H "Authorization: Bearer $token" \
+    "$base/_apis/wit/workitems?ids=$ids&fields=$fields_csv&api-version=7.1" 2>/dev/null) \
+    || return 1
+
+  # WIQL preserves the ORDER BY in workItems[]; the workitems endpoint may
+  # reorder. Sort rows in the original id sequence by indexing on id.
+  printf '%s\n' "$body" \
+    | jq -r --arg ids "$ids" '
+        ($ids | split(",") | map(tonumber)) as $order
+        | (.value | map({key: (.id|tostring), value: .}) | from_entries) as $by
+        | $order[] | ($by[(. | tostring)]) | select(. != null)
+        | [.id, .fields."System.WorkItemType", .fields."System.State", .fields."System.Title"]
+        | @tsv' \
+    | column -t -s $'\t'
 }
 
 _devops_type_filter() {
@@ -280,13 +333,17 @@ _devops_iterations() {
   # Print all leaf iteration paths in project-relative form, one per line
   # (matching System.IterationPath). Strips the leading '\Project\Iteration\'
   # or '\Project\' prefix that `az boards iteration project list` returns.
+  # Cached per-shell — the project's iteration tree changes rarely (new
+  # sprints), and a stale cache only affects --iteration <leaf> resolution.
+  [[ -n "$_DEVOPS_ITERATIONS" ]] && { printf '%s\n' "$_DEVOPS_ITERATIONS"; return; }
   local project
   IFS=$'\t' read -r _ project < <(_devops_defaults)
-  az boards iteration project list --depth 10 -o json 2>/dev/null \
+  _DEVOPS_ITERATIONS=$(az boards iteration project list --depth 10 -o json 2>/dev/null \
     | jq -r --arg p "$project" '
         .. | objects | select(.path? and (.hasChildren // false) == false)
         | .path | sub("^\\\\" + $p + "\\\\Iteration\\\\"; $p + "\\")
-               | sub("^\\\\" + $p + "\\\\"; $p + "\\")'
+               | sub("^\\\\" + $p + "\\\\"; $p + "\\")')
+  printf '%s\n' "$_DEVOPS_ITERATIONS"
 }
 
 _devops_list() {
@@ -294,7 +351,7 @@ _devops_list() {
   # bare type alias for back-compat). Called both as a top-level command and
   # as a primitive by _devops_pick.
   local type_clause status_clause owner_clause iter_clause alias area
-  local filter_file query_file query_pid query_rc
+  local filter_file query_file area_file query_pid query_rc
   _devops_parse_filters "$@"
   set -- "${DEVOPS_REST[@]}"
   alias="${DEVOPS_TYPE:-$1}"
@@ -302,14 +359,27 @@ _devops_list() {
   status_clause=$(_devops_status_filter "$DEVOPS_STATUS") || return 1
   owner_clause=$(_devops_owner_filter "$DEVOPS_OWNER") || return 1
   iter_clause=$(_devops_iteration_filter "$DEVOPS_ITERATION") || return 1
-  area=$(_devops_team_area)
 
-  # Run the filter block and the WIQL query in parallel — both make `az`
-  # calls and are independent. Buffer both, then print in fixed order
-  # (filters to stderr, results to stdout) once both finish.
+  # Three things race here: the team-area lookup (needed by WIQL), the filter
+  # block (printed above results), and — once area is back — the WIQL query.
+  # team_area is cached after first call, so this only matters on cold runs.
   filter_file=$(mktemp -t devops-filters.XXXXXX)
   query_file=$(mktemp -t devops-query.XXXXXX)
+  area_file=$(mktemp -t devops-area.XXXXXX)
+  local area_pid filter_pid
+  _devops_team_area >"$area_file" &
+  area_pid=$!
   _devops_print_filters "$alias" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION" >"$filter_file" 2>&1 &
+  filter_pid=$!
+
+  # Wait for area only — filter block keeps running while we kick off WIQL.
+  wait "$area_pid"
+  area=$(<"$area_file")
+  rm -f "$area_file"
+  # Backgrounded subshell can't write the cache var; populate it here so
+  # subsequent calls in this shell hit the cache.
+  _DEVOPS_TEAM_AREA="$area"
+
   _devops_query "
     SELECT [System.Id], [System.WorkItemType], [System.State], [System.Title]
     FROM WorkItems
@@ -321,7 +391,7 @@ _devops_list() {
     ORDER BY [System.ChangedDate] DESC
   " >"$query_file" &
   query_pid=$!
-  wait
+  wait "$filter_pid"
   wait "$query_pid"; query_rc=$?
 
   cat "$filter_file" >&2
@@ -405,13 +475,12 @@ _devops_open() {
 }
 
 _devops_edit() {
-  local id tmp patch org project token url before_hash after_hash
+  local id tmp patch token url before_hash after_hash
   local title_before title_after desc_after
   _devops_parse_filters "$@"
   set -- "${DEVOPS_REST[@]}"
   id="$1"
   [[ -z "$id" ]] && { id=$(_devops_pick edit "$DEVOPS_TYPE" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION") || return 1; }
-  IFS=$'\t' read -r org project < <(_devops_defaults)
 
   # Buffer layout: first non-comment line = title, then a blank separator,
   # then the description. The HTML-comment marker is purely a hint for the
@@ -472,10 +541,8 @@ _devops_edit() {
            else [] end)
     ' > "$patch"
 
-  token=$(az account get-access-token \
-    --resource "$AZURE_DEVOPS_RESOURCE_ID" \
-    --query accessToken -o tsv)
-  url="${org%/}/$(printf %s "$project" | jq -sRr @uri)/_apis/wit/workitems/${id}?api-version=7.1"
+  token=$(_devops_token) || return 1
+  url="$(_devops_api_base)/_apis/wit/workitems/${id}?api-version=7.1"
 
   if curl -sS -f -X PATCH \
     -H "Authorization: Bearer $token" \
