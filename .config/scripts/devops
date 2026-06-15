@@ -294,6 +294,7 @@ _devops_list() {
   # bare type alias for back-compat). Called both as a top-level command and
   # as a primitive by _devops_pick.
   local type_clause status_clause owner_clause iter_clause alias area
+  local filter_file query_file query_pid query_rc
   _devops_parse_filters "$@"
   set -- "${DEVOPS_REST[@]}"
   alias="${DEVOPS_TYPE:-$1}"
@@ -302,7 +303,13 @@ _devops_list() {
   owner_clause=$(_devops_owner_filter "$DEVOPS_OWNER") || return 1
   iter_clause=$(_devops_iteration_filter "$DEVOPS_ITERATION") || return 1
   area=$(_devops_team_area)
-  _devops_print_filters "$alias" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION" >&2
+
+  # Run the filter block and the WIQL query in parallel — both make `az`
+  # calls and are independent. Buffer both, then print in fixed order
+  # (filters to stderr, results to stdout) once both finish.
+  filter_file=$(mktemp -t devops-filters.XXXXXX)
+  query_file=$(mktemp -t devops-query.XXXXXX)
+  _devops_print_filters "$alias" "$DEVOPS_STATUS" "$DEVOPS_OWNER" "$DEVOPS_ITERATION" >"$filter_file" 2>&1 &
   _devops_query "
     SELECT [System.Id], [System.WorkItemType], [System.State], [System.Title]
     FROM WorkItems
@@ -312,7 +319,19 @@ _devops_list() {
       ${type_clause}
       ${iter_clause}
     ORDER BY [System.ChangedDate] DESC
-  " || { echo "[No items to show]"; return 1; }
+  " >"$query_file" &
+  query_pid=$!
+  wait
+  wait "$query_pid"; query_rc=$?
+
+  cat "$filter_file" >&2
+  if [[ $query_rc -ne 0 ]]; then
+    rm -f "$filter_file" "$query_file"
+    echo "[No items to show]"
+    return 1
+  fi
+  cat "$query_file"
+  rm -f "$filter_file" "$query_file"
 }
 
 _devops_sprint() {
