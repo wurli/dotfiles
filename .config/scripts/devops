@@ -165,7 +165,20 @@ _devops_print_filters() {
   # Args: type, status, owner, iteration — same shape as _devops_pick.
   local f_type="$1" f_status="$2" f_owner="$3" f_iter="$4"
   local project me current_name type_clause status_clause type_disp status_disp
+  local me_file current_file
   IFS=$'\t' read -r _ project < <(_devops_defaults)
+
+  # Kick off the two slow `az` calls in parallel — each is a Python startup
+  # plus an HTTPS round-trip. Only fire the ones we'll actually display.
+  if [[ -z "$f_owner" || "$f_owner" == "me" ]]; then
+    me_file=$(mktemp -t devops-me.XXXXXX)
+    az account show --query user.name -o tsv >"$me_file" 2>/dev/null &
+  fi
+  if [[ -z "$f_iter" || "$f_iter" == "current" ]]; then
+    current_file=$(mktemp -t devops-iter.XXXXXX)
+    az boards iteration team list --team "$DEVOPS_TEAM" --timeframe current -o json >"$current_file" 2>/dev/null &
+  fi
+
   printf 'project:   %s\n' "${project}"
   printf 'team:      %s\n' "${DEVOPS_TEAM}"
 
@@ -190,10 +203,13 @@ _devops_print_filters() {
   esac
   printf 'type:      %s\n' "$type_disp"
   printf 'status:    %s\n' "$status_disp"
+  # Wait for backgrounded `az` calls before reading their output.
+  wait
   case "$f_owner" in
     all)     printf 'owner:     all\n' ;;
     ""|me)
-      me=$(az account show --query user.name -o tsv 2>/dev/null)
+      me=$(<"$me_file")
+      rm -f "$me_file"
       printf 'owner:     %s (me)\n' "${me:-me}"
       ;;
     *)       printf 'owner:     %s\n' "$f_owner" ;;
@@ -201,8 +217,8 @@ _devops_print_filters() {
   case "$f_iter" in
     all)          printf 'iteration: all\n' ;;
     ""|current)
-      current_name=$(az boards iteration team list --team "$DEVOPS_TEAM" --timeframe current -o json 2>/dev/null \
-        | jq -r '.[0].name // empty')
+      current_name=$(jq -r '.[0].name // empty' <"$current_file" 2>/dev/null)
+      rm -f "$current_file"
       printf 'iteration: %s (current)\n' "${current_name:-current}"
       ;;
     *)            printf 'iteration: %s\n' "$f_iter" ;;
@@ -313,7 +329,7 @@ _devops_sprint() {
 }
 
 _devops_show() {
-  local id project
+  local id project summary_file json_file comments_file
   _devops_parse_filters "$@"
   set -- "${DEVOPS_REST[@]}"
   id="$1"
@@ -324,24 +340,31 @@ _devops_show() {
   # Decode entities first so pandoc sees real markdown characters (e.g. &gt; → >).
   html2md() { _devops_decode_entities | pandoc -f gfm -t gfm --wrap=preserve 2>/dev/null; }
 
+  # Three independent network calls — fan out in parallel and join via temp files.
+  summary_file=$(mktemp -t devops-show.XXXXXX)
+  json_file=$(mktemp -t devops-show.XXXXXX)
+  comments_file=$(mktemp -t devops-show.XXXXXX)
+  az boards work-item show --id "$id" --output table >"$summary_file" 2>/dev/null &
+  az boards work-item show --id "$id" -o json >"$json_file" 2>/dev/null &
+  az devops invoke \
+    --area wit --resource comments \
+    --route-parameters project="$project" workItemId="$id" \
+    --api-version 7.1-preview -o json >"$comments_file" 2>/dev/null &
+  wait
+
   {
     echo '## Summary'
     echo '```'
-    az boards work-item show --id "$id" --output table | tail -n +3
+    tail -n +3 "$summary_file"
     echo '```'
 
     echo
     echo '## Description'
-    az boards work-item show --id "$id" -o json \
-      | jq -r '.fields."System.Description" // ""' \
-      | html2md
+    jq -r '.fields."System.Description" // ""' <"$json_file" | html2md
 
     echo
     echo '## Comments'
-    az devops invoke \
-      --area wit --resource comments \
-      --route-parameters project="$project" workItemId="$id" \
-      --api-version 7.1-preview -o json 2>/dev/null \
+    cat "$comments_file" \
       | jq -r '.comments[] | "\u0001\(.createdBy.displayName)\t\(.createdDate)\t\(.text)"' \
       | while IFS=$'\t' read -r who when text; do
           who=${who#$'\001'}
@@ -349,6 +372,8 @@ _devops_show() {
           printf '%s\n' "$text" | html2md
         done
   } | bat -l md --style=plain --paging=never
+
+  rm -f "$summary_file" "$json_file" "$comments_file"
 }
 
 _devops_open() {
@@ -373,13 +398,13 @@ _devops_edit() {
   # then the description. The HTML-comment marker is purely a hint for the
   # user; the parser only keys off blank lines and '<!--' prefixes.
   tmp=$(mktemp -t devops.XXXXXX).md
-  title_before=$(az boards work-item show --id "$id" -o json \
-    | jq -r '.fields."System.Title" // ""')
+  local item_json desc_before
+  item_json=$(az boards work-item show --id "$id" -o json)
+  title_before=$(printf '%s' "$item_json" | jq -r '.fields."System.Title" // ""')
+  desc_before=$(printf '%s' "$item_json" | jq -r '.fields."System.Description" // ""')
   {
     printf '%s\n\n<!-- First line above is the title. Everything below this comment is the description (markdown). -->\n' "$title_before"
-    az boards work-item show --id "$id" -o json \
-      | jq -r '.fields."System.Description" // ""' \
-      | _devops_decode_entities
+    printf '%s' "$desc_before" | _devops_decode_entities
   } > "$tmp"
 
   before_hash=$(shasum "$tmp" | awk '{print $1}')
