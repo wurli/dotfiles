@@ -6,13 +6,19 @@ return {
 		formatters_by_ft = {
 			lua = { "stylua" },
 			python = { "ruff_format" },
-			rust = { "rustfmt", lsp_format = "fallback" },
+			rust = { "rustfmt" },
 			r = { "air", lsp_format = "fallback" },
 			markdown = { "injected" },
 		},
 		format_on_save = {
 			lsp_format = "fallback",
 			timeout_ms = 500,
+		},
+		formatters = {
+			rustfmt = {
+				commant = "rustfmt",
+				args = { "--edition", "2024" },
+			},
 		},
 	},
 	keys = {
