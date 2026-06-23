@@ -54,10 +54,9 @@ vim.api.nvim_create_user_command("Positron", function()
 	})
 end, { desc = "Open current file in Positron" })
 
----@param create? boolean
----@param now? integer
 ---@param dir? "work-notes" | "personal-notes"
-local open_daily_note = function(create, now, dir)
+---@return string
+local resolve_notes_dir = function(dir)
 	local selected_dir = dir and vim.fn.expand("~/Repos/") .. dir
 	local cur_notes_dir = (vim.fn.getcwd():find("notes") ~= nil) and vim.fn.getcwd()
 	local is_work_pc = vim.fn.getenv("USER") == "JACOB.SCOTT1"
@@ -67,11 +66,17 @@ local open_daily_note = function(create, now, dir)
 	--     2. Current dir if it contains "notes"
 	--     3. Default: work dir if on work PC, personal dir otherwise
 	local notes_dir = selected_dir or cur_notes_dir or default_dir
+	return notes_dir
+end
 
+---@param create? boolean
+---@param now? integer
+---@param dir? "work-notes" | "personal-notes"
+local open_daily_note = function(create, now, dir)
 	local time = now or vim.fn.localtime()
 	-- Date included in 2 formats for easier fuzzy finding
 	local filename = vim.fn.strftime("%Y-%m-%d %a, %d %b.md", time or vim.fn.localtime())
-	local path = notes_dir .. "/" .. filename
+	local path = resolve_notes_dir(dir) .. "/" .. filename
 
 	if vim.fn.findfile(path) == "" and create then
 		local file_io = io.open(path, "w")
@@ -84,16 +89,41 @@ local open_daily_note = function(create, now, dir)
 	end
 
 	if vim.fn.findfile(path) ~= "" then
-		vim.cmd("edit " .. path)
+		vim.cmd.edit(path)
 	else
 		print(("File `%s` does not exist."):format(path))
 	end
 end
 
+---@param dir? "work-notes" | "personal-notes"
+local open_last_note = function(dir)
+	local note = vim.fs.find(function(file)
+		return file:match("^%d%d%d%d%-%d%d%-%d%d.*%.md$")
+	end, {
+		path = resolve_notes_dir(dir),
+		type = "file",
+		limit = 1,
+		reverse = true,
+	})[1]
+
+	if not note then
+		vim.notify("No notes found in " .. resolve_notes_dir(dir))
+		return
+	end
+
+	vim.cmd.edit(note)
+end
+
 vim.api.nvim_create_user_command("Note", function(opts)
-	local n = tonumber(opts.fargs[1]) or 0
-	open_daily_note(n == 0, vim.fn.localtime() + n * 24 * 60 * 60)
-end, { nargs = "?", desc = "Open daily note. Pass -1 for yesterday's note" })
+	local n = tonumber(opts.fargs[1])
+
+	if n == 0 then
+		open_last_note()
+	else
+		n = n or 0
+		open_daily_note(n == 0, vim.fn.localtime() + n * 24 * 60 * 60)
+	end
+end, { nargs = "?", desc = "Open daily note. Pass -1 for yesterday's note, 0 for latest note." })
 
 vim.api.nvim_create_user_command("ToggleColours", function()
 	local cur_colorschema = vim.trim(vim.fn.execute("colorscheme"))
