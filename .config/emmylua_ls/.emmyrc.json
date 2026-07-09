@@ -1,0 +1,18 @@
+{
+	"runtime": {
+		"version": "LuaJIT",
+		"requirePattern": [
+			"?/init.lua",
+			"?.lua"
+		]
+	},
+	"workspace": {
+		"library": [
+			"$VIMRUNTIME",
+			"~/Repos/jet/lua/"
+		],
+		"packages": [
+			"$HOME/.local/share/nvim/lazy"
+		]
+	}
+}

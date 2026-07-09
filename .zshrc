@@ -3,6 +3,7 @@
 export XDG_CONFIG_HOME="$HOME/.config"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+export EMMYLUALS_CONFIG="$HOME/.config/emmylua_ls/.emmyrc.json"
 
 if [[ -n "$TMUX" ]]; then
     export TERM=tmux-256color
@@ -15,7 +16,7 @@ export HISTSIZE=10000 # Default 1000 lines isn't enough
 if [[ -z EDITOR ]]; then
 	export EDITOR=nvim
 fi
-export JUPYTER_PATH=$HOME/Repos/jet
+# export JUPYTER_PATH=$HOME/Repos/jet
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Adjust path
