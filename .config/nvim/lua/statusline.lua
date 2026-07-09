@@ -126,15 +126,6 @@ local git_component = function()
 	return component
 end
 
----@return string?
-local dap_component = function()
-	if not package.loaded["dap"] or require("dap").status() == "" then
-		return
-	end
-
-	return string.format("%%#%s#%s  %s", "Special", icons.misc.bug.symbol, require("dap").status())
-end
-
 ---@type table<string, string?>
 local progress_status = {
 	client = nil,
@@ -152,11 +143,14 @@ vim.api.nvim_create_autocmd("LspProgress", {
 			return
 		end
 
-		progress_status = {
-			client = vim.lsp.get_client_by_id(args.data.client_id).name,
-			kind = args.data.params.value.kind,
-			title = args.data.params.value.title,
-		}
+		local client = vim.lsp.get_client_by_id(args.data.client_id)
+		if client then
+			progress_status = {
+				client = client.name,
+				kind = args.data.params.value.kind,
+				title = args.data.params.value.title,
+			}
+		end
 
 		if progress_status.kind == "end" then
 			progress_status.title = nil
@@ -239,7 +233,7 @@ local file_component = function()
 		display_name = hl.Directory(buf_head .. "/") .. buf_tail_pretty
 	end
 
-	if buftype == "terminal" then
+	if buftype == "terminal" and display_name then
 		if display_name:match("zsh") then
 			icon = icons.misc.terminal.symbol
 			icon_hl = icons.misc.terminal.group
@@ -324,7 +318,7 @@ return {
 			"%<", -- Don't truncate the mode component
 			lpad(" ", file_component()),
 			lpad(" ", modified_component()),
-			lpad("  ", dap_component() or lsp_progress_component()),
+			lpad("  ", lsp_progress_component()),
 			"%=",
 			rpad(" ", diagnostic_component()),
 			rpad(" ", vim.bo.filetype == "markdown" and wordcount_component()),
