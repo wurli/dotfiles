@@ -287,12 +287,45 @@ local position_component = function()
 	return hl.StatusLineInverted(" %2l:%-2c ")
 end
 
+local jet_runtime_text = ""
+local jet_timer = nil ---@type uv.uv_timer_t?
+
 ---@return string?
 local jet_component = function()
 	local state = vim.b.jet and vim.b.jet.execution_state
-	if state and state ~= "idle" then
+	local start = vim.b.jet and vim.b.jet.curr_execution_start_time
+	state = state or "idle"
+	if state == "idle" then
+		---@diagnostic disable-next-line: unnecessary-if
+		if jet_timer then
+			jet_timer:stop()
+		end
+		return
+	end
+
+	if state == "busy" then
+		jet_timer = jet_timer or vim.uv.new_timer() --[[@as uv.uv_timer_t]]
+		local set_elapsed = vim.schedule_wrap(function()
+			local elapsed = os.time() - start
+			if elapsed < 30 then
+				jet_runtime_text = ""
+			else
+				local hrs, mins, secs = math.floor(elapsed / 3600), math.floor((elapsed % 3600) / 60), elapsed % 60
+				if hrs > 0 then
+					jet_runtime_text = hl.StatusLineDim(string.format("(%02.f:%02.f:%02.f) ", hrs, mins, secs))
+				else
+					jet_runtime_text = hl.StatusLineDim(string.format("(%02.f:%02.f) ", mins, secs))
+				end
+			end
+			vim.api.nvim__redraw({ statusline = true })
+		end)
+		-- Setting 'timeout' to non-0 seems to have weird unpredictable
+		-- behaviour, so just set check for elapsed time>=30 in the callback
+		-- itself.
+		jet_timer:start(0, 1000, set_elapsed)
 		local icon = icons.misc.working
-		return hl[icon.group](icon.symbol) .. " "
+		local icon_text = hl[icon.group](icon.symbol) .. " "
+		return jet_runtime_text .. icon_text
 	end
 end
 
@@ -310,7 +343,11 @@ return {
 		local win_is_active = tonumber(vim.g.actual_curwin) == vim.api.nvim_get_current_win()
 
 		if not win_is_active then
-			return lpad(" ", file_component())
+			return table.concat({
+				lpad(" ", file_component()),
+				"%=",
+				rpad(" ", jet_component()),
+			})
 		end
 
 		return table.concat({
