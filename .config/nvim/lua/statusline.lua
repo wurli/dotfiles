@@ -217,6 +217,11 @@ local file_component = function()
 	local icon = (icons.ft[ft] or {}).symbol
 	local icon_hl = (icons.ft[ft] or {}).group
 
+	if vim.b.jet then
+		icon = icons.misc.plane.symbol
+		icon_hl = icons.misc.plane.group
+	end
+
 	if not icon then
 		icon, icon_hl = devicons.get_icon(buf_tail, buf_ext)
 	end
@@ -288,6 +293,15 @@ local position_component = function()
 	return hl.StatusLineInverted(" %2l:%-2c ")
 end
 
+---@return string?
+local jet_component = function()
+	local state = vim.b.jet and vim.b.jet.execution_state
+	if state and state ~= "idle" then
+		local icon = icons.misc.working
+		return hl[icon.group](icon.symbol) .. " "
+	end
+end
+
 local lpad = function(pad, x)
 	return x and pad .. x or ""
 end
@@ -314,6 +328,7 @@ return {
 			"%=",
 			rpad(" ", diagnostic_component()),
 			rpad(" ", vim.bo.filetype == "markdown" and wordcount_component()),
+			rpad(" ", jet_component()),
 			rpad(" ", git_component()),
 			position_component(),
 		})

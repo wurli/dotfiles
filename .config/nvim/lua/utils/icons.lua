@@ -74,6 +74,8 @@ local compile_icons = function()
 		toolbox             = { symbol = "󰦬",                    group = "IconMiscToolbox",           hl = { fg = hl("Special").fg } },
 		vertical_bar        = { symbol = "│",                    group = "IconMiscVerticalBar",       hl = { fg = hl("Special").fg } },
 		lsp                 = { symbol = "󱑟",                    group = "IconMiscLsp",               hl = { fg = hl("Special").fg } },
+		working             = { symbol = "󰪥",                    group = "IconMiscWorking",           hl = { fg = hl("Special").fg } },
+		plane               = { symbol = "󰀝",                    group = "IconMiscPlane",             hl = { fg = hl("Comment").fg } },
 	}
 
 
