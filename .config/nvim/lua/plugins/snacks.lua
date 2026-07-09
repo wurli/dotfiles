@@ -205,6 +205,15 @@ return {
 		},
 
 		{
+			"<leader>fj",
+			pick_files({
+				cwd = "~/.local/share/jet",
+				sort = { fields = { "file:desc" } },
+				exclude = { "connection" },
+			}),
+		},
+
+		{
 			"<leader>fB",
 			pick("grep", {
 				title = "Grep Bible",
