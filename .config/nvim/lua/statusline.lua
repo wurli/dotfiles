@@ -292,6 +292,7 @@ local jet_timer = nil ---@type uv.uv_timer_t?
 
 ---@return string?
 local jet_component = function()
+	local buf = vim.api.nvim_get_current_buf()
 	local state = vim.b.jet and vim.b.jet.execution_state
 	local start = vim.b.jet and vim.b.jet.curr_execution_start_time
 	state = state or "idle"
@@ -303,11 +304,14 @@ local jet_component = function()
 		return
 	end
 
+	-- Don't show the timer before 30 seconds have elapsed
+	local timer_delay = 30
+
 	if state == "busy" then
 		jet_timer = jet_timer or vim.uv.new_timer() --[[@as uv.uv_timer_t]]
 		local set_elapsed = vim.schedule_wrap(function()
 			local elapsed = os.time() - start
-			if elapsed < 30 then
+			if elapsed < timer_delay then
 				jet_runtime_text = ""
 			else
 				local hrs, mins, secs = math.floor(elapsed / 3600), math.floor((elapsed % 3600) / 60), elapsed % 60
@@ -317,7 +321,8 @@ local jet_component = function()
 					jet_runtime_text = hl.StatusLineDim(string.format("(%02.f:%02.f) ", mins, secs))
 				end
 			end
-			vim.api.nvim__redraw({ statusline = true })
+			-- Note: without `cursor = true` other terminal buffers start doing weird things.
+			vim.api.nvim__redraw({ buf = buf, statusline = true, flush = true, cursor = true })
 		end)
 		-- Setting 'timeout' to non-0 seems to have weird unpredictable
 		-- behaviour, so just set check for elapsed time>=30 in the callback
