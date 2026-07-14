@@ -26,12 +26,12 @@ vim.opt.softtabstop = 4
 vim.opt.splitright = true
 vim.opt.statusline = "%{%v:lua.require'statusline'.render()%}"
 vim.opt.tabline = "%{%v:lua.require'tabline'.render()%}"
+vim.opt.signcolumn = "yes:1"
 vim.opt.swapfile = false
 vim.opt.tabstop = 4
 vim.opt.timeoutlen = 300
 vim.opt.updatetime = 250
 vim.opt.winborder = "rounded"
-vim.opt.signcolumn = "yes:1"
 
 -- Scheduling as this can impact startup time
 vim.schedule(function()
