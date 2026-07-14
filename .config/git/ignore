@@ -1,3 +1,5 @@
 **/.DS_Store
 .config/uv/
 **/.claude/settings.local.json
+
+**/.claude/.cc-writes/
