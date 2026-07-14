@@ -49,6 +49,14 @@ vim.api.nvim_create_autocmd("User", {
 	command = "tabclose",
 })
 
+vim.api.nvim_create_autocmd("User", {
+	pattern = "FugitiveChanged",
+	group = vim.api.nvim_create_augroup("custom-fugitive", { clear = true }),
+	callback = function()
+		require("gitsigns").refresh()
+	end,
+})
+
 return {
 	{
 		"tpope/vim-fugitive",
