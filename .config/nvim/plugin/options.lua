@@ -31,6 +31,7 @@ vim.opt.tabstop = 4
 vim.opt.timeoutlen = 300
 vim.opt.updatetime = 250
 vim.opt.winborder = "rounded"
+vim.opt.signcolumn = "yes:1"
 
 -- Scheduling as this can impact startup time
 vim.schedule(function()
