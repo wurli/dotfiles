@@ -3,8 +3,6 @@
 export XDG_CONFIG_HOME="$HOME/.config"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-export EMMYLUALS_CONFIG="$HOME/.config/emmylua_ls/.emmyrc.json"
-
 if [[ -n "$TMUX" ]]; then
     export TERM=tmux-256color
 else
