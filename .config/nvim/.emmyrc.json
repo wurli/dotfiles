@@ -9,7 +9,8 @@
 	"workspace": {
 		"library": [
 			"$VIMRUNTIME",
-			"$HOME/Repos/jet.nvim/lua"
+			"$HOME/Repos/jet.nvim/lua",
+			"$HOME/Repos/jet.ark/lua"
 		],
 		"packages": [
 			"$HOME/.local/share/nvim/lazy"
