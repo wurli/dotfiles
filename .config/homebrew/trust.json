@@ -1,0 +1,5 @@
+{
+  "trustedformulae": [
+    "axodotdev/tap/cargo-dist"
+  ]
+}
