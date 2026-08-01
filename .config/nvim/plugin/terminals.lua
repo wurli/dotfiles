@@ -64,12 +64,12 @@ local make_python_opts = function()
 	return opts
 end
 
-vim.keymap.set(
-	"n",
-	"<leader><leader>p",
-	term.make_toggler(make_python_cmd, { name = "python", job_opts = make_python_opts }),
-	{ desc = "Start IPython" }
-)
+-- vim.keymap.set(
+-- 	"n",
+-- 	"<leader><leader>p",
+-- 	term.make_toggler(make_python_cmd, { name = "python", job_opts = make_python_opts }),
+-- 	{ desc = "Start IPython" }
+-- )
 
 -----------------
 -- Claude Code --

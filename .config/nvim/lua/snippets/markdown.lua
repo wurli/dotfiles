@@ -30,27 +30,32 @@ local ms = ls.multi_snippet
 local k = require("luasnip.nodes.key_indexer").new_key
 
 ls.add_snippets("markdown", {
-    s("codeblock-static", fmta(
-        [[
+	s(
+		"codeblock-static",
+		fmta(
+			[[
         ``` <language>
         <code>
         ```
         ]],
-        {
-            language = i(1, "language"),
-            code = i(2, ""),
-        }
-    )),
-    s("codeblock-runnable", fmta(
-        [[
+			{
+				language = i(1, "language"),
+				code = i(2, ""),
+			}
+		)
+	),
+	s(
+		"codeblock-runnable",
+		fmta(
+			[[
         ``` {<language>}
         <code>
         ```
         ]],
-        {
-            language = i(1, "language"),
-            code = i(2, ""),
-        }
-    ))
+			{
+				language = i(1, "language"),
+				code = i(2, ""),
+			}
+		)
+	),
 })
-

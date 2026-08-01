@@ -1,21 +1,21 @@
 return {
 	-- LSP Configuration & Plugins
-	{
-		-- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
-		-- used for completion, annotations and signatures of Neovim apis
-		"folke/lazydev.nvim",
-		cond = not vim.g.vscode,
-		ft = "lua",
-		opts = {
-			library = {
-				-- Load luvit types when the `vim.uv` word is found
-				{ path = "luvit-meta/library", words = { "vim%.uv" } },
-				{ path = "snacks.nvim", words = { "Snacks" } },
-				-- https://github.com/rnwst/pandoc-lua-types
-				{ path = "~/Repos/pandoc-lua-types", words = { "pandoc%." } },
-			},
-		},
-	},
+	-- {
+	-- 	-- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
+	-- 	-- used for completion, annotations and signatures of Neovim apis
+	-- 	"folke/lazydev.nvim",
+	-- 	cond = not vim.g.vscode,
+	-- 	ft = "lua",
+	-- 	opts = {
+	-- 		library = {
+	-- 			-- Load luvit types when the `vim.uv` word is found
+	-- 			{ path = "luvit-meta/library", words = { "vim%.uv" } },
+	-- 			{ path = "snacks.nvim", words = { "Snacks" } },
+	-- 			-- https://github.com/rnwst/pandoc-lua-types
+	-- 			{ path = "~/Repos/pandoc-lua-types", words = { "pandoc%." } },
+	-- 		},
+	-- 	},
+	-- },
 	{
 		"Bilal2453/luvit-meta",
 		cond = not vim.g.vscode,
@@ -154,7 +154,8 @@ return {
 			local server_configs = {
 				air = {},
 				ty = {
-					cmd = { "ty", "server" },
+					-- Run ty using uv so we pick up the correct ty version per-project.
+					cmd = { "uv", "run", "ty", "server" },
 					filetypes = { "python" },
 					root_dir = vim.fs.root(0, { "pyproject.toml", ".git/" }),
 					settings = {
@@ -166,31 +167,9 @@ return {
 						},
 					},
 				},
-				-- basedpyright = {
-				-- 	settings = {
-				-- 		python = {
-				-- 			venvPath = ".",
-				-- 			venv = ".venv",
-				-- 		},
-				-- 		basedpyright = {
-				-- 			disableOrganizeImports = true,
-				-- 			analysis = {
-				-- 				-- stubPath = vim.fn.stdpath("config") .. "/misc/python-typings",
-				-- 				-- Why doesn't this do anything?
-				-- 				-- https://docs.basedpyright.com/latest/configuration/language-server-settings/#discouraged-settings
-				-- 				typeCheckingMode = "standard",
-				-- 				-- This doesn't seem to have any effect. Would be nice it did though,
-				-- 				-- as this rule duplicates a diagnostic from Ruff.
-				-- 				diagnosticSeverityOverrides = {
-				-- 					reportUnusedImport = "none",
-				-- 					reportUnknownVariableType = "none",
-				-- 				},
-				-- 			},
-				-- 		},
-				-- 	},
-				-- },
 				tombi = {},
 				ruff = {
+					cmd = { "uv", "run", "ruff", "server" },
 					capabilities = {
 						hoverProvider = false,
 					},

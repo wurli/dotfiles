@@ -16,7 +16,7 @@ return {
 		},
 		formatters = {
 			rustfmt = {
-				commant = "rustfmt",
+				command = "rustfmt",
 				args = { "--edition", "2024" },
 			},
 		},

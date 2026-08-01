@@ -30,8 +30,10 @@ local ms = ls.multi_snippet
 local k = require("luasnip.nodes.key_indexer").new_key
 
 ls.add_snippets("r", {
-    s("shinymodule", fmta(
-        [[
+	s(
+		"shinymodule",
+		fmta(
+			[[
         <name>UI <<- function(id) {
           ns <<- NS(id)
           tagList(
@@ -47,17 +49,20 @@ ls.add_snippets("r", {
 
         ]],
 
-        {
-            name = i(1, "name"),
-            ui = i(2, "# UI"),
-            server = i(3, "# Server")
-        },
+			{
+				name = i(1, "name"),
+				ui = i(2, "# UI"),
+				server = i(3, "# Server"),
+			},
 
-        { repeat_duplicates = true }
-    )),
+			{ repeat_duplicates = true }
+		)
+	),
 
-    s("shinyapp", fmta(
-        [[
+	s(
+		"shinyapp",
+		fmta(
+			[[
         library(shiny)
 
         ui <<- fluidPage(
@@ -72,9 +77,10 @@ ls.add_snippets("r", {
 
         ]],
 
-        {
-            ui = i(1, "# UI"),
-            server = i(2, "# Server")
-        }
-    ))
+			{
+				ui = i(1, "# UI"),
+				server = i(2, "# Server"),
+			}
+		)
+	),
 })
