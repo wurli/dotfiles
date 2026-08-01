@@ -68,7 +68,7 @@ source <(fzf --zsh)
 export MANPAGER='nvim +Man!'
 
 # uv install settings (only needed on work machine)
-export UV_NATIVE_TLS=true
+export UV_SYSTEM_CERTS=true
 
 # For Claude Code
 export ENABLE_LSP_TOOL=1
@@ -283,3 +283,5 @@ source ~/.zprofile
 
 # Load Angular CLI autocompletion.
 source <(ng completion script)
+
+. "$HOME/.local/bin/env"
