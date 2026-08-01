@@ -322,7 +322,9 @@ local jet_component = function()
 				end
 			end
 			-- Note: without `cursor = true` other terminal buffers start doing weird things.
-			vim.api.nvim__redraw({ buf = buf, statusline = true, flush = true, cursor = true })
+			if vim.api.nvim_buf_is_valid(buf) then
+				vim.api.nvim__redraw({ buf = buf, statusline = true, flush = true, cursor = true })
+			end
 		end)
 		-- Setting 'timeout' to non-0 seems to have weird unpredictable
 		-- behaviour, so just set check for elapsed time>=30 in the callback
