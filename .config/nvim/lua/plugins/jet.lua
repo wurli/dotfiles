@@ -120,18 +120,23 @@ return {
 							end
 						end,
 					},
-					-- on_message = {
-					-- 	---@param k jet.kernel
-					-- 	---@param msg jet.jupyter.msg
-					-- 	function(k, msg)
-					-- 		vim.print({
-					-- 			kernel = k.spec.display_name,
-					-- 			msg = msg,
-					-- 		})
-					-- 	end,
-					-- },
+					on_message_received = {
+						---@param k jet.kernel
+						---@param msg jet.jupyter.msg
+						function(k, msg)
+							---@diagnostic disable-next-line: unnecessary-if
+							if _G.jet_print then
+								---@diagnostic disable-next-line: inject-field
+								msg.kernel = k.spec.display_name
+								vim.print(msg)
+							end
+						end,
+					},
 				},
 			})
+
+			---@diagnostic disable-next-line: global-in-non-module
+			_G.jet_print = false
 
 			require("jet.core.send.get_code").filetype.python = { get_expr = get_python_expr }
 			vim.keymap.set({ "n", "v" }, "<enter>", function()
