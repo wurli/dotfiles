@@ -5,6 +5,7 @@ c = get_config()  # noqa: F821
 
 try:
     from IPython.core import ultratb
+
     ultratb.VerboseTB.tb_highlight_style = "monokai"
     ultratb.VerboseTB.tb_highlight = "bg:#3d0e0e"
 except Exception:
@@ -28,3 +29,9 @@ class MyPrompt(Prompts):
 
 
 c.TerminalInteractiveShell.prompts_class = MyPrompt
+
+# Causes completion engine to fall back to python 'live'
+# completion, which has less overlap than other LSPs and is
+# thus much more useful when combined with other LSP
+# servers, e.g. when using Jet
+c.IPCompleter.use_jedi = False
