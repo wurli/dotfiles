@@ -24,9 +24,48 @@ return {
 				["<C-l>"] = { "snippet_forward", "fallback" },
 				["<C-h>"] = { "snippet_backward", "fallback" },
 			},
+			fuzzy = {
+				sorts = {
+					function(a, b)
+						if (a.client_name == nil or b.client_name == nil) or (a.client_name == b.client_name) then
+							return
+						end
+						return b.client_name:sub(1, 4) == "jet_"
+					end,
+					"score",
+					"sort_text",
+				},
+			},
 			completion = {
 				list = {
 					selection = { preselect = false, auto_insert = false },
+				},
+				menu = {
+					draw = {
+						treesitter = { "lsp" },
+						columns = {
+							{ "kind_icon" },
+							{ "label", "label_description", gap = 1 },
+							{ "src" },
+						},
+						components = {
+							src = {
+								width = { max = 8 },
+								text = function(ctx)
+									-- vim.print(ctx)
+									if ctx.item.client_name then
+										if ctx.item.client_name:sub(1, 4) == "jet_" then
+											return "jet"
+										else
+											return ctx.item.client_name
+										end
+									end
+									return ctx.item.source_id
+								end,
+								highlight = "BlinkCmpSource",
+							},
+						},
+					},
 				},
 			},
 			cmdline = {
@@ -61,30 +100,6 @@ return {
 						},
 					},
 				},
-				-- providers = {
-				--     cmp_r = {
-				--         name = "cmp_r",
-				--         module = "blink.compat.source",
-				--         opts = {}
-				--     }
-				-- }
-			},
-			fuzzy = {
-				-- Always prioritise snippets if available
-				-- sorts = {
-				--     function(a, b)
-				--         if a.source_id == "snippets" and b.source_id ~= "snippets" then
-				--             -- prioritise a
-				--             return true
-				--         elseif a.source_id ~= "snippets" and b.source_id == "snippets" then
-				--             -- prioritise b
-				--             return false
-				--         else
-				--             -- fallback to default
-				--             return nil
-				--         end
-				--     end
-				-- }
 			},
 		},
 		-- allows extending the providers array elsewhere in your config
