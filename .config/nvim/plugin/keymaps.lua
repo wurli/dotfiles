@@ -2,6 +2,26 @@ local map = vim.keymap.set
 
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 
+map("n", "<leader>p", function()
+	local osa_cmd = [[osascript -e 'the clipboard as «class HTML»' | sed 's/«data HTML//; s/»//'  | xxd -r -p]]
+	local html = vim.system({ "sh", "-c", osa_cmd }):wait().stdout
+
+	if not html or html == "" then
+		vim.api.nvim_feedkeys("p", "n", false)
+		return
+	end
+
+	local pandoc_cmd = { "pandoc", "-f", "html-native_divs-native_spans", "-t", "gfm+pipe_tables" }
+	local markdown = vim.system(pandoc_cmd, { stdin = html }):wait().stdout
+
+	if not markdown or markdown == "" then
+		vim.api.nvim_feedkeys("p", "n", false)
+		return
+	end
+
+	vim.api.nvim_put(vim.split(markdown, "\n"), "l", true, true)
+end, { desc = "Paste from clipboard as markdown" })
+
 -- Use a vertical split instead of the default horizontal split for <c-w><c-f>
 map("n", "<c-w><c-f>", [[:vsplit<cr>gF]], { desc = "Open file under cursor" })
 
