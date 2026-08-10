@@ -43,7 +43,9 @@ _devops_team_area() {
   # Team's default area path (full form, with project prefix). Cached per
   # process — WIQL queries use this to keep result counts under the 20k cap.
   [[ -n "$_DEVOPS_TEAM_AREA" ]] && { printf '%s\n' "$_DEVOPS_TEAM_AREA"; return; }
-  _DEVOPS_TEAM_AREA=$(az boards area team list --team "$DEVOPS_TEAM" -o json 2>/dev/null \
+  local project
+  IFS=$'\t' read -r _ project < <(_devops_defaults)
+  _DEVOPS_TEAM_AREA=$(az boards area team list --team "$DEVOPS_TEAM" --project "$project" -o json 2>/dev/null \
     | jq -r '.defaultValue // empty')
   printf '%s\n' "$_DEVOPS_TEAM_AREA"
 }
@@ -229,7 +231,7 @@ _devops_print_filters() {
   fi
   if [[ -z "$f_iter" || "$f_iter" == "current" ]]; then
     current_file=$(mktemp -t devops-iter.XXXXXX)
-    az boards iteration team list --team "$DEVOPS_TEAM" --timeframe current -o json >"$current_file" 2>/dev/null &
+    az boards iteration team list --team "$DEVOPS_TEAM" --project "$project" --timeframe current -o json >"$current_file" 2>/dev/null &
   fi
 
   printf 'project:   %s\n' "${project}"
@@ -333,7 +335,7 @@ _devops_iterations() {
   [[ -n "$_DEVOPS_ITERATIONS" ]] && { printf '%s\n' "$_DEVOPS_ITERATIONS"; return; }
   local project
   IFS=$'\t' read -r _ project < <(_devops_defaults)
-  _DEVOPS_ITERATIONS=$(az boards iteration project list --depth 10 -o json 2>/dev/null \
+  _DEVOPS_ITERATIONS=$(az boards iteration project list --project "$project" --depth 10 -o json 2>/dev/null \
     | jq -r --arg p "$project" '
         .. | objects | select(.path? and (.hasChildren // false) == false)
         | .path | sub("^\\\\" + $p + "\\\\Iteration\\\\"; $p + "\\")
@@ -679,7 +681,9 @@ _devops_new() {
     parent_iter=$(az boards work-item show --id "$parent_id" -o json 2>/dev/null \
       | jq -r '.fields."System.IterationPath" // empty')
   fi
-  current_iter=$(az boards iteration team list --team "$team" --timeframe current -o json 2>/dev/null \
+  local new_project
+  IFS=$'\t' read -r _ new_project < <(_devops_defaults)
+  current_iter=$(az boards iteration team list --team "$team" --project "$new_project" --timeframe current -o json 2>/dev/null \
     | jq -r '.[0].path // empty')
   iter_paths=$(_devops_iterations)
   if [[ -n "$iter_paths" ]]; then
