@@ -86,6 +86,7 @@ terms.make_toggler = function(cmd, opts)
 				vim.tbl_extend("force", {
 					detach = 1,
 					term = true,
+					env = { VIMRUNTIME = vim.env.VIMRUNTIME },
 				}, opts1 or {})
 			)
 			if name then
