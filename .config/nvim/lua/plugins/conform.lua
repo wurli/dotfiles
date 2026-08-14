@@ -1,3 +1,6 @@
+-- For autocomplete
+_G.conform_off = false
+
 return {
 	"stevearc/conform.nvim",
 	lazy = false,
@@ -10,10 +13,15 @@ return {
 			r = { "air", lsp_format = "fallback" },
 			markdown = { "injected" },
 		},
-		format_on_save = {
-			lsp_format = "fallback",
-			timeout_ms = 500,
-		},
+		format_on_save = function(buf)
+			if not _G.conform_off then
+				require("conform").format({
+					bufnr = buf,
+					lsp_format = "fallback",
+					timeout_ms = 500,
+				})
+			end
+		end,
 		formatters = {
 			rustfmt = {
 				command = "rustfmt",
