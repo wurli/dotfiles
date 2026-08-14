@@ -97,21 +97,19 @@ end
 
 ---@param dir? "work-notes" | "personal-notes"
 local open_last_note = function(dir)
-	local note = vim.fs.find(function(file)
+	local is_daily_note = function(file)
 		return file:match("^%d%d%d%d%-%d%d%-%d%d.*%.md$")
-	end, {
-		path = resolve_notes_dir(dir),
-		type = "file",
-		limit = 1,
-		reverse = true,
-	})[1]
-
-	if not note then
-		vim.notify("No notes found in " .. resolve_notes_dir(dir))
-		return
 	end
+	local notes_dir = resolve_notes_dir(dir)
+	local notes = vim.fs.find(is_daily_note, { path = notes_dir, type = "file", limit = math.huge })
+	local note = notes[#notes]
 
-	vim.cmd.edit(note)
+	---@diagnostic disable-next-line: unnecessary-if
+	if note then
+		vim.cmd.edit(note)
+	else
+		vim.notify("No notes found in " .. notes_dir)
+	end
 end
 
 vim.api.nvim_create_user_command("Note", function(opts)
