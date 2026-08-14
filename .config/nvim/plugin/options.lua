@@ -4,7 +4,6 @@ vim.opt.breakindent = true
 vim.opt.colorcolumn = { 80, 120 }
 vim.opt.confirm = true
 vim.opt.cursorline = true
--- vim.opt.expandtab      = true
 vim.opt.ignorecase = true
 vim.opt.inccommand = "split"
 vim.opt.incsearch = true
