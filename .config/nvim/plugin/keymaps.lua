@@ -30,7 +30,7 @@ map("n", "!", function()
 end, { desc = "Enter command mode" })
 
 local cur_file = function()
-	local file = vim.fn.expand("%")
+	local file = vim.fn.expand("%") --[[@as string]]
 	local cwd = vim.fn.getcwd() .. "/"
 
 	if file:find(cwd, 1, true) == 1 then
@@ -63,10 +63,10 @@ map("v", "<leader>yp", function()
 end, { desc = "Yank the current file path" })
 
 -- g?: Web search
-vim.keymap.set("n", "g?", function()
+map("n", "g?", function()
 	vim.ui.open(("https://google.com/search?q=%s"):format(vim.fn.expand("<cword>")))
 end)
-vim.keymap.set("x", "g?", function()
+map("x", "g?", function()
 	vim.ui.open(
 		("https://google.com/search?q=%s"):format(
 			vim.trim(
@@ -131,54 +131,29 @@ map("n", "<C-l>", "<C-w><C-l>", { desc = "Window navigate right" })
 map("n", "<leader>x", "<cmd>.lua<CR>", { desc = "Execute the current line" })
 map("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "Execute the current file" })
 
--- Reindent on paste; use leader to not indent
--- map({ "n", "v" }, "p",         "p`[=`]", { desc = "Reindent on paste" })
--- map({ "n", "v" }, "P",         "P`[=`]", { desc = "Reindent on paste" })
--- map({ "n", "v" }, "<leader>p", "p",      { desc = "Normal paste"      })
--- map({ "n", "v" }, "<leader>P", "P",      { desc = "Normal paste"      })
-
 -- Delete without adding to register
 map({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete into empty register" })
 
--- These mappings control the size of splits (height/width)
+-- Resize splits (height/width)
 map("n", "<M-,>", "<c-w>5<", { desc = "Descrease split width" })
 map("n", "<M-.>", "<c-w>5>", { desc = "Increase split width" })
 map("n", "<M-;>", "<C-W>-", { desc = "Decrease split height" })
 map("n", "<M-'>", "<C-W>+", { desc = "Increase split height" })
 
--- Move line down
-map("n", "<M-j>", function()
-	if vim.opt.diff:get() then
-		vim.cmd("normal! ]c]")
-	elseif vim.fn.mode() == "v" or vim.fn.mode() == "V" then
-		-- vim.cmd("m .-2<CR>==")
-	else
-		vim.cmd("m .+1<CR>==")
-	end
-end, { desc = "Move line down" })
-
--- Move line up
-map("n", "<M-k>", function()
-	if vim.opt.diff:get() then
-		vim.cmd("normal! [c]")
-	elseif vim.fn.mode() == "v" or vim.fn.mode() == "V" then
-		-- vim.cmd("m .-2<CR>==")
-	else
-		vim.cmd("m .-2<CR>==")
-	end
-end, { desc = "Move line up" })
-
-map("v", "<M-j>", ":m '>+1<CR>gv=gv", { desc = "Move selected lines down" })
-map("v", "<M-k>", ":m '<-2<CR>gv=gv", { desc = "Move selected lines up" })
+-- Move line(s)
+map("n", "<M-j>", ":m .+1<CR>", { desc = "Move line down" })
+map("n", "<M-k>", ":m .-2<CR>", { desc = "Move line up" })
+map("v", "<M-j>", ":m '>+1<CR>gv", { desc = "Move selected lines down" })
+map("v", "<M-k>", ":m '<-2<CR>gv", { desc = "Move selected lines up" })
 
 -- Workaround for meta-key limitations in terminal emulators
 map({ "i", "n", "c", "v", "t" }, "<M-3>", "#", { noremap = true, desc = "Insert #" })
 
-vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
-vim.keymap.set("n", "<M-u>", "<cmd>silent !tmux neww tmux-sessionizer -s 0<CR>")
-vim.keymap.set("n", "<M-i>", "<cmd>silent !tmux neww tmux-sessionizer -s 1<CR>")
-vim.keymap.set("n", "<M-o>", "<cmd>silent !tmux neww tmux-sessionizer -s 2<CR>")
-vim.keymap.set("n", "<M-p>", "<cmd>silent !tmux neww tmux-sessionizer -s 3<CR>")
+map("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
+map("n", "<M-u>", "<cmd>silent !tmux neww tmux-sessionizer -s 0<CR>")
+map("n", "<M-i>", "<cmd>silent !tmux neww tmux-sessionizer -s 1<CR>")
+map("n", "<M-o>", "<cmd>silent !tmux neww tmux-sessionizer -s 2<CR>")
+map("n", "<M-p>", "<cmd>silent !tmux neww tmux-sessionizer -s 3<CR>")
 
 map("n", "<leader>lz", "<cmd>Lazy<CR>", { desc = "Open Lazy" })
 
@@ -203,22 +178,22 @@ map({ "n", "v" }, "gl", function()
 	return "g@"
 end, { expr = true, desc = "Cycle the case of a word" })
 
-map("n", "<m-f>", function()
-	local buf = vim.api.nvim_create_buf(false, true)
-	local cols = vim.o.columns
-	local lines = vim.o.lines
-	local scale = 0.65
-
-	vim.api.nvim_open_win(buf, true, {
-		relative = "editor",
-		width = math.floor(cols * scale),
-		height = math.floor(lines * scale),
-		col = math.floor(cols * (1 - scale) / 2),
-		row = math.floor(lines * (1 - scale) / 2),
-		style = "minimal",
-	})
-
-	vim.fn.jobstart("$XDG_CONFIG_HOME/scripts/session", {
-		term = true,
-	})
-end)
+-- map("n", "<m-f>", function()
+-- 	local buf = vim.api.nvim_create_buf(false, true)
+-- 	local cols = vim.o.columns
+-- 	local lines = vim.o.lines
+-- 	local scale = 0.65
+--
+-- 	vim.api.nvim_open_win(buf, true, {
+-- 		relative = "editor",
+-- 		width = math.floor(cols * scale),
+-- 		height = math.floor(lines * scale),
+-- 		col = math.floor(cols * (1 - scale) / 2),
+-- 		row = math.floor(lines * (1 - scale) / 2),
+-- 		style = "minimal",
+-- 	})
+--
+-- 	vim.fn.jobstart("$XDG_CONFIG_HOME/scripts/session", {
+-- 		term = true,
+-- 	})
+-- end)
