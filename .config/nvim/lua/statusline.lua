@@ -291,9 +291,12 @@ local jet_runtime_text = ""
 local jet_timer = nil ---@type uv.uv_timer_t?
 
 ---@return string?
-local jet_component = function()
+local jet_execution_component = function()
 	local buf = vim.api.nvim_get_current_buf()
-	local last_execution = vim.b.jet and vim.b.jet.last_execution
+	local session_id = vim.b.jet and vim.b.jet.session_id
+	local kernel = session_id and require("jet").get_by_id(session_id)
+	local last_execution = kernel and kernel.last_execution
+
 	if not last_execution then
 		return
 	end
@@ -327,6 +330,7 @@ local jet_component = function()
 			vim.api.nvim__redraw({ buf = buf, statusline = true, flush = true, cursor = true })
 		end
 	end)
+
 	-- Setting 'timeout' to non-0 seems to have weird unpredictable
 	-- behaviour, so just set check for elapsed time>=30 in the callback
 	-- itself.
@@ -334,6 +338,25 @@ local jet_component = function()
 	local icon = icons.misc.working
 	local icon_text = hl[icon.group](icon.symbol) .. " "
 	return jet_runtime_text .. icon_text
+end
+
+local jet_img_component = function()
+	local session_id = vim.b.jet and vim.b.jet.session_id --[[@as string?]]
+	local kernel = session_id and require("jet").get_by_id(session_id)
+	local img = kernel and kernel.img
+
+	if not img then
+		return
+	end
+
+	local files, curr_file_index = img:list_files()
+
+	if not curr_file_index then
+		return
+	end
+
+	local icon = icons.misc.chart
+	return string.format("%s %d/%d", hl[icon.group](icon.symbol), curr_file_index, #files)
 end
 
 local lpad = function(pad, x)
@@ -353,7 +376,8 @@ return {
 			return table.concat({
 				lpad(" ", file_component()),
 				"%=",
-				rpad(" ", jet_component()),
+				rpad(" ", jet_execution_component()),
+				rpad(" ", jet_img_component()),
 			})
 		end
 
@@ -366,7 +390,8 @@ return {
 			"%=",
 			rpad(" ", diagnostic_component()),
 			rpad(" ", vim.bo.filetype == "markdown" and wordcount_component()),
-			rpad(" ", jet_component()),
+			rpad(" ", jet_execution_component()),
+			rpad(" ", jet_img_component()),
 			rpad(" ", git_component()),
 			position_component(),
 		})
