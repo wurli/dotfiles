@@ -88,11 +88,24 @@ return {
 			vim.env.PATH = vim.env.PATH .. ":/Users/JACOB.SCOTT1/Repos/jet/target/debug"
 
 			require("jet").setup({
-				jet_binary_path = vim.fs.abspath("~/Repos/jet/target/debug/jet"),
-				jet_library_path = vim.fs.abspath("~/Repos/jet/target/debug/libjet_lua.dylib"),
+				binary_path = vim.fs.abspath("~/Repos/jet/target/debug/jet"),
+				library_path = vim.fs.abspath("~/Repos/jet/target/debug/libjet_lua.dylib"),
 				stop_on_buf_wipeout = true,
 				stop_on_nvim_quit = true,
 				send = {},
+				ui = { stream_lines = 10 },
+				image = {
+					handlers = {
+						svg = function(data, _mime, filepath)
+							local res = vim.system(
+								{ "resvg", "-", filepath, "--dpi", "500", "-z", "4" },
+								{ stdin = data }
+							)
+								:wait()
+							return res.code == 0 and filepath or false
+						end,
+					},
+				},
 				default_kernels = {
 					python = function()
 						return vim.fs.find("kernel.json", { path = ".venv/share/jupyter/kernels/python3" })[1]
@@ -100,7 +113,7 @@ return {
 				},
 				hooks = {
 					on_send_pre = {
-						---@param k jet.kernel
+						---@param k jet.Kernel
 						---@param code string[]
 						function(k, code)
 							if k.filetype == "python" and code[#code]:find("^%s+%S") then
@@ -121,8 +134,8 @@ return {
 						end,
 					},
 					on_message_received = {
-						---@param k jet.kernel
-						---@param msg jet.jupyter.msg
+						---@param k jet.Kernel
+						---@param msg jupyter.Msg
 						function(k, msg)
 							---@diagnostic disable-next-line: unnecessary-if
 							if _G.jet_print then
@@ -134,6 +147,10 @@ return {
 					},
 				},
 			})
+
+			vim.env.JET_LUA_LOG = "jet-nvim-lua.log"
+			vim.env.JET_LOG = "jet-nvim.log"
+			vim.env.RUST_LOG = "jet=debug"
 
 			---@diagnostic disable-next-line: global-in-non-module
 			_G.jet_print = false
@@ -149,14 +166,30 @@ return {
 
 			local open_ft = function(ft)
 				return function()
-					require("jet.core.api").get_any({ filetype = ft }, {}, function(k)
-						k:toggle_term()
+					require("jet.core.manager").get({ filetype = ft }, function(k)
+						k:term_toggle()
 					end)
 				end
 			end
 
 			vim.keymap.set("n", "<leader>jp", open_ft("python"), { desc = "Open Python (Jet)" })
 			vim.keymap.set("n", "<leader>jr", open_ft("r"), { desc = "Open R (Jet)" })
+
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "jetrepl",
+				callback = function()
+					vim.keymap.set({ "n", "t" }, "<c-i>", function()
+						local session = vim.b.jet and vim.b.jet.session_id
+						if not session then
+							return
+						end
+						local k = require("jet.core.manager").kernels[session]
+						if k then
+							k:img_toggle()
+						end
+					end, { buffer = vim.api.nvim_get_current_buf() })
+				end,
+			})
 		end,
 	},
 }
