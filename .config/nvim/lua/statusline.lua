@@ -294,7 +294,7 @@ local jet_timer = nil ---@type uv.uv_timer_t?
 local jet_execution_component = function()
 	local buf = vim.api.nvim_get_current_buf()
 	local session_id = vim.b.jet and vim.b.jet.session_id
-	local kernel = session_id and require("jet").get_by_id(session_id)
+	local kernel = session_id and require("jet.api").get_kernel_by_id(session_id)
 	local last_execution = kernel and kernel.last_execution
 
 	if not last_execution then
@@ -342,10 +342,10 @@ end
 
 local jet_img_component = function()
 	local session_id = vim.b.jet and vim.b.jet.session_id --[[@as string?]]
-	local kernel = session_id and require("jet").get_by_id(session_id)
+	local kernel = session_id and require("jet.api").get_kernel_by_id(session_id)
 	local img = kernel and kernel.img
 
-	if not img then
+	if not img or img.buf ~= vim.api.nvim_get_current_buf() then
 		return
 	end
 
