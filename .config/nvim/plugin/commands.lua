@@ -151,7 +151,3 @@ vim.api.nvim_create_user_command("TenData", function()
 	vim.notify("Opening " .. original_file)
 	vim.ui.open(original_file)
 end, { desc = "Open original version of 10_Data file" })
-
-vim.api.nvim_create_user_command("Reload", function()
-	vim.cmd([[mksession! /tmp/Session.vim | restart source /tmp/Session.vim]])
-end, { desc = "Reload Neovim" })
