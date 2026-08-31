@@ -18,6 +18,7 @@ local function get_python_expr(pos)
 		"expression_statement",
 		"for_statement",
 		"function_definition",
+		"future_import_statement",
 		"global_statement",
 		"if_statement",
 		"import_from_statement",
@@ -53,13 +54,13 @@ local function get_python_expr(pos)
 
 	local start_row, start_col, end_row, end_col = node:range(false)
 
-	return {
+	return require("jet.core.send.range").new({
 		buf = pos.buf,
 		start_row = start_row,
 		start_col = start_col,
 		end_row = end_row,
 		end_col = end_col,
-	}
+	})
 end
 
 return {
@@ -88,8 +89,8 @@ return {
 			vim.env.PATH = vim.env.PATH .. ":/Users/JACOB.SCOTT1/Repos/jet/target/debug"
 
 			require("jet").setup({
-				binary_path = vim.fs.abspath("~/Repos/jet/target/debug/jet"),
-				library_path = vim.fs.abspath("~/Repos/jet/target/debug/libjet_lua.dylib"),
+				-- binary_path = vim.fs.abspath("~/Repos/jet/target/debug/jet"),
+				-- library_path = vim.fs.abspath("~/Repos/jet/target/debug/libjet_lua.dylib"),
 				stop_on_buf_wipeout = true,
 				stop_on_nvim_quit = true,
 				send = {},
@@ -148,48 +149,90 @@ return {
 				},
 			})
 
-			vim.env.JET_LUA_LOG = "jet-nvim-lua.log"
-			vim.env.JET_LOG = "jet-nvim.log"
-			vim.env.RUST_LOG = "jet=debug"
+			-- vim.env.JET_LUA_LOG = "jet-nvim-lua.log"
+			-- vim.env.JET_LOG = "jet-nvim.log"
+			-- vim.env.RUST_LOG = "jet=debug"
 
 			---@diagnostic disable-next-line: global-in-non-module
 			_G.jet_print = false
 
-			require("jet.core.send.get_code").filetype.python = { get_expr = get_python_expr }
-			vim.keymap.set({ "n", "v" }, "<enter>", function()
-				require("jet.core.send").send_auto()
-				return "<enter>"
-			end, {
-				desc = "Execute code (Jet)",
-				expr = true,
-			})
+			require("jet").filetype.python = { get_expr = get_python_expr }
 
-			local open_ft = function(ft)
+			local api = require("jet.api")
+
+			local jet_toggler = function(ft)
 				return function()
-					require("jet.core.manager").get({ filetype = ft }, function(k)
+					api.get_kernel({ filetype = ft }, function(k)
 						k:term_toggle()
 					end)
 				end
 			end
 
-			vim.keymap.set("n", "<leader>jp", open_ft("python"), { desc = "Open Python (Jet)" })
-			vim.keymap.set("n", "<leader>jr", open_ft("r"), { desc = "Open R (Jet)" })
+			vim.keymap.set("n", "<leader>jp", jet_toggler("python"), { desc = "Open Python (Jet)" })
+			vim.keymap.set("n", "<leader>jr", jet_toggler("r"), { desc = "Open R (Jet)" })
 
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "jetrepl",
+			vim.api.nvim_create_autocmd("BufWinEnter", {
 				callback = function()
-					vim.keymap.set({ "n", "t" }, "<c-i>", function()
-						local session = vim.b.jet and vim.b.jet.session_id
-						if not session then
-							return
-						end
-						local k = require("jet.core.manager").kernels[session]
-						if k then
-							k:img_toggle()
-						end
-					end, { buffer = vim.api.nvim_get_current_buf() })
+					local session_id = vim.b.jet and vim.b.jet.session_id
+					local kernel = session_id and api.get_kernel_by_id(session_id)
+					if kernel then
+						vim.keymap.set({ "n", "t" }, "<c-o>", function()
+							kernel:img_toggle()
+						end, { buffer = 0 })
+					end
 				end,
 			})
+
+			vim.keymap.set(
+				{ "n", "v" },
+				"go",
+				api.handle_motion(function(range, filetype)
+					api.get_kernel({
+						filetype = filetype,
+						primary = true,
+						status = { "connected", "connecting" },
+					}, function(k)
+						local code = range:code({ comments = false })
+						if code then
+							k:send_repl(code)
+						end
+					end)
+				end),
+				{
+					desc = "Execute code (Jet)",
+					expr = true,
+				}
+			)
+
+			vim.keymap.set({ "x", "o" }, "ie", function()
+				local expr = api.get_expr()
+				if not expr then
+					local pos = api.next_expr_boundary({
+						current_ok = false,
+						boundary = "start",
+					})
+					expr = pos and api.get_expr(pos)
+				end
+				if expr then
+					expr:textobject()
+				end
+			end, {})
+
+			vim.keymap.set("n", "]e", function()
+				local pos = api.next_expr_boundary({ direction = 1, boundary = "start" })
+				if pos then
+					vim.fn.cursor(pos:to_cursor())
+				end
+			end)
+			vim.keymap.set("n", "[e", function()
+				local pos = api.next_expr_boundary({ direction = -1, boundary = "start" })
+				if pos then
+					vim.fn.cursor(pos:to_cursor())
+				end
+			end)
+
+			vim.keymap.set("n", "<enter>", "goie]e", { remap = true })
+			vim.keymap.set("x", "<enter>", "go", { remap = true })
 		end,
 	},
 }
