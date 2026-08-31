@@ -30,7 +30,13 @@ return {
 						if (a.client_name == nil or b.client_name == nil) or (a.client_name == b.client_name) then
 							return
 						end
-						return b.client_name:sub(1, 4) == "jet_"
+						local a_is_jet = a.client_name:sub(1, 4) == "jet_"
+						local b_is_jet = b.client_name:sub(1, 4) == "jet_"
+						if b_is_jet and not a_is_jet then
+							return true
+						else
+							return false
+						end
 					end,
 					"score",
 					"sort_text",
@@ -84,7 +90,7 @@ return {
 					"snippets",
 					"lsp",
 					"path",
-					"buffer",
+					-- "buffer",
 					-- "cmp_r"
 				},
 				providers = {
