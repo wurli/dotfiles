@@ -2,6 +2,8 @@ local map = vim.keymap.set
 
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 
+map("n", "<m-p>", "<c-l>", {})
+
 map("n", "<leader>p", function()
 	local osa_cmd = [[osascript -e 'the clipboard as «class HTML»' | sed 's/«data HTML//; s/»//'  | xxd -r -p]]
 	local html = vim.system({ "sh", "-c", osa_cmd }):wait().stdout
@@ -150,10 +152,10 @@ map("v", "<M-k>", ":m '<-2<CR>gv", { desc = "Move selected lines up" })
 map({ "i", "n", "c", "v", "t" }, "<M-3>", "#", { noremap = true, desc = "Insert #" })
 
 map("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
-map("n", "<M-u>", "<cmd>silent !tmux neww tmux-sessionizer -s 0<CR>")
-map("n", "<M-i>", "<cmd>silent !tmux neww tmux-sessionizer -s 1<CR>")
-map("n", "<M-o>", "<cmd>silent !tmux neww tmux-sessionizer -s 2<CR>")
-map("n", "<M-p>", "<cmd>silent !tmux neww tmux-sessionizer -s 3<CR>")
+-- map("n", "<M-u>", "<cmd>silent !tmux neww tmux-sessionizer -s 0<CR>")
+-- map("n", "<M-i>", "<cmd>silent !tmux neww tmux-sessionizer -s 1<CR>")
+-- map("n", "<M-o>", "<cmd>silent !tmux neww tmux-sessionizer -s 2<CR>")
+-- map("n", "<M-p>", "<cmd>silent !tmux neww tmux-sessionizer -s 3<CR>")
 
 map("n", "<leader>lz", "<cmd>Lazy<CR>", { desc = "Open Lazy" })
 
