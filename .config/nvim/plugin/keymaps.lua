@@ -2,7 +2,10 @@ local map = vim.keymap.set
 
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 
-map("n", "<m-p>", "<c-l>", {})
+map("n", "<m-p>", function()
+	local mc_ns = vim.api.nvim_create_namespace("nvim.multicursor")
+	vim.api.nvim_buf_clear_namespace(0, mc_ns, 0, -1)
+end, { desc = "Clear multicursor" })
 
 map("n", "<leader>p", function()
 	local osa_cmd = [[osascript -e 'the clipboard as «class HTML»' | sed 's/«data HTML//; s/»//'  | xxd -r -p]]

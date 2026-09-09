@@ -28,10 +28,3 @@ local types = require("luasnip.util.types")
 local parse = require("luasnip.util.parser").parse_snippet
 local ms = ls.multi_snippet
 local k = require("luasnip.nodes.key_indexer").new_key
-
-ls.add_snippets("python", {
-	s(
-		{ trig = "F.sum", name = "colsum" },
-		fmta([[F.sum("<colname>").alias("<colname>"),]], { colname = i(1, "colname") }, { repeat_duplicates = true })
-	),
-})

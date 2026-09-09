@@ -1,7 +1,7 @@
 -- vim.opt.formatoptions:remove "o"
 vim.opt.autoindent = true
 vim.opt.breakindent = true
-vim.opt.colorcolumn = { 80, 120 }
+vim.opt.colorcolumn = "80,120"
 vim.opt.confirm = true
 vim.opt.cursorline = true
 vim.opt.ignorecase = true
