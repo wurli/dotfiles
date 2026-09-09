@@ -1,4 +1,3 @@
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 export XDG_CONFIG_HOME="$HOME/.config"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -19,9 +18,10 @@ fi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Adjust path
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# path+=("$HOME/.local/bin/")
 path=($HOME/.local/bin/ $path)
 path=($HOME/.config/scripts/ $path)
+path=(/opt/homebrew/bin $path)
+path=($HOME/Repos/neovim/build/bin/ $path)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Shell autocompletions
@@ -69,9 +69,6 @@ export MANPAGER='nvim +Man!'
 
 # uv install settings (only needed on work machine)
 export UV_SYSTEM_CERTS=true
-
-# For Claude Code
-export ENABLE_LSP_TOOL=1
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # use starship
@@ -149,18 +146,26 @@ gif() {
     local input="$1"
     local output="$2"
     local width="${3:-1080}"
-    local speed="${4:-1}"    # E.g. 0.5 = half speed
+    local speed="${4:-1}"    # E.g. 0.5 = 2x speed
     local fps="${5:-20}"
+    local pause="${6:-0}"    # Seconds to hold on the final frame
 
     if [[ -z "$input" || -z "$output" ]]; then
-        echo "Usage: gif <input.mov> <output.gif> [<width>] [<speed>]"
+        echo "Usage: gif <input.mov> <output.gif> [<width>] [<speed>] [<fps>] [<pause>]"
         return 1
+    fi
+
+    local tpad_filter=""
+    if [[ "$pause" != "0" ]]; then
+        local stop_duration=$(awk "BEGIN {print ${pause} * ${fps}}")
+        tpad_filter="tpad=stop_mode=clone:stop_duration=${pause}, "
     fi
 
     ffmpeg -i "$input" \
         -vf "setpts=${speed}*PTS, \
         fps=${fps}, \
         scale=${width}:-1:flags=lanczos, \
+        ${tpad_filter}\
         split[s0][s1], \
         [s0]palettegen[p]; \
         [s1][p]paletteuse" \
@@ -279,9 +284,3 @@ unquarantine() {
 }
 
 source ~/.zprofile
-
-
-# Load Angular CLI autocompletion.
-source <(ng completion script)
-
-. "$HOME/.local/bin/env"
