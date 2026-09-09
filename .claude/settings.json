@@ -17,6 +17,7 @@
       "Read(~/10_Data/Plaintext/*)"
     ]
   },
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -50,5 +51,6 @@
   },
   "alwaysThinkingEnabled": false,
   "effortLevel": "medium",
+  "tui": "default",
   "skipDangerousModePermissionPrompt": true
 }
