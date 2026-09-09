@@ -1,19 +1,25 @@
 {
-	"runtime": {
-		"version": "LuaJIT",
-		"requirePattern": [
-			"?/init.lua",
-			"?.lua"
-		]
-	},
-	"workspace": {
-		"library": [
-			"$VIMRUNTIME",
-			"$HOME/Repos/jet.nvim/lua",
-			"$HOME/Repos/jet.ark/lua"
-		],
-		"packages": [
-			"$HOME/.local/share/nvim/lazy"
-		]
-	}
+  "diagnostics": {
+    "disable": [
+      "unnecessary-if"
+    ]
+  },
+  "runtime": {
+    "requirePattern": [
+      "?/init.lua",
+      "?.lua"
+    ],
+    "version": "LuaJIT"
+  },
+  "workspace": {
+    "library": [
+      "$VIMRUNTIME",
+      "$HOME/Repos/jet.nvim/lua",
+      "$HOME/Repos/jet.ark/lua",
+      "$HOME/Repos/jet.ipy/lua"
+    ],
+    "packages": [
+      "$HOME/.local/share/nvim/lazy"
+    ]
+  }
 }
