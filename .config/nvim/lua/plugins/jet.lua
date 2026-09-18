@@ -64,6 +64,7 @@ return {
 						end,
 					},
 					on_kernel_init = {
+						---@param k jet.Kernel
 						function(k)
 							if k.spec.display_name:lower():match("python") then
 								k.filetype = "python"
@@ -80,38 +81,16 @@ return {
 								msg.kernel = k.spec.display_name
 								vim.print(msg)
 							end
+
+							local file = msg.content and msg.content.data and msg.content.data["text/x.vd-file"]
+
+							if file then
+								vim.system({ "tmux", "split-window", "-h", "vd", file })
+							end
 						end,
 					},
 				},
 			})
-
-			local hooks = require("jet").hooks
-
-			local execute_inputs = {}
-			local execute_results = {}
-			hooks.on_message_received.notify = function(k, msg)
-				if msg.header.msg_type == "execute_input" and msg.parent_header then
-					execute_inputs[msg.parent_header.msg_id] = msg.content
-				elseif msg.header.msg_type == "execute_result" and msg.parent_header then
-					execute_results[msg.parent_header.msg_id] = msg.content
-				elseif
-					msg.header.msg_type == "status"
-					and msg.parent_header
-					and msg.parent_header.msg_type == "execute_request"
-				then
-					local input = execute_inputs[msg.parent_header.msg_id]
-					local result = execute_results[msg.parent_header.msg_id]
-					execute_inputs[msg.parent_header.msg_id] = nil
-					execute_results[msg.parent_header.msg_id] = nil
-
-					local code = input and input.code
-					local text = result and result.data and result.data["text/plain"]
-
-					if code and text and not (k.term and k.term:win()) then
-						vim.notify(string.format("Ran `%s`:\nResult: %s", code, text))
-					end
-				end
-			end
 
 			-- vim.env.JET_LUA_LOG = "jet-nvim-lua.log"
 			-- vim.env.JET_LOG = "jet-nvim.log"
