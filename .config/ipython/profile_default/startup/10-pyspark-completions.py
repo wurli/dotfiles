@@ -14,6 +14,16 @@ from IPython.core.completer import (  # ty:ignore[unresolved-import]
 
 _ip = get_ipython()  # noqa: F821  # ty:ignore[unresolved-reference]
 
+
+def _install_key_completions(_):
+    for name in ("pyspark.sql.dataframe", "pyspark.sql.connect.dataframe"):
+        if (m := sys.modules.get(name)) is not None:
+            m.DataFrame._ipython_key_completions_ = lambda self: list(self.columns)
+
+
+_ip.events.register("post_run_cell", _install_key_completions)
+
+
 _COL_METHODS = frozenset(
     {
         "agg",
@@ -92,9 +102,20 @@ def _df_col_matcher(context):
         func = call.func
         if not isinstance(func, ast.Attribute) or func.attr not in _COL_METHODS:
             continue
-        if not isinstance(func.value, ast.Name):
+        # Walk back through chained .method().method() calls to the root Name.
+        # If the root is anything else (e.g. a Call like tbl_compute("x")), we
+        # can't resolve it without executing code, so skip.
+        root = func.value
+        while True:
+            if isinstance(root, ast.Attribute):
+                root = root.value
+            elif isinstance(root, ast.Call) and isinstance(root.func, ast.Attribute):
+                root = root.func.value
+            else:
+                break
+        if not isinstance(root, ast.Name):
             continue
-        df = _ip.user_ns.get(func.value.id)
+        df = _ip.user_ns.get(root.id)
         if not isinstance(df, df_classes):
             continue
         return {
