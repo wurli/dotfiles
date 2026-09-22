@@ -37,14 +37,21 @@ return {
 				send = {},
 				ui = { stream_lines = 5 },
 				image = {
-					handlers = {
-						svg = function(data, _mime, filepath)
-							local res = vim.system(
+					handler = function(data, mime, filepath)
+						if mime.subtype == "svg" then
+							local cmd = vim.system(
 								{ "resvg", "-", filepath, "--dpi", "500", "-z", "4" },
 								{ stdin = data }
 							)
-								:wait()
-							return res.code == 0 and filepath or false
+							return cmd:wait().code == 0 and filepath or false
+						end
+					end,
+					format_priority = {
+						function(m)
+							return m.subtype == "svg"
+						end,
+						function(m)
+							return m.subtype == "png"
 						end,
 					},
 				},
@@ -61,14 +68,6 @@ return {
 							-- if k.filetype == "kotlin" then
 							-- 	table.insert(code, "")
 							-- end
-						end,
-					},
-					on_kernel_init = {
-						---@param k jet.Kernel
-						function(k)
-							if k.spec.display_name:lower():match("python") then
-								k.filetype = "python"
-							end
 						end,
 					},
 					on_message_received = {

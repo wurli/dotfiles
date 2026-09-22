@@ -2,6 +2,7 @@
 export XDG_CONFIG_HOME="$HOME/.config"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
 if [[ -n "$TMUX" ]]; then
     export TERM=tmux-256color
 else
@@ -138,6 +139,19 @@ retag() {
 	echo "Pushing tag $tag to remote"
 	git push origin "$tag"
 }
+
+
+# to mp4 w/compression:
+# ffmpeg -i \
+#   screenshots/jet-ark.mov -vf \
+#   "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setpts=PTS/1.2" \
+#   -r 60 \
+#   -c:v libx264 \
+#   -crf 22 \
+#   -preset slow \
+#   -pix_fmt yuv420p \
+#   -movflags +faststart \
+#   -an screenshots/jet-ark.mp4
 
 # Transform a video into a gif with nice settings.
 # This is pretty much impossible to remember if you're not intimately familiar

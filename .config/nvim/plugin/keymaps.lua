@@ -2,7 +2,15 @@ local map = vim.keymap.set
 
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 
-map("n", "<m-p>", function()
+map("x", "I", function()
+	vim.fn.feedkeys("Qi")
+end, {})
+
+map("x", "A", function()
+	vim.fn.feedkeys("Qa")
+end, {})
+
+map({ "n", "i", "x" }, "<m-p>", function()
 	local mc_ns = vim.api.nvim_create_namespace("nvim.multicursor")
 	vim.api.nvim_buf_clear_namespace(0, mc_ns, 0, -1)
 end, { desc = "Clear multicursor" })
