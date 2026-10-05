@@ -30,8 +30,8 @@ return {
 			vim.env.PATH = vim.env.PATH .. ":/Users/JACOB.SCOTT1/Repos/jet/target/debug"
 
 			require("jet").setup({
-				-- binary_path = vim.fs.abspath("~/Repos/jet/target/debug/jet"),
-				-- library_path = vim.fs.abspath("~/Repos/jet/target/debug/libjet_lua.dylib"),
+				binary_path = vim.fs.abspath("~/Repos/jet/target/debug/jet"),
+				library_path = vim.fs.abspath("~/Repos/jet/target/debug/libjet_lua.dylib"),
 				stop_on_buf_wipeout = true,
 				stop_on_nvim_quit = true,
 				send = {},
@@ -77,7 +77,7 @@ return {
 							---@diagnostic disable-next-line: unnecessary-if
 							if _G.jet_print then
 								---@diagnostic disable-next-line: inject-field
-								msg.kernel = k.spec.display_name
+								msg.kernel = k:friendly_name()
 								vim.print(msg)
 							end
 
@@ -123,24 +123,6 @@ return {
 				end,
 			})
 
-			vim.keymap.set(
-				{ "n", "v" },
-				"go",
-				api.handle_motion(function(range, filetype)
-					api.get_kernel({
-						filetype = filetype,
-						current = true,
-						status = { "connected", "connecting" },
-					}, function(k)
-						local code = range:code({ comments = false })
-						if code then
-							k:send_repl(code)
-						end
-					end)
-				end),
-				{ desc = "Execute code (Jet)", expr = true }
-			)
-
 			vim.api.nvim_create_autocmd("WinResized", {
 				callback = function()
 					local wins = vim.v.event.windows --[[@as integer[] ]]
@@ -161,8 +143,66 @@ return {
 			})
 
 			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "jetimg",
+				callback = function()
+					vim.keymap.set("n", "<c-e>", function()
+						-- Get the kernel which owns the current image buffer
+						local kernel = vim.b.jet and require("jet.api").get_kernel_by_id(vim.b.jet.session_id)
+						if not kernel then
+							return
+						end
+
+						-- If the current window is floating, close it and reopen the normal view
+						if vim.api.nvim_win_get_config(0).relative ~= "" then
+							vim.api.nvim_win_close(0, true)
+							vim.api.nvim_set_current_win(kernel:img_open())
+							return
+						end
+
+						local buf = vim.api.nvim_get_current_buf()
+
+						-- Close all windows which currently show the image buffer
+						-- (otherwise the image won't resize when we open the float)
+						for _, w in ipairs(vim.api.nvim_list_wins()) do
+							if vim.api.nvim_win_get_buf(w) == buf then
+								vim.api.nvim_win_close(w, true)
+							end
+						end
+
+						-- Open the image in a floating window
+						vim.api.nvim_open_win(buf, true, {
+							style = "minimal",
+							relative = "editor",
+							row = math.floor(vim.o.lines * 0.05),
+							col = math.floor(vim.o.columns * 0.05),
+							height = math.floor(vim.o.lines * 0.90),
+							width = math.floor(vim.o.columns * 0.90),
+						})
+					end, { buf = 0, desc = "Toggle image fullscreen" })
+				end,
+			})
+
+			vim.api.nvim_create_autocmd("FileType", {
 				pattern = { "r", "python", "markdown" },
 				callback = function()
+					vim.keymap.set(
+						{ "n", "v" },
+						"go",
+						api.handle_motion(function(range, filetype)
+							api.get_kernel({
+								filetype = filetype,
+								current = true,
+								status = { "connected", "connecting" },
+							}, function(k)
+								local code = range:code({ comments = false })
+								if code then
+									k:send_repl(code)
+								end
+							end)
+						end),
+						{ desc = "Execute code (Jet)", expr = true }
+					)
+
 					vim.keymap.set({ "x", "o" }, "ie", function()
 						local expr = api.get_expr()
 						if not expr then
