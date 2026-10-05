@@ -2,13 +2,9 @@ local map = vim.keymap.set
 
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 
-map("x", "I", function()
-	vim.fn.feedkeys("Qi")
-end, {})
+map("x", "I", function() vim.fn.feedkeys("Qi") end, {})
 
-map("x", "A", function()
-	vim.fn.feedkeys("Qa")
-end, {})
+map("x", "A", function() vim.fn.feedkeys("Qa") end, {})
 
 map({ "n", "i", "x" }, "<m-p>", function()
 	local mc_ns = vim.api.nvim_create_namespace("nvim.multicursor")
@@ -38,9 +34,7 @@ end, { desc = "Paste from clipboard as markdown" })
 -- Use a vertical split instead of the default horizontal split for <c-w><c-f>
 map("n", "<c-w><c-f>", [[:vsplit<cr>gF]], { desc = "Open file under cursor" })
 
-map("n", "!", function()
-	vim.fn.feedkeys(":! ", "n")
-end, { desc = "Enter command mode" })
+map("n", "!", function() vim.fn.feedkeys(":! ", "n") end, { desc = "Enter command mode" })
 
 local cur_file = function()
 	local file = vim.fn.expand("%") --[[@as string]]
@@ -76,9 +70,7 @@ map("v", "<leader>yp", function()
 end, { desc = "Yank the current file path" })
 
 -- g?: Web search
-map("n", "g?", function()
-	vim.ui.open(("https://google.com/search?q=%s"):format(vim.fn.expand("<cword>")))
-end)
+map("n", "g?", function() vim.ui.open(("https://google.com/search?q=%s"):format(vim.fn.expand("<cword>"))) end)
 map("x", "g?", function()
 	vim.ui.open(
 		("https://google.com/search?q=%s"):format(
@@ -161,12 +153,6 @@ map("v", "<M-k>", ":m '<-2<CR>gv", { desc = "Move selected lines up" })
 
 -- Workaround for meta-key limitations in terminal emulators
 map({ "i", "n", "c", "v", "t" }, "<M-3>", "#", { noremap = true, desc = "Insert #" })
-
-map("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
--- map("n", "<M-u>", "<cmd>silent !tmux neww tmux-sessionizer -s 0<CR>")
--- map("n", "<M-i>", "<cmd>silent !tmux neww tmux-sessionizer -s 1<CR>")
--- map("n", "<M-o>", "<cmd>silent !tmux neww tmux-sessionizer -s 2<CR>")
--- map("n", "<M-p>", "<cmd>silent !tmux neww tmux-sessionizer -s 3<CR>")
 
 map("n", "<leader>lz", "<cmd>Lazy<CR>", { desc = "Open Lazy" })
 
