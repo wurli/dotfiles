@@ -101,6 +101,10 @@ local mode_component = function()
 	return hl["StatusLineMode" .. group](" " .. mode .. " ")
 end
 
+local servery_component = function()
+	return hl["StatusLineBold"](vim.fs.basename(require("servery").cwd()))
+end
+
 vim.api.nvim_create_autocmd("User", {
 	pattern = "GitSignsUpdate",
 	group = vim.api.nvim_create_augroup("jscott/statusline_gitsigns", { clear = true }),
@@ -383,6 +387,7 @@ return {
 
 		return table.concat({
 			mode_component(),
+			lpad(" ", servery_component()),
 			"%<", -- Don't truncate the mode component
 			lpad(" ", file_component()),
 			lpad(" ", modified_component()),
