@@ -115,7 +115,7 @@ bindkey -s '\ei' "tmux-sessionizer -s 1\n"
 bindkey -s '\eo' "tmux-sessionizer -s 2\n"
 bindkey -s '\ep' "tmux-sessionizer -s 3\n"
 
-function fg() {
+function rgfzf() {
     RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
     INITIAL_QUERY="${*:-}"
 
@@ -141,17 +141,23 @@ retag() {
 }
 
 
-# to mp4 w/compression:
-# ffmpeg -i \
-#   screenshots/jet-ark.mov -vf \
-#   "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setpts=PTS/1.2" \
-#   -r 60 \
-#   -c:v libx264 \
-#   -crf 22 \
-#   -preset slow \
-#   -pix_fmt yuv420p \
-#   -movflags +faststart \
-#   -an screenshots/jet-ark.mp4
+mov-compress() {
+    local input="$1"
+    local output="$2"
+	local speed="${3:-1}"
+
+    ffmpeg -i \
+      "$input" -vf \
+      "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setpts=${speed}*PTS," \
+      -r 60 \
+      -c:v libx264 \
+      -crf 22 \
+      -preset slow \
+      -pix_fmt yuv420p \
+      -movflags +faststart \
+      -an "$output"
+}
+
 
 # Transform a video into a gif with nice settings.
 # This is pretty much impossible to remember if you're not intimately familiar
