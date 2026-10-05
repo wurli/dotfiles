@@ -3,7 +3,6 @@ local map = vim.keymap.set
 vim.api.nvim_set_keymap("", "\\", "<Nop>", { noremap = true, silent = true })
 
 map("x", "I", function() vim.fn.feedkeys("Qi") end, {})
-
 map("x", "A", function() vim.fn.feedkeys("Qa") end, {})
 
 map({ "n", "i", "x" }, "<m-p>", function()
@@ -46,18 +45,21 @@ local cur_file = function()
 	return file
 end
 
+-- Yank curr filepath
 map("n", "<leader>yf", function()
 	local file = cur_file()
 	vim.notify(string.format('Yanked: "%s"', file))
 	vim.fn.setreg("+", file)
 end, { desc = "Yank the current file path" })
 
+-- Yank curr position
 map("n", "<leader>yp", function()
 	local file = cur_file() .. "#L" .. vim.fn.line(".")
 	vim.notify(string.format('Yanked: "%s"', file))
 	vim.fn.setreg("+", file)
 end, { desc = "Yank the current file path" })
 
+-- Yank curr range
 map("v", "<leader>yp", function()
 	local region = { vim.fn.getpos("v")[2], vim.fn.getpos(".")[2] }
 	table.sort(region)
@@ -70,15 +72,11 @@ map("v", "<leader>yp", function()
 end, { desc = "Yank the current file path" })
 
 -- g?: Web search
-map("n", "g?", function() vim.ui.open(("https://google.com/search?q=%s"):format(vim.fn.expand("<cword>"))) end)
+map("n", "g?", function() vim.ui.open("https://google.com/search?q=%s" .. vim.fn.expand("<cword>")) end)
 map("x", "g?", function()
-	vim.ui.open(
-		("https://google.com/search?q=%s"):format(
-			vim.trim(
-				table.concat(vim.fn.getregion(vim.fn.getpos("."), vim.fn.getpos("v"), { type = vim.fn.mode() }), " ")
-			)
-		)
-	)
+	local text = vim.fn.getregion(vim.fn.getpos("."), vim.fn.getpos("v"), { type = vim.fn.mode() })
+	local google = "https://google.com/search?q="
+	vim.ui.open(google .. vim.trim(table.concat(text, " ")))
 	vim.api.nvim_input("<esc>")
 end)
 
@@ -176,23 +174,3 @@ map({ "n", "v" }, "gl", function()
 	vim.o.operatorfunc = "v:lua.cycle_case"
 	return "g@"
 end, { expr = true, desc = "Cycle the case of a word" })
-
--- map("n", "<m-f>", function()
--- 	local buf = vim.api.nvim_create_buf(false, true)
--- 	local cols = vim.o.columns
--- 	local lines = vim.o.lines
--- 	local scale = 0.65
---
--- 	vim.api.nvim_open_win(buf, true, {
--- 		relative = "editor",
--- 		width = math.floor(cols * scale),
--- 		height = math.floor(lines * scale),
--- 		col = math.floor(cols * (1 - scale) / 2),
--- 		row = math.floor(lines * (1 - scale) / 2),
--- 		style = "minimal",
--- 	})
---
--- 	vim.fn.jobstart("$XDG_CONFIG_HOME/scripts/session", {
--- 		term = true,
--- 	})
--- end)
