@@ -109,11 +109,36 @@ alias db="databricks"
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Keymaps
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bindkey -s ^f "tmux-sessionizer\n"
-bindkey -s '\eu' "tmux-sessionizer -s 0\n"
-bindkey -s '\ei' "tmux-sessionizer -s 1\n"
-bindkey -s '\eo' "tmux-sessionizer -s 2\n"
-bindkey -s '\ep' "tmux-sessionizer -s 3\n"
+
+# ------- `cd` picker ---------------------------------------------------------
+CDD_ROOTS=(
+    "$HOME/Repos"
+    "$HOME/.config"
+)
+
+function cdd() {
+    local root dir selected
+    local -a dirs
+    for root in $CDD_ROOTS; do
+        [[ -d $root ]] || continue
+        for dir in $root/*(N/); do
+            dirs+=("$dir")
+        done
+    done
+    selected=$(printf '%s\n' $dirs | fzf --prompt 'cd> ' --tiebreak=end) || return
+    cd -- "$selected"
+}
+
+function _cdd_widget() {
+    cdd < /dev/tty
+    local ret=$?
+    zle reset-prompt
+    return $ret
+}
+zle -N _cdd_widget
+bindkey '^f' _cdd_widget
+
+# -----------------------------------------------------------------------------
 
 function rgfzf() {
     RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
