@@ -64,6 +64,12 @@ vim.api.nvim_create_autocmd("FileType", {
 
 vim.api.nvim_set_hl(0, "MCursorVisual", { link = "LspReferenceTarget" })
 
+vim.filetype.add({
+	extension = {
+		excalidraw = "json",
+	},
+})
+
 -- Load snippets --------------------------------------------------------------
 if not vim.g.vscode then
 	for _, path in ipairs(vim.api.nvim_get_runtime_file("lua/snippets/*.lua", true)) do
