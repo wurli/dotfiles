@@ -20,9 +20,7 @@ return {
 	},
 	{
 		dir = "~/Repos/jet.ipy",
-		config = function()
-			require("jet.ipy").setup()
-		end,
+		config = function() require("jet.ipy").setup() end,
 	},
 	{
 		dir = "~/Repos/jet.nvim",
@@ -34,7 +32,9 @@ return {
 				library_path = vim.fs.abspath("~/Repos/jet/target/debug/libjet_lua.dylib"),
 				stop_on_buf_wipeout = true,
 				stop_on_nvim_quit = true,
-				send = {},
+				send = {
+					send_by_expr = true,
+				},
 				ui = { stream_lines = 5 },
 				image = {
 					handler = function(data, mime, filepath)
@@ -47,12 +47,8 @@ return {
 						end
 					end,
 					format_priority = {
-						function(m)
-							return m.subtype == "svg"
-						end,
-						function(m)
-							return m.subtype == "png"
-						end,
+						function(m) return m.subtype == "svg" end,
+						function(m) return m.subtype == "png" end,
 					},
 				},
 				hooks = {
@@ -102,9 +98,7 @@ return {
 
 			local toggle_repl = function(ft)
 				return function()
-					api.get_kernel({ filetype = ft }, function(k)
-						k:term_toggle()
-					end)
+					api.get_kernel({ filetype = ft }, function(k) k:term_toggle() end)
 				end
 			end
 
@@ -116,9 +110,7 @@ return {
 					local session_id = vim.b.jet and vim.b.jet.session_id
 					local kernel = session_id and api.get_kernel_by_id(session_id)
 					if kernel then
-						vim.keymap.set({ "n", "t" }, "<c-o>", function()
-							kernel:img_toggle()
-						end, { buffer = 0 })
+						vim.keymap.set({ "n", "t" }, "<c-o>", function() kernel:img_toggle() end, { buffer = 0 })
 					end
 				end,
 			})
@@ -200,7 +192,7 @@ return {
 								end
 							end)
 						end),
-						{ desc = "Execute code (Jet)", expr = true }
+						{ desc = "Execute code (Jet)", expr = true, buf = 0 }
 					)
 
 					vim.keymap.set({ "x", "o" }, "ie", function()
@@ -215,23 +207,24 @@ return {
 						if expr then
 							expr:textobject()
 						end
-					end, {})
+					end, { buf = 0 })
 
 					vim.keymap.set("n", "]e", function()
 						local pos = api.next_expr_boundary({ direction = 1, boundary = "start" })
 						if pos then
 							vim.fn.cursor(pos:to_cursor())
 						end
-					end)
-					vim.keymap.set("n", "[e", function()
+					end, { buf = 0 })
+
+					vim.keymap.set("n", "[e", function(n)
 						local pos = api.next_expr_boundary({ direction = -1, boundary = "start" })
 						if pos then
 							vim.fn.cursor(pos:to_cursor())
 						end
-					end)
+					end, { buf = 0 })
 
-					vim.keymap.set("n", "<enter>", "goie]e", { remap = true })
-					vim.keymap.set("x", "<enter>", "go", { remap = true })
+					vim.keymap.set("n", "<enter>", "goie]e", { remap = true, buf = 0 })
+					vim.keymap.set("x", "<enter>", "go", { remap = true, buf = 0 })
 				end,
 			})
 		end,
