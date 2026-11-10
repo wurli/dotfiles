@@ -6,10 +6,12 @@ return {
 				provider = "snacks",
 			},
 			dirs = function()
-				return vim.iter({ "~/Repos/*", "~/CLPData/*" })
-					:map(function(dir)
-						return vim.fn.glob(dir, true, true)
-					end)
+				return vim.iter({
+					"~/Repos/*",
+					"~/CLPData/*",
+					"~/OneDrive - Zurich Insurance/Documents - Integrated Benefits/*",
+				})
+					:map(function(dir) return vim.fn.glob(dir, true, true) end)
 					:fold({}, vim.list_extend)
 			end,
 		})
