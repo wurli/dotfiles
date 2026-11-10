@@ -1,13 +1,3 @@
-vim.api.nvim_create_user_command("LspFormat", function(x)
-	vim.lsp.buf.format({
-		name = x.fargs[1],
-		range = x.range == 0 and nil or {
-			["start"] = { x.line1, 0 },
-			["end"] = { x.line2, 0 },
-		},
-	})
-end, { nargs = "?", range = "%", desc = "LSP format" })
-
 local go_to_relative_file = function(n, relative_to)
 	return function()
 		local this_dir = vim.fs.dirname(vim.fs.normalize(vim.fn.expand("%:p")))
@@ -45,14 +35,18 @@ end
 vim.api.nvim_create_user_command("FileNext", go_to_relative_file(1), {})
 vim.api.nvim_create_user_command("FilePrev", go_to_relative_file(-1), {})
 
-vim.api.nvim_create_user_command("Positron", function()
-	vim.system({
-		"positron",
-		"--goto",
-		vim.fn.expand("%:p") .. ":" .. vim.api.nvim_win_get_cursor(0)[1],
-		vim.fn.getcwd(),
-	})
-end, { desc = "Open current file in Positron" })
+vim.api.nvim_create_user_command(
+	"Positron",
+	function()
+		vim.system({
+			"positron",
+			"--goto",
+			vim.fn.expand("%:p") .. ":" .. vim.api.nvim_win_get_cursor(0)[1],
+			vim.fn.getcwd(),
+		})
+	end,
+	{ desc = "Open current file in Positron" }
+)
 
 ---@param dir? "work-notes" | "personal-notes"
 ---@return string
@@ -97,9 +91,7 @@ end
 
 ---@param dir? "work-notes" | "personal-notes"
 local open_last_note = function(dir)
-	local is_daily_note = function(file)
-		return file:match("^%d%d%d%d%-%d%d%-%d%d.*%.md$")
-	end
+	local is_daily_note = function(file) return file:match("^%d%d%d%d%-%d%d%-%d%d.*%.md$") end
 	local notes_dir = resolve_notes_dir(dir)
 	local notes = vim.fs.find(is_daily_note, { path = notes_dir, type = "file", limit = math.huge })
 	local note = notes[#notes]
@@ -132,6 +124,12 @@ vim.api.nvim_create_user_command("ToggleColours", function()
 		vim.cmd.colorscheme("cobalt")
 	end
 end, { desc = "Toggle light/dark colorscheme" })
+
+vim.api.nvim_create_user_command("CleanChars", function()
+	vim.cmd([[%s/\%u00a0/ /ge]])
+	vim.cmd([[%s/[‘’]/'/ge]])
+	vim.cmd([[%s/[“”]/"/ge]])
+end)
 
 vim.api.nvim_create_user_command("TenData", function()
 	local tendata_real_dir = vim.fn.expand("~/10_Data")
