@@ -5,8 +5,9 @@ return {
 	config = function()
 		local api = require("nvim-tree.api")
 		require("nvim-tree").setup({
+			sync_root_with_cwd = true,
 			on_attach = function(bufnr)
-				api.config.mappings.default_on_attach(bufnr)
+				api.map.on_attach.default(bufnr)
 				vim.keymap.del("n", "<c-k>", { buffer = bufnr })
 
 				for key, cmd in pairs({
@@ -15,7 +16,8 @@ return {
 				}) do
 					vim.keymap.set("n", key, function()
 						vim.cmd(cmd)
-						if api.tree.get_node_under_cursor().type == "file" then
+						local node = api.tree.get_node_under_cursor()
+						if node and node.type == "file" then
 							api.node.open.preview()
 						end
 					end, { buffer = bufnr })
@@ -23,10 +25,12 @@ return {
 
 				vim.keymap.set("n", "<c-p>", function()
 					local node = api.tree.get_node_under_cursor()
-					if node.type == "file" then
-						local ok, line = pcall(function()
-							return vim.api.nvim_win_get_cursor(vim.fn.bufwinid(vim.fn.bufnr(node.absolute_path)))[1]
-						end)
+					if node and node.type == "file" then
+						local ok, line = pcall(
+							function()
+								return vim.api.nvim_win_get_cursor(vim.fn.bufwinid(vim.fn.bufnr(node.absolute_path)))[1]
+							end
+						)
 
 						local path = ok and (node.absolute_path .. ":" .. line) or node.absolute_path
 						vim.system({ "positron", "--goto", path, vim.fn.getcwd() })
