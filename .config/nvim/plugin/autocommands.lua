@@ -49,3 +49,19 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.wo.relativenumber = use_nums
 	end,
 })
+
+vim.api.nvim_create_autocmd("UIEnter", {
+	group = vim.api.nvim_create_augroup("set-venv", { clear = true }),
+	callback = function()
+		local venv = vim.fs.find(".venv", { type = "directory" })[1]
+		if venv then
+			vim.env.VIRTUAL_ENV = venv
+			local venv_bin = vim.fs.joinpath(venv, "bin")
+			if vim.uv.fs_stat(venv_bin) then
+				vim.env.PATH = venv_bin .. ":" .. vim.env.PATH
+				return
+			end
+		end
+		require("vim._core.ui2").enable({})
+	end,
+})
