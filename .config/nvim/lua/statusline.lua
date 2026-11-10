@@ -16,9 +16,7 @@ setmetatable(hl, {
 
 ---@param group string
 ---@return vim.api.keyset.get_hl_info
-local get_hl = function(group)
-	return vim.api.nvim_get_hl(0, { name = group, link = false, create = false })
-end
+local get_hl = function(group) return vim.api.nvim_get_hl(0, { name = group, link = false, create = false }) end
 
 local set_hl_groups = function()
 	---@type table<string, vim.api.keyset.highlight>
@@ -99,10 +97,6 @@ local mode_component = function()
 	local group = settings.hl or "Other"
 
 	return hl["StatusLineMode" .. group](" " .. mode .. " ")
-end
-
-local servery_component = function()
-	return hl["StatusLineBold"](vim.fs.basename(require("servery").cwd()))
 end
 
 vim.api.nvim_create_autocmd("User", {
@@ -287,9 +281,7 @@ end
 
 --- The current line, total line count, and column position.
 ---@return string
-local position_component = function()
-	return hl.StatusLineInverted(" %2l:%-2c ")
-end
+local position_component = function() return hl.StatusLineInverted(" %2l:%-2c ") end
 
 local jet_runtime_text = ""
 local jet_timer = nil ---@type uv.uv_timer_t?
@@ -363,13 +355,9 @@ local jet_img_component = function()
 	return string.format("%s %d/%d", hl[icon.group](icon.symbol), curr_file_index, #files)
 end
 
-local lpad = function(pad, x)
-	return x and pad .. x or ""
-end
+local lpad = function(pad, x) return x and pad .. x or "" end
 
-local rpad = function(pad, x)
-	return x and x .. pad or ""
-end
+local rpad = function(pad, x) return x and x .. pad or "" end
 
 return {
 	---@return string
@@ -387,7 +375,6 @@ return {
 
 		return table.concat({
 			mode_component(),
-			lpad(" ", servery_component()),
 			"%<", -- Don't truncate the mode component
 			lpad(" ", file_component()),
 			lpad(" ", modified_component()),
