@@ -34,7 +34,7 @@ local get_yaml_task = function()
 	local basename = vim.fs.basename(path)
 
 	local deps = {}
-	for tbl in lines:gmatch([===[tbl_[a-zA-Z_]*%(%s*['"][a-zA-Z_]+['"]]===]) do
+	for tbl in lines:gmatch([===[tbl_[a-zA-Z_]*%(%s*['"][a-zA-Z0-9_]+['"]]===]) do
 		if
 			vim.startswith(tbl, "tbl_stg")
 			or vim.startswith(tbl, "tbl_processed")
@@ -43,7 +43,7 @@ local get_yaml_task = function()
 			or vim.startswith(tbl, "tbl_log")
 			or vim.startswith(tbl, "tbl_checks")
 		then
-			tbl = tbl:match([===[['"]([a-zA-Z_]+)['"]]===])
+			tbl = tbl:match([===[['"]([a-zA-Z0-9_]+)['"]]===])
 			if tbl then
 				deps[tbl] = true
 			end

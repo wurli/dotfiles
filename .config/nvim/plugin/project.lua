@@ -9,6 +9,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
 			["bible%-notes"] = "bible_notes",
 			["data_pipeline$"] = "data_pipeline",
 			["pricing_pipeline$"] = "data_pipeline",
+			["central_pipeline$"] = "data_pipeline",
 			["lifeware_pipeline$"] = "data_pipeline2",
 			["clpw_migration"] = "data_pipeline",
 			["notes"] = "notes",
