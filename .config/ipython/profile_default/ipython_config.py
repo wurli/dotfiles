@@ -1,5 +1,10 @@
+import sys
+
 from IPython.terminal.prompts import Prompts
 from pygments.token import Token
+
+sys.path.append("src")
+
 
 c = get_config()  # noqa: F821
 
