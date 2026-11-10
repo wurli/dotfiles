@@ -133,7 +133,7 @@ return {
 		"zbirenbaum/copilot.lua",
 		cmd = "Copilot",
 		event = "InsertEnter",
-		cond = not vim.g.vscode or not vim.lsp.inline_completion,
+		cond = false and not vim.g.vscode or not vim.lsp.inline_completion,
 		dependencies = { "copilotlsp-nvim/copilot-lsp" },
 		config = {
 			filetypes = {

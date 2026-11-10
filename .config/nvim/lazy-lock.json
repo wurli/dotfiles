@@ -5,8 +5,6 @@
   "blink.compat": { "branch": "main", "commit": "2ed6d9a28b07fa6f3bface818470605f8896408c" },
   "codediff.nvim": { "branch": "main", "commit": "09d9ebef2cc5a5c04db7a349cd6c61bdf84ecc8e" },
   "conform.nvim": { "branch": "master", "commit": "619363c30309d29ffa631e67c8183f2a72caa373" },
-  "copilot-lsp": { "branch": "main", "commit": "a80e0c17e7366614d39506825f49a25d285fead9" },
-  "copilot.lua": { "branch": "master", "commit": "5bde2cfe01f049f522eeb8b52c5c723407db8bdf" },
   "csvview.nvim": { "branch": "main", "commit": "f190de76d2eca0380ddcb2425cd582d740699b55" },
   "gitsigns.nvim": { "branch": "main", "commit": "4bcd99167c265f135886b282baad77afe06206b2" },
   "grug-far.nvim": { "branch": "main", "commit": "91b7e58b6ffc6ddad5acb7a7c1df21257724449e" },
