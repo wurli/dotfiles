@@ -1,5 +1,15 @@
 {
   "trustedformulae": [
-    "axodotdev/tap/cargo-dist"
+    "anomalyco/tap/opencode",
+    "axodotdev/tap/cargo-dist",
+    "databricks/tap/databricks",
+    "microsoft/mssql-release/msodbcsql17",
+    "microsoft/mssql-release/msodbcsql18",
+    "microsoft/mssql-release/mssql-tools",
+    "microsoft/mssql-release/mssql-tools18",
+    "mongodb/brew/mongodb-community",
+    "mongodb/brew/mongodb-communitys",
+    "mongodb/brew/mongodb-database-tools",
+    "neurosnap/tap/zmx"
   ]
 }
