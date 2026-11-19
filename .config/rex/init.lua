@@ -58,7 +58,7 @@ local resolve_dirs = function()
 	end
 
 	table.sort(out, function(a, b)
-		return a.title < b.title
+		return a.id < b.id
 	end)
 
 	return out
