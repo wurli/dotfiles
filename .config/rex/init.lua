@@ -150,7 +150,26 @@ rex.action({
 	end,
 })
 
+rex.unbind("alt+cmd+left", "pane.focus.left")
+rex.unbind("alt+cmd+right", "pane.focus.right")
+rex.unbind("alt+cmd+up", "pane.focus.up")
+rex.unbind("alt+cmd+down", "pane.focus.down")
+rex.unbind("shift+cmd+left", "pane.split.left")
+rex.unbind("shift+cmd+right", "pane.split.right")
+rex.unbind("shift+cmd+up", "pane.split.up")
+rex.unbind("shift+cmd+down", "pane.split.down")
+
+rex.bind("ctrl+alt+h", "pane.focus.left")
+rex.bind("ctrl+alt+l", "pane.focus.right")
+rex.bind("ctrl+alt+k", "pane.focus.up")
+rex.bind("ctrl+alt+j", "pane.focus.down")
+rex.bind("shift+cmd+h", "pane.split.left")
+rex.bind("shift+cmd+l", "pane.split.right")
+rex.bind("shift+cmd+k", "pane.split.up")
+rex.bind("shift+cmd+j", "pane.split.down")
+
 rex.bind("ctrl+f", "pick_project")
+rex.bind("alt+f", "pane.insert_file")
 
 rex.bind("cmd+o", "client.window.fullscreen.toggle")
 rex.bind("cmd+l", "session.previous")
