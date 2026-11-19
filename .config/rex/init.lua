@@ -64,8 +64,32 @@ local resolve_dirs = function()
 	return out
 end
 
+local resolve_sessions = function()
+	local result, err = rex.call("session.list")
+	if err then
+		error(err)
+	end
+
+	local out = {}
+	for _, session in ipairs(result.sessions) do
+		table.insert(out, {
+			id = session.session_id,
+			title = session.label,
+			-- subtitle = ,
+			icon = "terminal",
+		})
+	end
+	return out
+end
+
 local pick_project = function()
-	local items = resolve_dirs()
+	local items = {}
+	for _, item in ipairs(resolve_sessions()) do
+		table.insert(items, item)
+	end
+	for _, item in ipairs(resolve_dirs()) do
+		table.insert(items, item)
+	end
 	local id, _why = rex.ui.pick({
 		title = "Open project",
 		placeholder = "Filter projects",
@@ -83,26 +107,34 @@ local pick_project = function()
 		return
 	end
 
-	-- A window in the API is a tab in the app.
-	local session, failed = rex.call("session.create", {
-		label = selected.title,
-		initial_windows = {
-			{
-				window_label = "shell",
-				layout = rex.layout.block({
-					flavor = "com.superlogical.terminal.shell",
-					options = { cwd = selected.id },
-				}),
-			},
-		},
-	})
+	local session_id
 
-	if session == nil then
-		error(failed, 0)
+	if selected.icon == "terminal" then
+		session_id = selected.id
+	else
+		-- A window in the API is a tab in the app.
+		local session, failed = rex.call("session.create", {
+			label = selected.title,
+			initial_windows = {
+				{
+					window_label = "shell",
+					layout = rex.layout.block({
+						flavor = "com.superlogical.terminal.shell",
+						options = { cwd = selected.id },
+					}),
+				},
+			},
+		})
+
+		if session == nil then
+			error(failed, 0)
+		end
+
+		session_id = session.session_id
 	end
 
 	-- Creating a session does not show it. Ask the app to switch to it.
-	rex.client.queue("session.select", { session_id = session.session_id })
+	rex.client.queue("session.select", { session_id = session_id })
 end
 
 rex.action({
