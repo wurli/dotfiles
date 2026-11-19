@@ -84,11 +84,16 @@ end
 
 local pick_project = function()
 	local items = {}
+	local existing = {}
 	for _, item in ipairs(resolve_sessions()) do
+		existing[item.title] = true
 		table.insert(items, item)
 	end
 	for _, item in ipairs(resolve_dirs()) do
-		table.insert(items, item)
+		-- Only allow creating a new sessino in a dir if there isn't one already open
+		if not existing[item.title] then
+			table.insert(items, item)
+		end
 	end
 	local id, _why = rex.ui.pick({
 		title = "Open project",
@@ -146,3 +151,6 @@ rex.action({
 })
 
 rex.bind("ctrl+f", "pick_project")
+
+rex.bind("cmd+o", "client.window.fullscreen.toggle")
+rex.bind("cmd+l", "session.previous")
