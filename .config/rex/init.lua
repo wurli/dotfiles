@@ -173,3 +173,6 @@ rex.bind("alt+f", "pane.insert_file")
 
 rex.bind("cmd+o", "client.window.fullscreen.toggle")
 rex.bind("cmd+l", "session.previous")
+
+rex.unbind("alt+shift+cmd+t", "client.pane_header.reveal")
+rex.bind("ctrl+enter", "client.pane_header.reveal")
