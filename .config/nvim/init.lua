@@ -43,24 +43,25 @@ require("lazy").setup({
 	},
 })
 
+-- No idea what's setting this keymap
+vim.keymap.del("n", "<cr>", {})
+
 -- Built-in plugins -----------------------------------------------------------
 
 -- experimental improved UI
 require("vim._core.ui2").enable({})
 
 -- built-in undotree
-vim.cmd.packadd("nvim.undotree")
-
-vim.keymap.set("n", "<leader>u", ":Undotree<CR>", { desc = "Toggle undotree" })
-
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "nvim-undotree",
-	callback = function()
-		vim.wo.number = false
-		vim.wo.relativenumber = false
-		vim.keymap.set("n", "q", ":q<CR>", { buffer = true })
-	end,
-})
+-- vim.cmd.packadd("nvim.undotree")
+-- vim.keymap.set("n", "<leader>u", ":Undotree<CR>", { desc = "Toggle undotree" })
+-- vim.api.nvim_create_autocmd("FileType", {
+-- 	pattern = "nvim-undotree",
+-- 	callback = function()
+-- 		vim.wo.number = false
+-- 		vim.wo.relativenumber = false
+-- 		vim.keymap.set("n", "q", ":q<CR>", { buffer = true })
+-- 	end,
+-- })
 
 vim.api.nvim_set_hl(0, "MCursorVisual", { link = "LspReferenceTarget" })
 
