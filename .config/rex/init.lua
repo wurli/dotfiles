@@ -175,4 +175,4 @@ rex.bind("cmd+o", "client.window.fullscreen.toggle")
 rex.bind("cmd+l", "session.previous")
 
 rex.unbind("alt+shift+cmd+t", "client.pane_header.reveal")
-rex.bind("ctrl+enter", "client.pane_header.reveal")
+rex.bind("cmd+shift+/", "client.pane_header.reveal")
