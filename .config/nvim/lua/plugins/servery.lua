@@ -1,5 +1,6 @@
 return {
 	dir = "~/Repos/servery.nvim",
+	enabled = false,
 	config = function()
 		require("servery").setup({
 			ui = {
