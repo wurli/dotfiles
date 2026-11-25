@@ -79,6 +79,12 @@ local resolve_sessions = function()
 			icon = "terminal",
 		})
 	end
+
+	local this_session = rex.session.view().session_id
+	table.sort(out, function(a, b)
+		return a.id == this_session or a.id < b.id
+	end)
+
 	return out
 end
 
