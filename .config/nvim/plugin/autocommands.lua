@@ -2,9 +2,6 @@ if vim.g.vscode then
 	return
 end
 
--- Not sure what's making this necessary :'(
-vim.api.nvim_create_autocmd("FileType", { pattern = "qf", command = "nunmap <cr>" })
-
 vim.api.nvim_create_autocmd("FileType", {
 	group = vim.api.nvim_create_augroup("custom-filetype", { clear = true }),
 	pattern = {
